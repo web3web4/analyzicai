@@ -87,12 +87,14 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {/* Step 1 */}
+            {/* First Step */}
             <div className="glass-card rounded-2xl p-8">
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-6">
-                <span className="text-2xl font-bold text-primary">1</span>
+                <span className="text-xl font-bold text-primary">1st</span>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Initial Analysis</h3>
+              <h3 className="text-xl font-semibold mb-3">
+                First Step: Initial Analysis
+              </h3>
               <p className="text-muted">
                 Each AI provider independently analyzes your UI/UX, scoring
                 categories like color contrast, typography, accessibility, and
@@ -100,27 +102,32 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Step 2 */}
-            <div className="glass-card rounded-2xl p-8">
+            {/* Intermediate Step */}
+            <div className="glass-card rounded-2xl p-8 opacity-60">
               <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-6">
-                <span className="text-2xl font-bold text-accent">2</span>
+                <span className="text-lg font-bold text-accent">V2</span>
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                Cross-Provider Rethink
+                Intermediate Step
+                <span className="ml-2 text-xs px-2 py-1 rounded-full bg-accent/20 text-accent">
+                  Coming in V2
+                </span>
               </h3>
               <p className="text-muted">
-                Providers review each other&apos;s findings. They reconsider
-                their assessments, catching blind spots and resolving
-                disagreements.
+                Planned for version 2: Providers will review each other&apos;s
+                findings, reconsidering their assessments and catching blind
+                spots.
               </p>
             </div>
 
-            {/* Step 3 */}
+            {/* Last Step */}
             <div className="glass-card rounded-2xl p-8">
               <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center mb-6">
-                <span className="text-2xl font-bold text-success">3</span>
+                <span className="text-xl font-bold text-success">3rd</span>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Master Synthesis</h3>
+              <h3 className="text-xl font-semibold mb-3">
+                Last Step: Master Synthesis
+              </h3>
               <p className="text-muted">
                 Your trusted provider synthesizes all insights into a final,
                 actionable report with prioritized recommendations.

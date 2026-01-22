@@ -116,6 +116,8 @@ export class AnalysisOrchestrator {
     return v1Results;
   }
 
+  // TODO: Version 2 - This method will be re-enabled in version 2
+  // For now, this step is skipped in the pipeline
   private async runStep2Rethink(
     imageBase64: string,
     config: AnalysisConfig,
@@ -170,7 +172,8 @@ export class AnalysisOrchestrator {
   private async runStep3Synthesis(
     imageBase64: string,
     config: AnalysisConfig,
-    v2Results: Map<
+    providerResults: Map<
+      // Now accepts v1 or v2 results
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >,
@@ -183,15 +186,15 @@ export class AnalysisOrchestrator {
     onProgress?.("step3", `Master synthesis with ${config.masterProvider}`);
 
     const masterProvider = this.getProvider(config.masterProvider);
-    const allV2Results: AnalysisResult[] = Array.from(v2Results.values()).map(
-      (v) => v.result,
-    );
+    const allResults: AnalysisResult[] = Array.from(
+      providerResults.values(),
+    ).map((v) => v.result);
 
     return await masterProvider.synthesize(
       imageBase64,
       SYNTHESIS_SYSTEM_PROMPT,
       SYNTHESIS_USER_PROMPT,
-      allV2Results,
+      allResults,
     );
   }
 
@@ -211,18 +214,25 @@ export class AnalysisOrchestrator {
     );
 
     // Step 2: Cross-Provider Rethink (parallel)
-    const v2Results = await this.runStep2Rethink(
-      imageBase64,
-      config,
-      v1Results,
-      onProgress,
-    );
+    // TODO: Version 2 - This step will be implemented in a future version
+    // For now, we skip the rethink step and use v1 results directly for synthesis
+    const v2Results = new Map<
+      AIProvider,
+      { result: AnalysisResult; tokensUsed: number; latencyMs: number }
+    >();
+    // const v2Results = await this.runStep2Rethink(
+    //   imageBase64,
+    //   config,
+    //   v1Results,
+    //   onProgress,
+    // );
 
     // Step 3: Master Synthesis
+    // TODO: Version 2 - Currently using v1 results instead of v2 results
     const synthesisResult = await this.runStep3Synthesis(
       imageBase64,
       config,
-      v2Results,
+      v1Results, // Using v1Results directly instead of v2Results for now
       onProgress,
     );
 
@@ -276,17 +286,18 @@ export class AnalysisOrchestrator {
     }
 
     // V2 results
-    for (const [provider, data] of results.v2Results) {
-      records.push({
-        analysis_id: analysisId,
-        provider,
-        step: "v2_rethink",
-        result: data.result,
-        score: data.result.overallScore,
-        tokens_used: data.tokensUsed,
-        latency_ms: data.latencyMs,
-      });
-    }
+    // TODO: Version 2 - Rethink step will be re-enabled in version 2
+    // for (const [provider, data] of results.v2Results) {
+    //   records.push({
+    //     analysis_id: analysisId,
+    //     provider,
+    //     step: "v2_rethink",
+    //     result: data.result,
+    //     score: data.result.overallScore,
+    //     tokens_used: data.tokensUsed,
+    //     latency_ms: data.latencyMs,
+    //   });
+    // }
 
     // Synthesis result
     records.push({
