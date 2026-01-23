@@ -85,7 +85,7 @@ The [AnalysisOrchestrator](file:///.//src/lib/ai/orchestrator.ts) coordinates th
 ```typescript
 const orchestrator = new AnalysisOrchestrator({
   openai: process.env.OPENAI_API_KEY,
-  gemini: process.env.GOOGLE_GEMINI_API_KEY,
+  gemini: process.env.GEMINI_API_KEY,
   claude: process.env.ANTHROPIC_API_KEY,
 });
 

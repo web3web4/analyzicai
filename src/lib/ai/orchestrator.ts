@@ -103,9 +103,9 @@ export class AnalysisOrchestrator {
       onProgress?.("step1", `Analyzing with ${providerName}`);
 
       const result = await provider.analyze(
-        imageBase64,
         INITIAL_SYSTEM_PROMPT,
         INITIAL_USER_PROMPT,
+        [imageBase64],
       );
 
       v1Results.set(providerName, result);
@@ -154,11 +154,11 @@ export class AnalysisOrchestrator {
       onProgress?.("step2", `Rethinking with ${providerName}`);
 
       const result = await provider.rethink(
-        imageBase64,
         RETHINK_SYSTEM_PROMPT,
         RETHINK_USER_PROMPT,
         myV1.result,
         otherV1Results,
+        [imageBase64],
       );
 
       v2Results.set(providerName, result);
@@ -191,10 +191,10 @@ export class AnalysisOrchestrator {
     ).map((v) => v.result);
 
     return await masterProvider.synthesize(
-      imageBase64,
       SYNTHESIS_SYSTEM_PROMPT,
       SYNTHESIS_USER_PROMPT,
       allResults,
+      [imageBase64],
     );
   }
 

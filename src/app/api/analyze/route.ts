@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       const { AnalysisOrchestrator } = await import("@/lib/ai/orchestrator");
       const orchestrator = new AnalysisOrchestrator({
         openai: process.env.OPENAI_API_KEY,
-        gemini: process.env.GOOGLE_GEMINI_API_KEY,
+        gemini: process.env.GEMINI_API_KEY,
         claude: process.env.ANTHROPIC_API_KEY,
       });
 
@@ -112,8 +112,10 @@ export async function POST(request: NextRequest) {
       });
 
       // Store all AI responses in database
-      const responseRecords =
-        AnalysisOrchestrator.formatForDatabase(analysisId, results);
+      const responseRecords = AnalysisOrchestrator.formatForDatabase(
+        analysisId,
+        results,
+      );
 
       const { error: insertError } = await supabase
         .from("analysis_responses")
@@ -163,8 +165,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "AI analysis failed",
-          details:
-            aiError instanceof Error ? aiError.message : "Unknown error",
+          details: aiError instanceof Error ? aiError.message : "Unknown error",
         },
         { status: 500 },
       );
