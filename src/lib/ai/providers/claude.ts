@@ -19,7 +19,21 @@ export class ClaudeProvider extends BaseAIProvider {
 
   constructor(config: AIProviderConfig) {
     super("claude", config);
-    this.model = config.model || "claude-sonnet-4-20250514";
+
+    // Determine model from environment-specific variables
+    const isProduction = process.env.NODE_ENV === "production";
+    this.model =
+      config.model ||
+      (isProduction
+        ? process.env.ANTHROPIC_MODEL_FOR_PRODUCTION
+        : process.env.ANTHROPIC_MODEL_FOR_TESTING) ||
+      "";
+
+    if (!this.model) {
+      throw new Error(
+        `Claude model not configured. Set ${isProduction ? "ANTHROPIC_MODEL_FOR_PRODUCTION" : "ANTHROPIC_MODEL_FOR_TESTING"} in .env.local`,
+      );
+    }
   }
 
   protected async callAPI(

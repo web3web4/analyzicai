@@ -17,7 +17,21 @@ export class OpenAIProvider extends BaseAIProvider {
 
   constructor(config: AIProviderConfig) {
     super("openai", config);
-    this.model = config.model || "gpt-4o";
+
+    // Determine model from environment-specific variables
+    const isProduction = process.env.NODE_ENV === "production";
+    this.model =
+      config.model ||
+      (isProduction
+        ? process.env.OPENAI_MODEL_FOR_PRODUCTION
+        : process.env.OPENAI_MODEL_FOR_TESTING) ||
+      "";
+
+    if (!this.model) {
+      throw new Error(
+        `OpenAI model not configured. Set ${isProduction ? "OPENAI_MODEL_FOR_PRODUCTION" : "OPENAI_MODEL_FOR_TESTING"} in .env.local`,
+      );
+    }
   }
 
   protected async callAPI(

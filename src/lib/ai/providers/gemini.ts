@@ -6,7 +6,21 @@ export class GeminiProvider extends BaseAIProvider {
 
   constructor(config: AIProviderConfig) {
     super("gemini", config);
-    this.model = config.model || "gemini-2.0-flash";
+
+    // Determine model from environment-specific variables
+    const isProduction = process.env.NODE_ENV === "production";
+    this.model =
+      config.model ||
+      (isProduction
+        ? process.env.GEMINI_MODEL_FOR_PRODUCTION
+        : process.env.GEMINI_MODEL_FOR_TESTING) ||
+      "";
+
+    if (!this.model) {
+      throw new Error(
+        `Gemini model not configured. Set ${isProduction ? "GEMINI_MODEL_FOR_PRODUCTION" : "GEMINI_MODEL_FOR_TESTING"} in .env.local`,
+      );
+    }
   }
 
   protected async callAPI(

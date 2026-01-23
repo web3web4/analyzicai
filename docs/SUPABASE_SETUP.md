@@ -14,6 +14,41 @@ This project uses **custom ports** to avoid conflicts with other Supabase projec
 | Vector       | 54328   | **54338**    |
 | Shadow DB    | 54320   | **54340**    |
 
+## Development URLs
+
+When Supabase is running, you can access the following services:
+
+### 🔧 Development Tools
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| **Studio** | http://127.0.0.1:54333 | Database admin UI, schema editor, table viewer |
+| **Mailpit** | http://127.0.0.1:54334 | Email testing (catches all emails sent locally) |
+| **MCP** | http://127.0.0.1:54331/mcp | Model Context Protocol endpoint |
+
+### 🌐 API Endpoints
+
+| API | URL | Purpose |
+|-----|-----|---------|
+| **Project URL** | http://127.0.0.1:54331 | Main Supabase API endpoint |
+| **REST** | http://127.0.0.1:54331/rest/v1 | PostgREST API for database access |
+| **GraphQL** | http://127.0.0.1:54331/graphql/v1 | GraphQL API (if enabled) |
+| **Edge Functions** | http://127.0.0.1:54331/functions/v1 | Serverless functions endpoint |
+| **Storage** | http://127.0.0.1:54331/storage/v1/s3 | S3-compatible storage API |
+
+### ⛁ Database Connection
+
+```
+postgresql://postgres:postgres@127.0.0.1:54332/postgres
+```
+
+**Quick connect:** Use this connection string with database tools like:
+- **pgAdmin**
+- **DBeaver**
+- **psql CLI:** `psql postgresql://postgres:postgres@127.0.0.1:54332/postgres`
+
+---
+
 ## Quick Start
 
 ### Zero-Config Development (Recommended)

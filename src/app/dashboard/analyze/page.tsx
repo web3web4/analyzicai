@@ -15,7 +15,9 @@ export default function AnalyzePage() {
   const [selectedProviders, setSelectedProviders] = useState<AIProvider[]>([
     "openai",
   ]);
-  const [masterProvider, setMasterProvider] = useState<AIProvider>("openai");
+  const [masterProvider, setMasterProvider] = useState<AIProvider>(
+    (process.env.NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER as AIProvider) || "openai",
+  );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
