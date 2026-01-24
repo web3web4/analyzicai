@@ -7,7 +7,7 @@ import {
 import { BaseAIProvider } from "./base-provider";
 import { OpenAIProvider } from "./providers/openai";
 import { GeminiProvider } from "./providers/gemini";
-import { ClaudeProvider } from "./providers/claude";
+import { AnthropicProvider } from "./providers/anthropic";
 import {
   INITIAL_SYSTEM_PROMPT,
   INITIAL_USER_PROMPT,
@@ -37,25 +37,27 @@ interface OrchestratorResult {
 export class AnalysisOrchestrator {
   private providers: Map<AIProvider, BaseAIProvider>;
 
-  constructor(apiKeys: { openai?: string; gemini?: string; claude?: string }) {
+  constructor(options: {
+    apiKeys: { openai?: string; gemini?: string; anthropic?: string };
+  }) {
     this.providers = new Map();
 
-    if (apiKeys.openai) {
+    if (options.apiKeys.openai) {
       this.providers.set(
         "openai",
-        new OpenAIProvider({ apiKey: apiKeys.openai }),
+        new OpenAIProvider({ apiKey: options.apiKeys.openai }),
       );
     }
-    if (apiKeys.gemini) {
+    if (options.apiKeys.gemini) {
       this.providers.set(
         "gemini",
-        new GeminiProvider({ apiKey: apiKeys.gemini }),
+        new GeminiProvider({ apiKey: options.apiKeys.gemini }),
       );
     }
-    if (apiKeys.claude) {
+    if (options.apiKeys.anthropic) {
       this.providers.set(
-        "claude",
-        new ClaudeProvider({ apiKey: apiKeys.claude }),
+        "anthropic",
+        new AnthropicProvider({ apiKey: options.apiKeys.anthropic }),
       );
     }
   }
@@ -82,8 +84,8 @@ export class AnalysisOrchestrator {
   }
 
   private async runStep1InitialAnalysis(
-    imageBase64: string,
     config: AnalysisConfig,
+    imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
   ): Promise<
     Map<
@@ -105,7 +107,7 @@ export class AnalysisOrchestrator {
       const result = await provider.analyze(
         INITIAL_SYSTEM_PROMPT,
         INITIAL_USER_PROMPT,
-        [imageBase64],
+        imagesBase64,
       );
 
       v1Results.set(providerName, result);
@@ -119,12 +121,12 @@ export class AnalysisOrchestrator {
   // TODO: Version 2 - This method will be re-enabled in version 2
   // For now, this step is skipped in the pipeline
   private async runStep2Rethink(
-    imageBase64: string,
     config: AnalysisConfig,
     v1Results: Map<
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >,
+    imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
   ): Promise<
     Map<
@@ -158,7 +160,7 @@ export class AnalysisOrchestrator {
         RETHINK_USER_PROMPT,
         myV1.result,
         otherV1Results,
-        [imageBase64],
+        imagesBase64,
       );
 
       v2Results.set(providerName, result);
@@ -170,13 +172,13 @@ export class AnalysisOrchestrator {
   }
 
   private async runStep3Synthesis(
-    imageBase64: string,
     config: AnalysisConfig,
     providerResults: Map<
       // Now accepts v1 or v2 results
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >,
+    imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
   ): Promise<{
     result: AnalysisResult;
@@ -194,13 +196,13 @@ export class AnalysisOrchestrator {
       SYNTHESIS_SYSTEM_PROMPT,
       SYNTHESIS_USER_PROMPT,
       allResults,
-      [imageBase64],
+      imagesBase64,
     );
   }
 
   async runPipeline(
-    imageBase64: string,
     config: AnalysisConfig,
+    imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
   ): Promise<OrchestratorResult> {
     // Validate providers
@@ -208,8 +210,8 @@ export class AnalysisOrchestrator {
 
     // Step 1: Initial Analysis from all providers (parallel)
     const v1Results = await this.runStep1InitialAnalysis(
-      imageBase64,
       config,
+      imagesBase64,
       onProgress,
     );
 
@@ -230,9 +232,9 @@ export class AnalysisOrchestrator {
     // Step 3: Master Synthesis
     // TODO: Version 2 - Currently using v1 results instead of v2 results
     const synthesisResult = await this.runStep3Synthesis(
-      imageBase64,
       config,
       v1Results, // Using v1Results directly instead of v2Results for now
+      imagesBase64,
       onProgress,
     );
 

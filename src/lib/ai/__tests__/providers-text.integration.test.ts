@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from "@jest/globals";
+import { describe, it, expect } from "@jest/globals";
 import { OpenAIProvider } from "../providers/openai";
-import { ClaudeProvider } from "../providers/claude";
+import { AnthropicProvider } from "../providers/anthropic";
 import { GeminiProvider } from "../providers/gemini";
 
 /**
@@ -10,7 +10,6 @@ import { GeminiProvider } from "../providers/gemini";
  * - OPENAI_API_KEY
  * - ANTHROPIC_API_KEY
  * - GEMINI_API_KEY
- * - GITHUB_COPILOT_API_KEY
  *
  * To run: npm test -- providers-text.integration.test.ts
  */
@@ -84,7 +83,7 @@ describe("Text-Only Analysis Integration Tests", () => {
     it("should analyze code without image", async () => {
       if (skipIfNoKey("ANTHROPIC_API_KEY")) return;
 
-      const provider = new ClaudeProvider({
+      const provider = new AnthropicProvider({
         apiKey: process.env.ANTHROPIC_API_KEY!,
       });
 
@@ -93,7 +92,7 @@ describe("Text-Only Analysis Integration Tests", () => {
         `Analyze this HTML page:\n\n${SIMPLE_HTML}`,
       );
 
-      expect(result.result.provider).toBe("claude");
+      expect(result.result.provider).toBe("anthropic");
       expect(result.result.overallScore).toBeGreaterThanOrEqual(0);
       expect(result.result.overallScore).toBeLessThanOrEqual(100);
       expect(result.tokensUsed).toBeGreaterThan(0);

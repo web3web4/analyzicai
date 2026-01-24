@@ -6,7 +6,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 type SourceType = "upload" | "screen_capture";
-type AIProvider = "openai" | "gemini" | "claude";
+type AIProvider = "openai" | "gemini" | "anthropic";
 
 export default function AnalyzePage() {
   const [sourceType, setSourceType] = useState<SourceType>("upload");
@@ -35,7 +35,7 @@ export default function AnalyzePage() {
       description: "Great for visual patterns",
     },
     {
-      id: "claude",
+      id: "anthropic",
       name: "Claude 3 Sonnet",
       description: "Excellent for accessibility",
     },

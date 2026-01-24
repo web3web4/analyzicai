@@ -78,23 +78,25 @@ This intermediate refinement step will be implemented in a future version of the
 ### Providers
 - [OpenAIProvider](file:///.//src/lib/ai/providers/openai.ts) - GPT implementation
 - [GeminiProvider](file:///.//src/lib/ai/providers/gemini.ts) - Gemini implementation
-- [ClaudeProvider](file:///.//src/lib/ai/providers/claude.ts) - Claude implementation
+- [AnthropicProvider](file:///.//src/lib/ai/providers/anthropic.ts) - Anthropic (Claude) implementation
 
 ### Orchestrator
 The [AnalysisOrchestrator](file:///.//src/lib/ai/orchestrator.ts) coordinates the entire pipeline:
 ```typescript
 const orchestrator = new AnalysisOrchestrator({
-  openai: process.env.OPENAI_API_KEY,
-  gemini: process.env.GEMINI_API_KEY,
-  claude: process.env.ANTHROPIC_API_KEY,
+  apiKeys: {
+    openai: process.env.OPENAI_API_KEY,
+    gemini: process.env.GEMINI_API_KEY,
+    anthropic: process.env.ANTHROPIC_API_KEY,
+  },
 });
 
 const results = await orchestrator.runPipeline(
-  imageBase64,
   {
-    providers: ['openai', 'gemini', 'claude'],
+    providers: ['openai', 'gemini', 'anthropic'],
     masterProvider: 'openai'
-  }
+  },
+  imagesBase64
 );
 ```
 
@@ -127,7 +129,7 @@ Instead of calling each provider once per step, allow multiple calls to the same
   providers: [
     { name: 'openai', samples: 3 },
     { name: 'gemini', samples: 2 },
-    { name: 'claude', samples: 1 }
+    { name: 'anthropic', samples: 1 }
   ],
   masterProvider: 'openai'
 }

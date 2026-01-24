@@ -1,6 +1,6 @@
 import { BaseAIProvider, AIProviderConfig } from "../base-provider";
 
-interface ClaudeMessage {
+interface AnthropicMessage {
   role: "user" | "assistant";
   content: Array<{
     type: "text" | "image";
@@ -13,12 +13,12 @@ interface ClaudeMessage {
   }>;
 }
 
-export class ClaudeProvider extends BaseAIProvider {
+export class AnthropicProvider extends BaseAIProvider {
   private baseUrl = "https://api.anthropic.com/v1";
   private model: string;
 
   constructor(config: AIProviderConfig) {
-    super("claude", config);
+    super("anthropic", config);
 
     // Determine model from environment-specific variables
     const isProduction = process.env.NODE_ENV === "production";
@@ -31,7 +31,7 @@ export class ClaudeProvider extends BaseAIProvider {
 
     if (!this.model) {
       throw new Error(
-        `Claude model not configured. Set ${isProduction ? "ANTHROPIC_MODEL_FOR_PRODUCTION" : "ANTHROPIC_MODEL_FOR_TESTING"} in .env.local`,
+        `Anthropic model not configured. Set ${isProduction ? "ANTHROPIC_MODEL_FOR_PRODUCTION" : "ANTHROPIC_MODEL_FOR_TESTING"} in .env.local`,
       );
     }
   }
@@ -39,9 +39,9 @@ export class ClaudeProvider extends BaseAIProvider {
   protected async callAPI(
     systemPrompt: string,
     userPrompt: string,
-    imagesBase64: string[],
+    imagesBase64?: string[],
   ): Promise<{ content: string; tokensUsed: number }> {
-    const imagesContent: ClaudeMessage["content"] = [];
+    const imagesContent: AnthropicMessage["content"] = [];
     if (imagesBase64) {
       imagesBase64.forEach((imageBase64) => {
         // Extract base64 data and mime type
@@ -60,7 +60,7 @@ export class ClaudeProvider extends BaseAIProvider {
         });
       });
     }
-    const messages: ClaudeMessage[] = [
+    const messages: AnthropicMessage[] = [
       {
         role: "user",
         content: imagesContent.concat([
@@ -89,7 +89,7 @@ export class ClaudeProvider extends BaseAIProvider {
 
     if (!response.ok) {
       const error = await response.text();
-      throw new Error(`Claude API error: ${response.status} - ${error}`);
+      throw new Error(`Anthropic API error: ${response.status} - ${error}`);
     }
 
     const data = await response.json();
@@ -101,8 +101,8 @@ export class ClaudeProvider extends BaseAIProvider {
   }
 
   protected parseResponseContent(content: string): unknown {
-    // Claude may return markdown-wrapped JSON, extract it
-    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [
+    // Anthropic may return markdown-wrapped JSON, extract it
+    const jsonMatch = content.match(/```(?:json)?\\s*([\\s\\S]*?)```/) || [
       null,
       content,
     ];

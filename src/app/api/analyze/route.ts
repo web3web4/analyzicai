@@ -95,9 +95,11 @@ export async function POST(request: NextRequest) {
       // Initialize orchestrator with API keys
       const { AnalysisOrchestrator } = await import("@/lib/ai/orchestrator");
       const orchestrator = new AnalysisOrchestrator({
-        openai: process.env.OPENAI_API_KEY,
-        gemini: process.env.GEMINI_API_KEY,
-        claude: process.env.ANTHROPIC_API_KEY,
+        apiKeys: {
+          openai: process.env.OPENAI_API_KEY,
+          gemini: process.env.GEMINI_API_KEY,
+          anthropic: process.env.ANTHROPIC_API_KEY,
+        },
       });
 
       // Update status and run pipeline
@@ -106,10 +108,13 @@ export async function POST(request: NextRequest) {
         .update({ status: "step1" })
         .eq("id", analysisId);
 
-      const results = await orchestrator.runPipeline(imageBase64, {
-        providers,
-        masterProvider,
-      });
+      const results = await orchestrator.runPipeline(
+        {
+          providers,
+          masterProvider,
+        },
+        [imageBase64],
+      );
 
       // Store all AI responses in database
       const responseRecords = AnalysisOrchestrator.formatForDatabase(

@@ -1,4 +1,16 @@
 # ═══════════════════════════════════════════════════════════════════════
+# 🔑 API Keys
+# ═══════════════════════════════════════════════════════════════════════
+# Get API keys from:
+# - OpenAI: https://platform.openai.com/api-keys
+# - Anthropic: https://console.anthropic.com/account/keys
+# - Google: https://aistudio.google.com/app/apikey
+
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GEMINI_API_KEY=AI...
+
+# ═══════════════════════════════════════════════════════════════════════
 # 🔧 API Logging
 # ═══════════════════════════════════════════════════════════════════════
 ENABLE_API_LOGGING=true

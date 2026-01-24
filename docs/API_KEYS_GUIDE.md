@@ -34,6 +34,11 @@ Add these to your `.env.local` file (see `.env.example` for full template):
 
 ```bash
 # AI Provider API Keys
+# Note: Variable names are platform/API-scoped, mapped to code providers:
+#   OPENAI_API_KEY      → 'openai' provider (OpenAI Platform)
+#   ANTHROPIC_API_KEY   → 'anthropic' provider (Anthropic Platform) 
+#   GEMINI_API_KEY      → 'gemini' provider (Google Gemini API - official naming)
+
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 GEMINI_API_KEY=AI...

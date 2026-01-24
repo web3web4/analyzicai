@@ -361,9 +361,9 @@ OpenAI GPT implementation.
 
 Google Gemini Pro Vision implementation.
 
-#### [NEW] [src/lib/ai/providers/claude.ts](file:///.//src/lib/ai/providers/claude.ts)
+#### [NEW] [src/lib/ai/providers/anthropic.ts](file:///.//src/lib/ai/providers/anthropic.ts)
 
-Anthropic Claude 3 implementation.
+Anthropic Claude implementation.
 
 #### [NEW] [src/lib/ai/orchestrator.ts](file:///.//src/lib/ai/orchestrator.ts)
 
@@ -387,28 +387,28 @@ flowchart LR
 
 ```typescript
 export interface AnalysisConfig {
-  providers: ('openai' | 'gemini' | 'claude')[];
-  masterProvider: 'openai' | 'gemini' | 'claude';
+  providers: ('openai' | 'gemini' | 'anthropic')[];
+  masterProvider: 'openai' | 'gemini' | 'anthropic';
 }
 
 export async function runAnalysisPipeline(
-  imageBase64: string,
-  config: AnalysisConfig
+  config: AnalysisConfig,
+  imagesBase64?: string[],
 ): Promise<FinalAnalysisResult> {
   // Step 1: Initial analysis from each provider
   const v1Results = await Promise.all(
-    config.providers.map(p => analyze(p, imageBase64, 'initial'))
+    config.providers.map(p => analyze(p, imagesBase64, 'initial'))
   );
   
   // Step 2: Each provider rethinks with others' results
   const v2Results = await Promise.all(
     config.providers.map(p => 
-      analyze(p, imageBase64, 'rethink', aggregateOthersResults(p, v1Results))
+      analyze(p, imagesBase64, 'rethink', aggregateOthersResults(p, v1Results))
     )
   );
   
   // Step 3: Master provider synthesizes final result
-  return synthesize(config.masterProvider, imageBase64, v2Results);
+  return synthesize(config.masterProvider, imagesBase64, v2Results);
 }
 ```
 
@@ -694,7 +694,7 @@ app.uxicai/
 │   │   │   └── providers/
 │   │   │       ├── openai.ts
 │   │   │       ├── gemini.ts
-│   │   │       └── claude.ts
+│   │   │       └── anthropic.ts
 │   │   └── capture/
 │   │       └── screen-capture.ts
 │   └── middleware.ts
