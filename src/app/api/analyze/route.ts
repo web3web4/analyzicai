@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Update analysis as completed
-      await supabase
+      const { error: updateError } = await supabase
         .from("analyses")
         .update({
           status: "completed",
@@ -140,6 +140,11 @@ export async function POST(request: NextRequest) {
           completed_at: new Date().toISOString(),
         })
         .eq("id", analysisId);
+
+      if (updateError) {
+        console.error("[API] Failed to update analysis status:", updateError);
+        throw new Error("Failed to update analysis status");
+      }
 
       // Track usage for master provider
       const masterTokens =
@@ -150,6 +155,12 @@ export async function POST(request: NextRequest) {
         analysis_id: analysisId,
         provider: masterProvider,
         tokens_used: masterTokens,
+      });
+
+      console.log("[API] Analysis pipeline completed successfully", {
+        analysisId,
+        finalScore: results.finalScore,
+        providers: Array.from(results.v1Results.keys()),
       });
 
       return NextResponse.json({

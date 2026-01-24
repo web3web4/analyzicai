@@ -1,6 +1,14 @@
 import { AnalysisResult, analysisResultSchema } from "./types";
-import * as fs from "fs";
-import * as path from "path";
+
+// Conditionally import Node.js modules only in server environments to prevent client-side bundling issues
+let fs: typeof import("fs") | null = null;
+let path: typeof import("path") | null = null;
+
+// Import fs/path dynamically in Node.js environments only
+if (typeof window === "undefined" && typeof process !== "undefined") {
+  fs = require("fs");
+  path = require("path");
+}
 
 export interface AIProviderConfig {
   apiKey: string;
@@ -16,9 +24,10 @@ export abstract class BaseAIProvider {
     this.name = name;
     this.config = config;
 
-    // Set up logging directory if enabled via environment variable
-    if (process.env.ENABLE_API_LOGGING === "true") {
+    // Set up logging directory if enabled (ENABLE_API_LOGGING=true)
+    if (process.env.ENABLE_API_LOGGING === "true" && fs && path) {
       this.logDir = path.join(process.cwd(), "test-logs", name);
+      // Synchronous setup acceptable during initialization; async operations used during runtime
       if (!fs.existsSync(this.logDir)) {
         fs.mkdirSync(this.logDir, { recursive: true });
       }
@@ -40,17 +49,50 @@ export abstract class BaseAIProvider {
 
   /**
    * Hook for parsing response content.
-   * Override this if provider returns non-standard JSON (e.g., markdown-wrapped).
-   * Default implementation: direct JSON parse.
+   * Override this if provider needs special handling beyond the default strategies.
+   * Default implementation tries multiple strategies to extract JSON from various formats.
    */
   protected parseResponseContent(content: string): unknown {
-    return JSON.parse(content);
+    // Try to extract JSON using multiple strategies
+    let jsonContent: string | undefined;
+
+    // Strategy 1: Look for markdown-wrapped JSON
+    const markdownMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (markdownMatch?.[1]) {
+      jsonContent = markdownMatch[1].trim();
+    }
+
+    // Strategy 2: Extract raw JSON object from prose (look for {...})
+    if (!jsonContent) {
+      const objectMatch = content.match(/\{[\s\S]*\}/);
+      if (objectMatch?.[0]) {
+        jsonContent = objectMatch[0];
+      }
+    }
+
+    // Strategy 3: Assume entire content is JSON
+    if (!jsonContent) {
+      jsonContent = content.trim();
+    }
+
+    // Attempt to parse with helpful error messages
+    try {
+      return JSON.parse(jsonContent);
+    } catch (error) {
+      const preview = content.substring(0, 200).replace(/\n/g, " ");
+      throw new Error(
+        `Failed to parse ${this.name} response as JSON. ` +
+          `Response preview: "${preview}${content.length > 200 ? "..." : ""}" ` +
+          `Parse error: ${error instanceof Error ? error.message : String(error)}. ` +
+          `Tip: Ensure the system prompt explicitly requires JSON-only output.`,
+      );
+    }
   }
 
   /**
-   * Log API request and response to a dedicated folder with JSON, TXT, and image files
+   * Log API request and response to a dedicated folder with JSON, TXT, and image files.
    */
-  private logAPICall(
+  private async logAPICall(
     methodName: string,
     request: {
       systemPrompt: string;
@@ -65,109 +107,157 @@ export abstract class BaseAIProvider {
       rawResponse?: unknown; // Raw API response object
       error?: string;
     },
-  ): void {
-    if (!this.logDir) return;
+  ): Promise<void> {
+    if (!this.logDir || !fs || !path) return;
 
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const callFolderName = `${methodName}_${timestamp}`;
-    const callDir = path.join(this.logDir, callFolderName);
+    try {
+      const now = new Date();
+      // Use local time for folder names (easier to correlate with test runs)
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const seconds = String(now.getSeconds()).padStart(2, "0");
+      const ms = String(now.getMilliseconds()).padStart(3, "0");
+      const localTimestamp = `${year}-${month}-${day}T${hours}-${minutes}-${seconds}-${ms}Z`;
 
-    // Create dedicated folder for this API call
-    if (!fs.existsSync(callDir)) {
-      fs.mkdirSync(callDir, { recursive: true });
-    }
+      // Use UTC for JSON log metadata (standard format)
+      const isoTimestamp = now.toISOString();
+      const callFolderName = `${methodName}_${localTimestamp}`;
+      const callDir = path.join(this.logDir, callFolderName);
 
-    // Save input images if any
-    const inputImagePaths: string[] = [];
-    if (request.imagesBase64 && request.imagesBase64.length > 0) {
-      request.imagesBase64.forEach((imageBase64, idx) => {
-        const matches = imageBase64.match(/^data:(.+);base64,(.+)$/);
-        if (matches) {
-          const [, mimeType, base64Data] = matches;
-          const extension = mimeType.split("/")[1] || "png";
-          const filename = `input_image_${idx + 1}.${extension}`;
-          const imagePath = path.join(callDir, filename);
+      await fs.promises.mkdir(callDir, { recursive: true });
 
-          // Write image binary data
-          fs.writeFileSync(imagePath, Buffer.from(base64Data, "base64"));
-          inputImagePaths.push(filename);
-        }
-      });
-    }
+      // Process images in parallel, keeping full results array (including nulls) for index alignment
+      const imageResults: (string | null)[] = request.imagesBase64?.length
+        ? await Promise.all(
+            request.imagesBase64.map(async (imageBase64, idx) => {
+              try {
+                // Optimization: Parse only the header, not the entire (potentially huge) base64 string
+                const commaIndex = imageBase64.indexOf(",");
+                if (commaIndex === -1) return null;
 
-    // JSON log with full data including raw request/response
-    const logData = {
-      provider: this.name,
-      method: methodName,
-      timestamp: new Date().toISOString(),
-      request: {
-        systemPrompt: request.systemPrompt,
-        userPrompt: request.userPrompt,
-        imagesCount: request.imagesBase64?.length || 0,
-        imageFiles: inputImagePaths,
-        rawRequest: request.rawRequest,
-      },
-      response: {
-        content: response.content,
-        tokensUsed: response.tokensUsed,
-        latencyMs: response.latencyMs,
-        rawResponse: response.rawResponse,
-        error: response.error,
-      },
-    };
+                const header = imageBase64.substring(0, commaIndex);
+                const matches = header.match(/^data:(.+);base64$/);
+                if (!matches) return null;
 
-    fs.writeFileSync(
-      path.join(callDir, "request.json"),
-      JSON.stringify(logData, null, 2),
-    );
+                const mimeType = matches[1];
+                const extension = mimeType.split("/")[1] || "png";
+                const filename = `input_image_${idx + 1}.${extension}`;
+                const imagePath = path.join(callDir, filename);
 
-    // TXT log with human-readable format
-    let txtContent = "";
-    txtContent += "=".repeat(80) + "\n";
-    txtContent += `PROVIDER: ${this.name}\n`;
-    txtContent += `METHOD: ${methodName}\n`;
-    txtContent += `TIMESTAMP: ${new Date().toISOString()}\n`;
-    txtContent += "=".repeat(80) + "\n\n";
+                // Optimization: Write directly with base64 encoding to avoid Buffer allocation
+                await fs.promises.writeFile(
+                  imagePath,
+                  imageBase64.substring(commaIndex + 1),
+                  "base64",
+                );
+                return filename;
+              } catch (imgError) {
+                console.warn(
+                  `[${this.name}] Failed to save image ${idx + 1}:`,
+                  imgError,
+                );
+                return null;
+              }
+            }),
+          )
+        : [];
 
-    txtContent += "SYSTEM PROMPT:\n";
-    txtContent += "-".repeat(80) + "\n";
-    txtContent += request.systemPrompt + "\n\n";
+      // Extract successful saves for JSON log
+      const inputImagePaths = imageResults.filter(
+        (f): f is string => f !== null,
+      );
 
-    txtContent += "USER PROMPT:\n";
-    txtContent += "-".repeat(80) + "\n";
-    txtContent += request.userPrompt + "\n\n";
+      // Write JSON log with full request/response data
+      const logData = {
+        provider: this.name,
+        method: methodName,
+        timestamp: isoTimestamp,
+        request: {
+          systemPrompt: request.systemPrompt,
+          userPrompt: request.userPrompt,
+          imagesCount: request.imagesBase64?.length || 0,
+          imageFiles: inputImagePaths,
+          rawRequest: request.rawRequest,
+        },
+        response: {
+          content: response.content,
+          tokensUsed: response.tokensUsed,
+          latencyMs: response.latencyMs,
+          rawResponse: response.rawResponse,
+          error: response.error,
+        },
+      };
 
-    if (request.imagesBase64 && request.imagesBase64.length > 0) {
-      txtContent += "IMAGES:\n";
+      await fs.promises.writeFile(
+        path.join(callDir, "request.json"),
+        JSON.stringify(logData, null, 2),
+      );
+
+      // Build human-readable text log
+      let txtContent = "";
+      txtContent += "=".repeat(80) + "\n";
+      txtContent += `PROVIDER: ${this.name}\n`;
+      txtContent += `METHOD: ${methodName}\n`;
+      txtContent += `TIMESTAMP: ${isoTimestamp}\n`;
+      txtContent += "=".repeat(80) + "\n\n";
+
+      txtContent += "SYSTEM PROMPT:\n";
       txtContent += "-".repeat(80) + "\n";
-      request.imagesBase64.forEach((img, idx) => {
-        const sizeKB = Math.round((img.length * 3) / 4 / 1024);
-        const mimeType = img.match(/^data:(.+);base64,/)?.[1] || "unknown";
-        txtContent += `Image ${idx + 1}: ${mimeType}, ~${sizeKB}KB\n`;
-        txtContent += `  Saved as: ${inputImagePaths[idx]}\n`;
-      });
-      txtContent += "\n";
+      txtContent += request.systemPrompt + "\n\n";
+
+      txtContent += "USER PROMPT:\n";
+      txtContent += "-".repeat(80) + "\n";
+      txtContent += request.userPrompt + "\n\n";
+
+      if (request.imagesBase64 && request.imagesBase64.length > 0) {
+        txtContent += "IMAGES:\n";
+        txtContent += "-".repeat(80) + "\n";
+        request.imagesBase64.forEach((img, idx) => {
+          const sizeKB = Math.round((img.length * 3) / 4 / 1024);
+          const mimeType = img.match(/^data:(.+);base64,/)?.[1] || "unknown";
+          txtContent += `Image ${idx + 1}: ${mimeType}, ~${sizeKB}KB\n`;
+          // Use imageResults to maintain index alignment
+          txtContent += `  Saved as: ${imageResults[idx] || "[failed to save]"}\n`;
+        });
+        txtContent += "\n";
+      }
+
+      txtContent += "API RESPONSE:\n";
+      txtContent += "-".repeat(80) + "\n";
+      if (response.error) {
+        txtContent += `ERROR: ${response.error}\n\n`;
+      } else {
+        txtContent += response.content + "\n\n";
+      }
+
+      txtContent += "METADATA:\n";
+      txtContent += "-".repeat(80) + "\n";
+      txtContent += `Tokens Used: ${response.tokensUsed}\n`;
+      txtContent += `Latency: ${response.latencyMs}ms\n`;
+      txtContent += `Log Directory: ${callFolderName}\n`;
+      txtContent += "=".repeat(80) + "\n";
+
+      await fs.promises.writeFile(
+        path.join(callDir, "request.txt"),
+        txtContent,
+      );
+    } catch (error) {
+      console.error(
+        `[${this.name}] Failed to log API call for ${methodName}:`,
+        error,
+      );
     }
-
-    txtContent += "API RESPONSE:\n";
-    txtContent += "-".repeat(80) + "\n";
-    if (response.error) {
-      txtContent += `ERROR: ${response.error}\n\n`;
-    } else {
-      txtContent += response.content + "\n\n";
-    }
-
-    txtContent += "METADATA:\n";
-    txtContent += "-".repeat(80) + "\n";
-    txtContent += `Tokens Used: ${response.tokensUsed}\n`;
-    txtContent += `Latency: ${response.latencyMs}ms\n`;
-    txtContent += `Log Directory: ${callFolderName}\n`;
-    txtContent += "=".repeat(80) + "\n";
-
-    fs.writeFileSync(path.join(callDir, "request.txt"), txtContent);
   }
 
-  async analyze(
+  /**
+   * Common wrapper for API calls with error handling and logging.
+   * All public methods (analyze, rethink, synthesize) use this to ensure consistent behavior.
+   */
+  private async executeWithLogging(
+    methodName: string,
     systemPrompt: string,
     userPrompt: string,
     imagesBase64?: string[],
@@ -196,47 +286,60 @@ export abstract class BaseAIProvider {
 
       const latencyMs = Date.now() - startTime;
 
-      // Log successful API call
-      this.logAPICall(
-        "analyze",
-        {
-          systemPrompt,
-          userPrompt,
-          imagesBase64,
-        },
-        {
-          content,
-          tokensUsed,
-          latencyMs,
-        },
-      );
+      try {
+        await this.logAPICall(
+          methodName,
+          { systemPrompt, userPrompt, imagesBase64 },
+          { content, tokensUsed, latencyMs },
+        );
+      } catch (logError) {
+        console.error(
+          `[${this.name}] Logging error in ${methodName}:`,
+          logError,
+        );
+      }
 
-      return {
-        result,
-        tokensUsed,
-        latencyMs,
-      };
+      return { result, tokensUsed, latencyMs };
     } catch (error) {
       const latencyMs = Date.now() - startTime;
 
-      // Log failed API call
-      this.logAPICall(
-        "analyze",
-        {
-          systemPrompt,
-          userPrompt,
-          imagesBase64,
-        },
-        {
-          content: "",
-          tokensUsed: 0,
-          latencyMs,
-          error: error instanceof Error ? error.message : String(error),
-        },
-      );
+      try {
+        await this.logAPICall(
+          methodName,
+          { systemPrompt, userPrompt, imagesBase64 },
+          {
+            content: "",
+            tokensUsed: 0,
+            latencyMs,
+            error: error instanceof Error ? error.message : String(error),
+          },
+        );
+      } catch (logError) {
+        console.error(
+          `[${this.name}] Logging error in ${methodName}:`,
+          logError,
+        );
+      }
 
       throw error;
     }
+  }
+
+  async analyze(
+    systemPrompt: string,
+    userPrompt: string,
+    imagesBase64?: string[],
+  ): Promise<{
+    result: AnalysisResult;
+    tokensUsed: number;
+    latencyMs: number;
+  }> {
+    return this.executeWithLogging(
+      "analyze",
+      systemPrompt,
+      userPrompt,
+      imagesBase64,
+    );
   }
 
   async rethink(
@@ -250,8 +353,6 @@ export abstract class BaseAIProvider {
     tokensUsed: number;
     latencyMs: number;
   }> {
-    const startTime = Date.now();
-
     const enhancedPrompt = `${userPrompt}
 
 ## Your Previous Analysis
@@ -262,26 +363,12 @@ ${otherResults.map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`).jo
 
 Based on these other perspectives, reconsider your analysis. Where do you agree or disagree? Provide your revised assessment.`;
 
-    const { content, tokensUsed } = await this.callAPI(
+    return this.executeWithLogging(
+      "rethink",
       systemPrompt,
       enhancedPrompt,
       imagesBase64,
     );
-
-    const parsed = this.parseResponseContent(content) as Record<
-      string,
-      unknown
-    >;
-    const result = analysisResultSchema.parse({
-      ...parsed,
-      provider: this.name,
-    });
-
-    return {
-      result,
-      tokensUsed,
-      latencyMs: Date.now() - startTime,
-    };
   }
 
   async synthesize(
@@ -294,35 +381,19 @@ Based on these other perspectives, reconsider your analysis. Where do you agree 
     tokensUsed: number;
     latencyMs: number;
   }> {
-    const startTime = Date.now();
-
     const synthesisPrompt = `${userPrompt}
 
-## All Provider Analyses (v2 Rethink Phase)
+## All Provider Analyses
 ${allResults.map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`).join("\n\n")}
 
 Synthesize these analyses into a final, comprehensive result. Resolve any disagreements between providers, and provide weighted scores based on the consensus. Highlight areas of high agreement and areas where providers significantly disagreed.`;
 
-    const { content, tokensUsed } = await this.callAPI(
+    return this.executeWithLogging(
+      "synthesize",
       systemPrompt,
       synthesisPrompt,
       imagesBase64,
     );
-
-    const parsed = this.parseResponseContent(content) as Record<
-      string,
-      unknown
-    >;
-    const result = analysisResultSchema.parse({
-      ...parsed,
-      provider: this.name,
-    });
-
-    return {
-      result,
-      tokensUsed,
-      latencyMs: Date.now() - startTime,
-    };
   }
 
   getName(): string {

@@ -23,7 +23,7 @@ AI-Powered UI/UX analysis platform using multi-provider consensus (OpenAI GPT, G
 pnpm install
 
 # Start dev server (auto-starts Supabase!)
-npm run dev
+pnpm run dev
 ```
 
 That's it! The app will:

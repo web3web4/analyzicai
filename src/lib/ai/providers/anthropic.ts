@@ -99,14 +99,4 @@ export class AnthropicProvider extends BaseAIProvider {
 
     return { content, tokensUsed };
   }
-
-  protected parseResponseContent(content: string): unknown {
-    // Anthropic may return markdown-wrapped JSON, extract it
-    const jsonMatch = content.match(/```(?:json)?\\s*([\\s\\S]*?)```/) || [
-      null,
-      content,
-    ];
-    const jsonContent = jsonMatch[1]?.trim() || content;
-    return JSON.parse(jsonContent);
-  }
 }

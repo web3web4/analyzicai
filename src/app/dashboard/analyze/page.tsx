@@ -187,10 +187,27 @@ export default function AnalyzePage() {
         throw new Error("Failed to create analysis");
       }
 
-      // Trigger analysis (in real implementation, this would call /api/analyze)
-      // For now, redirect to results page
+      // Trigger analysis via API
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ analysisId: analysis.id }),
+      });
+
+      console.log("[Client] API response status:", response.status);
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("[Client] API error:", data);
+        throw new Error(data.error || "Failed to start analysis");
+      }
+
+      const responseData = await response.json();
+
+      // Redirect to results page where user can watch progress
       router.push(`/dashboard/results/${analysis.id}`);
     } catch (err) {
+      console.error("[Client] Error in handleAnalyze:", err);
       setError((err as Error).message);
       setIsAnalyzing(false);
     }

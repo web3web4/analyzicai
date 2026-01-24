@@ -29,7 +29,7 @@ export class OpenAIProvider extends BaseAIProvider {
 
     if (!this.model) {
       throw new Error(
-        `OpenAI model not configured. Set ${isProduction ? "OPENAI_MODEL_FOR_PRODUCTION" : "OPENAI_MODEL_FOR_TESTING"} in .env.local`,
+        `OpenAI model not configured. Set the ${isProduction ? "OPENAI_MODEL_FOR_PRODUCTION" : "OPENAI_MODEL_FOR_TESTING"} environment variable in your environment configuration (e.g. .env, .env.local, or your deployment settings).`,
       );
     }
   }
@@ -72,7 +72,7 @@ export class OpenAIProvider extends BaseAIProvider {
       body: JSON.stringify({
         model: this.model,
         messages,
-        max_tokens: 4096,
+        max_completion_tokens: 4096,
         response_format: { type: "json_object" },
       }),
     });

@@ -11,7 +11,7 @@ import { GeminiProvider } from "../providers/gemini";
  * - ANTHROPIC_API_KEY
  * - GEMINI_API_KEY
  *
- * To run: npm test -- providers-text.integration.test.ts
+ * To run: pnpm test -- providers-text.integration.test.ts
  */
 
 const SYSTEM_PROMPT = `You are a UI/UX analysis assistant. Analyze the provided content and return a JSON object with:
@@ -79,7 +79,7 @@ describe("Text-Only Analysis Integration Tests", () => {
     }, 30000);
   });
 
-  describe("Claude Provider", () => {
+  describe("Anthropic Provider", () => {
     it("should analyze code without image", async () => {
       if (skipIfNoKey("ANTHROPIC_API_KEY")) return;
 

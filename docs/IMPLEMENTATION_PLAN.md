@@ -618,7 +618,7 @@ Since this is a new project, we'll set up the testing infrastructure during impl
 
 **Unit Tests** (Vitest):
 ```bash
-npm run test
+pnpm run test
 ```
 - AI provider response parsing
 - Synthesizer logic
