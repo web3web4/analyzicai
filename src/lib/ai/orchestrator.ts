@@ -8,6 +8,7 @@ import { BaseAIProvider } from "./base-provider";
 import { OpenAIProvider } from "./providers/openai";
 import { GeminiProvider } from "./providers/gemini";
 import { ClaudeProvider } from "./providers/claude";
+import { CopilotProvider } from "./providers/copilot";
 import {
   INITIAL_SYSTEM_PROMPT,
   INITIAL_USER_PROMPT,
@@ -37,7 +38,12 @@ interface OrchestratorResult {
 export class AnalysisOrchestrator {
   private providers: Map<AIProvider, BaseAIProvider>;
 
-  constructor(apiKeys: { openai?: string; gemini?: string; claude?: string }) {
+  constructor(apiKeys: {
+    openai?: string;
+    gemini?: string;
+    claude?: string;
+    copilot?: string;
+  }) {
     this.providers = new Map();
 
     if (apiKeys.openai) {
@@ -56,6 +62,12 @@ export class AnalysisOrchestrator {
       this.providers.set(
         "claude",
         new ClaudeProvider({ apiKey: apiKeys.claude }),
+      );
+    }
+    if (apiKeys.copilot) {
+      this.providers.set(
+        "copilot",
+        new CopilotProvider({ apiKey: apiKeys.copilot }),
       );
     }
   }

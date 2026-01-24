@@ -27,6 +27,7 @@ Create accounts and generate API keys for each provider:
 - **OpenAI**: https://platform.openai.com/api-keys
 - **Anthropic**: https://console.anthropic.com/account/keys
 - **Google**: https://aistudio.google.com/app/apikey
+- **GitHub Copilot**: https://github.com/settings/copilot
 
 ## Environment Variables
 
@@ -37,6 +38,8 @@ Add these to your `.env.local` file (see `.env.example` for full template):
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 GEMINI_API_KEY=AI...
+GITHUB_COPILOT_API_KEY=ghu_...
+
 
 # Model Configuration
 # Testing/Development Models (cheapest - as of Jan 2026)

@@ -55,7 +55,7 @@ export const synthesizedResultSchema = z.object({
 export type SynthesizedResult = z.infer<typeof synthesizedResultSchema>;
 
 // Provider types
-export type AIProvider = "openai" | "gemini" | "claude";
+export type AIProvider = "openai" | "gemini" | "claude" | "copilot";
 
 // Analysis step types
 export type AnalysisStep = "v1_initial" | "v2_rethink" | "v3_synthesis";

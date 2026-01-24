@@ -87,6 +87,7 @@ const orchestrator = new AnalysisOrchestrator({
   openai: process.env.OPENAI_API_KEY,
   gemini: process.env.GEMINI_API_KEY,
   claude: process.env.ANTHROPIC_API_KEY,
+  copilot: process.env.GITHUB_COPILOT_API_KEY // experimental
 });
 
 const results = await orchestrator.runPipeline(

@@ -10,6 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:copilot": "NODE_OPTIONS='--experimental-vm-modules' jest --config=jest.config.esm.mjs",
+    "test:copilot:prod": "npx tsx scripts/test-copilot-sdk.ts",
     "supabase:ensure": "supabase status >/dev/null 2>&1 || pnpm run supabase:init",
     "supabase:init": "supabase start && supabase db push --local",
     "supabase:start": "supabase start",
