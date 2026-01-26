@@ -7,7 +7,7 @@ import {
 import { BaseAIProvider } from "./base-provider";
 import { OpenAIProvider } from "./providers/openai";
 import { GeminiProvider } from "./providers/gemini";
-import { ClaudeProvider } from "./providers/claude";
+import { AnthropicProvider } from "./providers/anthropic";
 import {
   INITIAL_SYSTEM_PROMPT,
   INITIAL_USER_PROMPT,
@@ -37,25 +37,27 @@ interface OrchestratorResult {
 export class AnalysisOrchestrator {
   private providers: Map<AIProvider, BaseAIProvider>;
 
-  constructor(apiKeys: { openai?: string; gemini?: string; claude?: string }) {
+  constructor(options: {
+    apiKeys: { openai?: string; gemini?: string; anthropic?: string };
+  }) {
     this.providers = new Map();
 
-    if (apiKeys.openai) {
+    if (options.apiKeys.openai) {
       this.providers.set(
         "openai",
-        new OpenAIProvider({ apiKey: apiKeys.openai }),
+        new OpenAIProvider({ apiKey: options.apiKeys.openai }),
       );
     }
-    if (apiKeys.gemini) {
+    if (options.apiKeys.gemini) {
       this.providers.set(
         "gemini",
-        new GeminiProvider({ apiKey: apiKeys.gemini }),
+        new GeminiProvider({ apiKey: options.apiKeys.gemini }),
       );
     }
-    if (apiKeys.claude) {
+    if (options.apiKeys.anthropic) {
       this.providers.set(
-        "claude",
-        new ClaudeProvider({ apiKey: apiKeys.claude }),
+        "anthropic",
+        new AnthropicProvider({ apiKey: options.apiKeys.anthropic }),
       );
     }
   }
@@ -82,8 +84,8 @@ export class AnalysisOrchestrator {
   }
 
   private async runStep1InitialAnalysis(
-    imageBase64: string,
     config: AnalysisConfig,
+    imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
   ): Promise<
     Map<
@@ -103,9 +105,9 @@ export class AnalysisOrchestrator {
       onProgress?.("step1", `Analyzing with ${providerName}`);
 
       const result = await provider.analyze(
-        imageBase64,
         INITIAL_SYSTEM_PROMPT,
         INITIAL_USER_PROMPT,
+        imagesBase64,
       );
 
       v1Results.set(providerName, result);
@@ -116,13 +118,15 @@ export class AnalysisOrchestrator {
     return v1Results;
   }
 
+  // TODO: Version 2 - This method will be re-enabled in version 2
+  // For now, this step is skipped in the pipeline
   private async runStep2Rethink(
-    imageBase64: string,
     config: AnalysisConfig,
     v1Results: Map<
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >,
+    imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
   ): Promise<
     Map<
@@ -152,11 +156,11 @@ export class AnalysisOrchestrator {
       onProgress?.("step2", `Rethinking with ${providerName}`);
 
       const result = await provider.rethink(
-        imageBase64,
         RETHINK_SYSTEM_PROMPT,
         RETHINK_USER_PROMPT,
         myV1.result,
         otherV1Results,
+        imagesBase64,
       );
 
       v2Results.set(providerName, result);
@@ -168,12 +172,13 @@ export class AnalysisOrchestrator {
   }
 
   private async runStep3Synthesis(
-    imageBase64: string,
     config: AnalysisConfig,
-    v2Results: Map<
+    providerResults: Map<
+      // Now accepts v1 or v2 results
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >,
+    imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
   ): Promise<{
     result: AnalysisResult;
@@ -183,21 +188,21 @@ export class AnalysisOrchestrator {
     onProgress?.("step3", `Master synthesis with ${config.masterProvider}`);
 
     const masterProvider = this.getProvider(config.masterProvider);
-    const allV2Results: AnalysisResult[] = Array.from(v2Results.values()).map(
-      (v) => v.result,
-    );
+    const allResults: AnalysisResult[] = Array.from(
+      providerResults.values(),
+    ).map((v) => v.result);
 
     return await masterProvider.synthesize(
-      imageBase64,
       SYNTHESIS_SYSTEM_PROMPT,
       SYNTHESIS_USER_PROMPT,
-      allV2Results,
+      allResults,
+      imagesBase64,
     );
   }
 
   async runPipeline(
-    imageBase64: string,
     config: AnalysisConfig,
+    imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
   ): Promise<OrchestratorResult> {
     // Validate providers
@@ -205,24 +210,31 @@ export class AnalysisOrchestrator {
 
     // Step 1: Initial Analysis from all providers (parallel)
     const v1Results = await this.runStep1InitialAnalysis(
-      imageBase64,
       config,
+      imagesBase64,
       onProgress,
     );
 
     // Step 2: Cross-Provider Rethink (parallel)
-    const v2Results = await this.runStep2Rethink(
-      imageBase64,
-      config,
-      v1Results,
-      onProgress,
-    );
+    // TODO: Version 2 - This step will be implemented in a future version
+    // For now, we skip the rethink step and use v1 results directly for synthesis
+    const v2Results = new Map<
+      AIProvider,
+      { result: AnalysisResult; tokensUsed: number; latencyMs: number }
+    >();
+    // const v2Results = await this.runStep2Rethink(
+    //   imageBase64,
+    //   config,
+    //   v1Results,
+    //   onProgress,
+    // );
 
     // Step 3: Master Synthesis
+    // TODO: Version 2 - Currently using v1 results instead of v2 results
     const synthesisResult = await this.runStep3Synthesis(
-      imageBase64,
       config,
-      v2Results,
+      v1Results, // Using v1Results directly instead of v2Results for now
+      imagesBase64,
       onProgress,
     );
 
@@ -276,17 +288,18 @@ export class AnalysisOrchestrator {
     }
 
     // V2 results
-    for (const [provider, data] of results.v2Results) {
-      records.push({
-        analysis_id: analysisId,
-        provider,
-        step: "v2_rethink",
-        result: data.result,
-        score: data.result.overallScore,
-        tokens_used: data.tokensUsed,
-        latency_ms: data.latencyMs,
-      });
-    }
+    // TODO: Version 2 - Rethink step will be re-enabled in version 2
+    // for (const [provider, data] of results.v2Results) {
+    //   records.push({
+    //     analysis_id: analysisId,
+    //     provider,
+    //     step: "v2_rethink",
+    //     result: data.result,
+    //     score: data.result.overallScore,
+    //     tokens_used: data.tokensUsed,
+    //     latency_ms: data.latencyMs,
+    //   });
+    // }
 
     // Synthesis result
     records.push({

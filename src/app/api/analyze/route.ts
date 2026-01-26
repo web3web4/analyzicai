@@ -95,9 +95,11 @@ export async function POST(request: NextRequest) {
       // Initialize orchestrator with API keys
       const { AnalysisOrchestrator } = await import("@/lib/ai/orchestrator");
       const orchestrator = new AnalysisOrchestrator({
-        openai: process.env.OPENAI_API_KEY,
-        gemini: process.env.GOOGLE_GEMINI_API_KEY,
-        claude: process.env.ANTHROPIC_API_KEY,
+        apiKeys: {
+          openai: process.env.OPENAI_API_KEY,
+          gemini: process.env.GEMINI_API_KEY,
+          anthropic: process.env.ANTHROPIC_API_KEY,
+        },
       });
 
       // Update status and run pipeline
@@ -106,14 +108,19 @@ export async function POST(request: NextRequest) {
         .update({ status: "step1" })
         .eq("id", analysisId);
 
-      const results = await orchestrator.runPipeline(imageBase64, {
-        providers,
-        masterProvider,
-      });
+      const results = await orchestrator.runPipeline(
+        {
+          providers,
+          masterProvider,
+        },
+        [imageBase64],
+      );
 
       // Store all AI responses in database
-      const responseRecords =
-        AnalysisOrchestrator.formatForDatabase(analysisId, results);
+      const responseRecords = AnalysisOrchestrator.formatForDatabase(
+        analysisId,
+        results,
+      );
 
       const { error: insertError } = await supabase
         .from("analysis_responses")
@@ -125,7 +132,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Update analysis as completed
-      await supabase
+      const { error: updateError } = await supabase
         .from("analyses")
         .update({
           status: "completed",
@@ -133,6 +140,11 @@ export async function POST(request: NextRequest) {
           completed_at: new Date().toISOString(),
         })
         .eq("id", analysisId);
+
+      if (updateError) {
+        console.error("[API] Failed to update analysis status:", updateError);
+        throw new Error("Failed to update analysis status");
+      }
 
       // Track usage for master provider
       const masterTokens =
@@ -143,6 +155,12 @@ export async function POST(request: NextRequest) {
         analysis_id: analysisId,
         provider: masterProvider,
         tokens_used: masterTokens,
+      });
+
+      console.log("[API] Analysis pipeline completed successfully", {
+        analysisId,
+        finalScore: results.finalScore,
+        providers: Array.from(results.v1Results.keys()),
       });
 
       return NextResponse.json({
@@ -163,8 +181,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "AI analysis failed",
-          details:
-            aiError instanceof Error ? aiError.message : "Unknown error",
+          details: aiError instanceof Error ? aiError.message : "Unknown error",
         },
         { status: 500 },
       );

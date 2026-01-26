@@ -14,14 +14,49 @@ This project uses **custom ports** to avoid conflicts with other Supabase projec
 | Vector       | 54328   | **54338**    |
 | Shadow DB    | 54320   | **54340**    |
 
+## Development URLs
+
+When Supabase is running, you can access the following services:
+
+### 🔧 Development Tools
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| **Studio** | http://127.0.0.1:54333 | Database admin UI, schema editor, table viewer |
+| **Mailpit** | http://127.0.0.1:54334 | Email testing (catches all emails sent locally) |
+| **MCP** | http://127.0.0.1:54331/mcp | Model Context Protocol endpoint |
+
+### 🌐 API Endpoints
+
+| API | URL | Purpose |
+|-----|-----|---------|
+| **Project URL** | http://127.0.0.1:54331 | Main Supabase API endpoint |
+| **REST** | http://127.0.0.1:54331/rest/v1 | PostgREST API for database access |
+| **GraphQL** | http://127.0.0.1:54331/graphql/v1 | GraphQL API (if enabled) |
+| **Edge Functions** | http://127.0.0.1:54331/functions/v1 | Serverless functions endpoint |
+| **Storage** | http://127.0.0.1:54331/storage/v1/s3 | S3-compatible storage API |
+
+### ⛁ Database Connection
+
+```
+postgresql://postgres:postgres@127.0.0.1:54332/postgres
+```
+
+**Quick connect:** Use this connection string with database tools like:
+- **pgAdmin**
+- **DBeaver**
+- **psql CLI:** `psql postgresql://postgres:postgres@127.0.0.1:54332/postgres`
+
+---
+
 ## Quick Start
 
 ### Zero-Config Development (Recommended)
 
-**Just run `npm run dev`** — Supabase will automatically start if needed!
+**Just run `pnpm run dev`** — Supabase will automatically start if needed!
 
 ```bash
-npm run dev  # Auto-ensures Supabase is running, applies migrations, starts Next.js
+pnpm run dev  # Auto-ensures Supabase is running, applies migrations, starts Next.js
 ```
 
 This works because:
@@ -38,10 +73,10 @@ If you prefer explicit control:
 
 ```bash
 # Start Supabase manually (first time or after reboot)
-npm run supabase:init
+pnpm run supabase:init
 
 # Then run dev
-npm run dev
+pnpm run dev
 ```
 
 ---
@@ -50,7 +85,7 @@ npm run dev
 
 ```bash
 # Apply new migrations to local database
-npm run supabase:push
+pnpm run supabase:push
 ```
 
 ---
@@ -58,7 +93,7 @@ npm run supabase:push
 ### Stop Supabase
 
 ```bash
-npm run supabase:stop
+pnpm run supabase:stop
 ```
 
 ---
@@ -67,19 +102,19 @@ npm run supabase:stop
 
 | Script | Description | When to Use |
 |--------|-------------|-------------|
-| `npm run dev` | **Auto-start everything** | ✅ Daily workflow |
-| `npm run build` | Build for production (auto-ensures Supabase) | Before deployment |
-| `npm run start` | Production server (auto-ensures Supabase) | Production mode |
-| `npm run supabase:ensure` | Check if running, start if needed | Auto-called by dev/build/start |
-| `npm run supabase:init` | **First time setup** - Start + apply migrations | First clone, after reboot |
-| `npm run supabase:start` | Start Supabase containers | Manual control |
-| `npm run supabase:stop` | Stop Supabase containers | End of day |
-| `npm run supabase:restart` | Restart Supabase (stop + start) | After config changes |
-| `npm run supabase:push` | Apply new migrations | After creating `.sql` files |
-| `npm run supabase:reset` | Reset database ⚠️ **destroys data** (requires typing "YES") | Testing, fresh start |
-| `npm run supabase:status` | Show running status and URLs | Troubleshooting |
-| `npm run supabase:studio` | Open Supabase Studio in browser | Database admin UI |
-| `npm run supabase:watch` | Auto-apply migrations on file changes | Heavy schema work |
+| `pnpm run dev` | **Auto-start everything** | ✅ Daily workflow |
+| `pnpm run build` | Build for production (auto-ensures Supabase) | Before deployment |
+| `pnpm run start` | Production server (auto-ensures Supabase) | Production mode |
+| `pnpm run supabase:ensure` | Check if running, start if needed | Auto-called by dev/build/start |
+| `pnpm run supabase:init` | **First time setup** - Start + apply migrations | First clone, after reboot |
+| `pnpm run supabase:start` | Start Supabase containers | Manual control |
+| `pnpm run supabase:stop` | Stop Supabase containers | End of day |
+| `pnpm run supabase:restart` | Restart Supabase (stop + start) | After config changes |
+| `pnpm run supabase:push` | Apply new migrations | After creating `.sql` files |
+| `pnpm run supabase:reset` | Reset database ⚠️ **destroys data** (requires typing "YES") | Testing, fresh start |
+| `pnpm run supabase:status` | Show running status and URLs | Troubleshooting |
+| `pnpm run supabase:studio` | Open Supabase Studio in browser | Database admin UI |
+| `pnpm run supabase:watch` | Auto-apply migrations on file changes | Heavy schema work |
 
 ---
 
@@ -90,7 +125,7 @@ npm run supabase:stop
 The `supabase:reset` command includes a confirmation prompt to prevent accidental data loss:
 
 ```bash
-npm run supabase:reset
+pnpm run supabase:reset
 # ⚠️  WARNING: This will DESTROY ALL DATA!
 # Type YES to confirm: _
 ```
@@ -115,12 +150,12 @@ This safety mechanism prevents:
 
 ```bash
 # Morning - just run dev!
-npm run dev  # Everything auto-starts ✅
+pnpm run dev  # Everything auto-starts ✅
 
 # ... develop features ...
 
 # End of day (optional)
-npm run supabase:stop
+pnpm run supabase:stop
 ```
 
 ### Adding Database Changes
@@ -130,20 +165,20 @@ npm run supabase:stop
 echo "ALTER TABLE analyses ADD COLUMN foo TEXT;" > supabase/migrations/004_foo.sql
 
 # 2. Apply it
-npm run supabase:push
+pnpm run supabase:push
 
 # Continue developing
-npm run dev
+pnpm run dev
 ```
 
 ### Heavy Schema Work (Auto-Push)
 
 ```bash
 # Terminal 1 - Auto-apply migrations on save
-npm run supabase:watch
+pnpm run supabase:watch
 
 # Terminal 2 - Dev server
-npm run dev
+pnpm run dev
 
 # Now .sql file changes auto-apply!
 ```
@@ -206,16 +241,16 @@ npx supabase stop --project-id <other-project-id>
 ### How `supabase:ensure` Works
 
 ```bash
-"supabase:ensure": "supabase status >/dev/null 2>&1 || npm run supabase:init"
+"supabase:ensure": "supabase status >/dev/null 2>&1 || pnpm run supabase:init"
 ```
 
 **Breakdown:**
 1. **`supabase status`** — Check if Supabase is running
 2. **`>/dev/null 2>&1`** — Suppress output (silent check)
 3. **`||`** — "OR" operator (if status fails...)
-4. **`npm run supabase:init`** — ...then start and push migrations
+4. **`pnpm run supabase:init`** — ...then start and push migrations
 
-**Result:** Zero-config development! Just `npm run dev`.
+**Result:** Zero-config development! Just `pnpm run dev`.
 
 ---
 

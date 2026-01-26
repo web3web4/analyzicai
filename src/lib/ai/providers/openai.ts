@@ -1,5 +1,4 @@
 import { BaseAIProvider, AIProviderConfig } from "../base-provider";
-import { AnalysisResult, analysisResultSchema } from "../types";
 
 interface OpenAIVisionMessage {
   role: "system" | "user" | "assistant";
@@ -18,22 +17,49 @@ export class OpenAIProvider extends BaseAIProvider {
 
   constructor(config: AIProviderConfig) {
     super("openai", config);
-    this.model = config.model || "gpt-4o";
+
+    // Determine model from environment-specific variables
+    const isProduction = process.env.NODE_ENV === "production";
+    this.model =
+      config.model ||
+      (isProduction
+        ? process.env.OPENAI_MODEL_FOR_PRODUCTION
+        : process.env.OPENAI_MODEL_FOR_TESTING) ||
+      "";
+
+    if (!this.model) {
+      throw new Error(
+        `OpenAI model not configured. Set the ${isProduction ? "OPENAI_MODEL_FOR_PRODUCTION" : "OPENAI_MODEL_FOR_TESTING"} environment variable in your environment configuration (e.g. .env, .env.local, or your deployment settings).`,
+      );
+    }
   }
 
-  private async callVisionAPI(
+  protected async callAPI(
     systemPrompt: string,
     userPrompt: string,
-    imageBase64: string,
+    imagesBase64?: string[],
   ): Promise<{ content: string; tokensUsed: number }> {
+    const userContent: Array<{
+      type: "text" | "image_url";
+      text?: string;
+      image_url?: { url: string };
+    }> = [{ type: "text", text: userPrompt }];
+
+    // Add images if provided
+    if (imagesBase64 && imagesBase64.length > 0) {
+      imagesBase64.forEach((imageBase64) => {
+        userContent.push({
+          type: "image_url",
+          image_url: { url: imageBase64 },
+        });
+      });
+    }
+
     const messages: OpenAIVisionMessage[] = [
       { role: "system", content: systemPrompt },
       {
         role: "user",
-        content: [
-          { type: "text", text: userPrompt },
-          { type: "image_url", image_url: { url: imageBase64 } },
-        ],
+        content: userContent,
       },
     ];
 
@@ -46,7 +72,7 @@ export class OpenAIProvider extends BaseAIProvider {
       body: JSON.stringify({
         model: this.model,
         messages,
-        max_tokens: 4096,
+        max_completion_tokens: 4096,
         response_format: { type: "json_object" },
       }),
     });
@@ -60,116 +86,6 @@ export class OpenAIProvider extends BaseAIProvider {
     return {
       content: data.choices[0]?.message?.content || "",
       tokensUsed: data.usage?.total_tokens || 0,
-    };
-  }
-
-  async analyze(
-    imageBase64: string,
-    systemPrompt: string,
-    userPrompt: string,
-  ): Promise<{
-    result: AnalysisResult;
-    tokensUsed: number;
-    latencyMs: number;
-  }> {
-    const startTime = Date.now();
-
-    const { content, tokensUsed } = await this.callVisionAPI(
-      systemPrompt,
-      userPrompt,
-      imageBase64,
-    );
-
-    const parsed = JSON.parse(content);
-    const result = analysisResultSchema.parse({
-      ...parsed,
-      provider: this.name,
-    });
-
-    return {
-      result,
-      tokensUsed,
-      latencyMs: Date.now() - startTime,
-    };
-  }
-
-  async rethink(
-    imageBase64: string,
-    systemPrompt: string,
-    userPrompt: string,
-    previousResult: AnalysisResult,
-    otherResults: AnalysisResult[],
-  ): Promise<{
-    result: AnalysisResult;
-    tokensUsed: number;
-    latencyMs: number;
-  }> {
-    const startTime = Date.now();
-
-    const enhancedPrompt = `${userPrompt}
-
-## Your Previous Analysis
-${JSON.stringify(previousResult, null, 2)}
-
-## Other AI Perspectives
-${otherResults.map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`).join("\n\n")}
-
-Based on these other perspectives, reconsider your analysis. Where do you agree or disagree? Provide your revised assessment.`;
-
-    const { content, tokensUsed } = await this.callVisionAPI(
-      systemPrompt,
-      enhancedPrompt,
-      imageBase64,
-    );
-
-    const parsed = JSON.parse(content);
-    const result = analysisResultSchema.parse({
-      ...parsed,
-      provider: this.name,
-    });
-
-    return {
-      result,
-      tokensUsed,
-      latencyMs: Date.now() - startTime,
-    };
-  }
-
-  async synthesize(
-    imageBase64: string,
-    systemPrompt: string,
-    userPrompt: string,
-    allResults: AnalysisResult[],
-  ): Promise<{
-    result: AnalysisResult;
-    tokensUsed: number;
-    latencyMs: number;
-  }> {
-    const startTime = Date.now();
-
-    const synthesisPrompt = `${userPrompt}
-
-## All Provider Analyses (v2 Rethink Phase)
-${allResults.map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`).join("\n\n")}
-
-Synthesize these analyses into a final, comprehensive result. Resolve any disagreements between providers, and provide weighted scores based on the consensus. Highlight areas of high agreement and areas where providers significantly disagreed.`;
-
-    const { content, tokensUsed } = await this.callVisionAPI(
-      systemPrompt,
-      synthesisPrompt,
-      imageBase64,
-    );
-
-    const parsed = JSON.parse(content);
-    const result = analysisResultSchema.parse({
-      ...parsed,
-      provider: this.name,
-    });
-
-    return {
-      result,
-      tokensUsed,
-      latencyMs: Date.now() - startTime,
     };
   }
 }

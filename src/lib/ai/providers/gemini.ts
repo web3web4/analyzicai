@@ -1,5 +1,4 @@
 import { BaseAIProvider, AIProviderConfig } from "../base-provider";
-import { AnalysisResult, analysisResultSchema } from "../types";
 
 export class GeminiProvider extends BaseAIProvider {
   private baseUrl = "https://generativelanguage.googleapis.com/v1beta";
@@ -7,45 +6,65 @@ export class GeminiProvider extends BaseAIProvider {
 
   constructor(config: AIProviderConfig) {
     super("gemini", config);
-    this.model = config.model || "gemini-2.0-flash";
+
+    // Determine model from environment-specific variables
+    const isProduction = process.env.NODE_ENV === "production";
+    this.model =
+      config.model ||
+      (isProduction
+        ? process.env.GEMINI_MODEL_FOR_PRODUCTION
+        : process.env.GEMINI_MODEL_FOR_TESTING) ||
+      "";
+
+    if (!this.model) {
+      throw new Error(
+        `Gemini model not configured. Set ${isProduction ? "GEMINI_MODEL_FOR_PRODUCTION" : "GEMINI_MODEL_FOR_TESTING"} in .env.local`,
+      );
+    }
   }
 
-  private async callVisionAPI(
+  protected async callAPI(
     systemPrompt: string,
     userPrompt: string,
-    imageBase64: string,
+    imagesBase64?: string[],
   ): Promise<{ content: string; tokensUsed: number }> {
-    // Extract base64 data and mime type
-    const matches = imageBase64.match(/^data:(.+);base64,(.+)$/);
-    if (!matches) {
-      throw new Error("Invalid base64 image format");
+    const parts: Array<{
+      text?: string;
+      inlineData?: { mimeType: string; data: string };
+    }> = [{ text: userPrompt }];
+
+    // Add images if provided
+    if (imagesBase64 && imagesBase64.length > 0) {
+      imagesBase64.forEach((imageBase64) => {
+        const matches = imageBase64.match(/^data:(.+);base64,(.+)$/);
+        if (!matches) {
+          throw new Error("Invalid base64 image format");
+        }
+        const [, mimeType, base64Data] = matches;
+        parts.push({
+          inlineData: {
+            mimeType,
+            data: base64Data,
+          },
+        });
+      });
     }
-    const [, mimeType, base64Data] = matches;
+
+    const contents = [{ parts }];
 
     const response = await fetch(
-      `${this.baseUrl}/models/${this.model}:generateContent?key=${this.config.apiKey}`,
+      `${this.baseUrl}/models/${this.model}:generateContent`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-goog-api-key": this.config.apiKey,
         },
         body: JSON.stringify({
           systemInstruction: {
             parts: [{ text: systemPrompt }],
           },
-          contents: [
-            {
-              parts: [
-                { text: userPrompt },
-                {
-                  inlineData: {
-                    mimeType,
-                    data: base64Data,
-                  },
-                },
-              ],
-            },
-          ],
+          contents,
           generationConfig: {
             responseMimeType: "application/json",
             temperature: 0.7,
@@ -65,115 +84,5 @@ export class GeminiProvider extends BaseAIProvider {
     const tokensUsed = data.usageMetadata?.totalTokenCount || 0;
 
     return { content, tokensUsed };
-  }
-
-  async analyze(
-    imageBase64: string,
-    systemPrompt: string,
-    userPrompt: string,
-  ): Promise<{
-    result: AnalysisResult;
-    tokensUsed: number;
-    latencyMs: number;
-  }> {
-    const startTime = Date.now();
-
-    const { content, tokensUsed } = await this.callVisionAPI(
-      systemPrompt,
-      userPrompt,
-      imageBase64,
-    );
-
-    const parsed = JSON.parse(content);
-    const result = analysisResultSchema.parse({
-      ...parsed,
-      provider: this.name,
-    });
-
-    return {
-      result,
-      tokensUsed,
-      latencyMs: Date.now() - startTime,
-    };
-  }
-
-  async rethink(
-    imageBase64: string,
-    systemPrompt: string,
-    userPrompt: string,
-    previousResult: AnalysisResult,
-    otherResults: AnalysisResult[],
-  ): Promise<{
-    result: AnalysisResult;
-    tokensUsed: number;
-    latencyMs: number;
-  }> {
-    const startTime = Date.now();
-
-    const enhancedPrompt = `${userPrompt}
-
-## Your Previous Analysis
-${JSON.stringify(previousResult, null, 2)}
-
-## Other AI Perspectives
-${otherResults.map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`).join("\n\n")}
-
-Based on these other perspectives, reconsider your analysis. Where do you agree or disagree? Provide your revised assessment.`;
-
-    const { content, tokensUsed } = await this.callVisionAPI(
-      systemPrompt,
-      enhancedPrompt,
-      imageBase64,
-    );
-
-    const parsed = JSON.parse(content);
-    const result = analysisResultSchema.parse({
-      ...parsed,
-      provider: this.name,
-    });
-
-    return {
-      result,
-      tokensUsed,
-      latencyMs: Date.now() - startTime,
-    };
-  }
-
-  async synthesize(
-    imageBase64: string,
-    systemPrompt: string,
-    userPrompt: string,
-    allResults: AnalysisResult[],
-  ): Promise<{
-    result: AnalysisResult;
-    tokensUsed: number;
-    latencyMs: number;
-  }> {
-    const startTime = Date.now();
-
-    const synthesisPrompt = `${userPrompt}
-
-## All Provider Analyses (v2 Rethink Phase)
-${allResults.map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`).join("\n\n")}
-
-Synthesize these analyses into a final, comprehensive result. Resolve any disagreements between providers, and provide weighted scores based on the consensus.`;
-
-    const { content, tokensUsed } = await this.callVisionAPI(
-      systemPrompt,
-      synthesisPrompt,
-      imageBase64,
-    );
-
-    const parsed = JSON.parse(content);
-    const result = analysisResultSchema.parse({
-      ...parsed,
-      provider: this.name,
-    });
-
-    return {
-      result,
-      tokensUsed,
-      latencyMs: Date.now() - startTime,
-    };
   }
 }

@@ -6,7 +6,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 type SourceType = "upload" | "screen_capture";
-type AIProvider = "openai" | "gemini" | "claude";
+type AIProvider = "openai" | "gemini" | "anthropic";
 
 export default function AnalyzePage() {
   const [sourceType, setSourceType] = useState<SourceType>("upload");
@@ -15,7 +15,9 @@ export default function AnalyzePage() {
   const [selectedProviders, setSelectedProviders] = useState<AIProvider[]>([
     "openai",
   ]);
-  const [masterProvider, setMasterProvider] = useState<AIProvider>("openai");
+  const [masterProvider, setMasterProvider] = useState<AIProvider>(
+    (process.env.NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER as AIProvider) || "openai",
+  );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,7 +35,7 @@ export default function AnalyzePage() {
       description: "Great for visual patterns",
     },
     {
-      id: "claude",
+      id: "anthropic",
       name: "Claude 3 Sonnet",
       description: "Excellent for accessibility",
     },
@@ -185,10 +187,27 @@ export default function AnalyzePage() {
         throw new Error("Failed to create analysis");
       }
 
-      // Trigger analysis (in real implementation, this would call /api/analyze)
-      // For now, redirect to results page
+      // Trigger analysis via API
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ analysisId: analysis.id }),
+      });
+
+      console.log("[Client] API response status:", response.status);
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("[Client] API error:", data);
+        throw new Error(data.error || "Failed to start analysis");
+      }
+
+      const responseData = await response.json();
+
+      // Redirect to results page where user can watch progress
       router.push(`/dashboard/results/${analysis.id}`);
     } catch (err) {
+      console.error("[Client] Error in handleAnalyze:", err);
       setError((err as Error).message);
       setIsAnalyzing(false);
     }
