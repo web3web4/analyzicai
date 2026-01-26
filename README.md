@@ -4,15 +4,17 @@ AI-Powered UI/UX analysis platform using multi-provider consensus (OpenAI GPT, G
 
 ## Status: MVP 🚧
 
-**Phases Complete:** Foundation ✅ | Capture & Upload ✅ | Single Provider ✅ | Multi-Provider Pipeline ✅ | History & Polish 🚧
+**Phases Complete:** Foundation ✅ | Capture & Upload ✅ | Single Provider ✅ | Multi-Provider Pipeline ✅ | History & Polish 🚧 ...
 
 ### Current Features
 - ✅ Social auth (GitHub, Figma, Notion, Google, Apple, Azure)
 - ✅ WebRTC screen capture + image upload
-- ✅ Multi-step AI analysis pipeline (3 providers with consensus)
-- ✅ Analysis history with filtering
-- ✅ Rate limiting & usage tracking
-- 🚧 Responsive design polish (in progress)
+- ✅ Multi-step AI analysis pipeline (v1: two steps processing: 3 parallel providers processing then synthesis)
+- 🚧 Multi-step AI analysis pipeline (v2: three steps processing: interduce re-think as an intermediate iterative step)
+- 🚧 Analysis history with filtering
+- 🚧 Rate limiting & usage tracking
+- 🚧 Responsive design polish
+- ...
 
 ## Quick Start
 
