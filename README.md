@@ -42,13 +42,19 @@ Open [http://localhost:3001](http://localhost:3001) (or `3000` if available) to 
 - **[Implementation Plan](docs/IMPLEMENTATION_PLAN.md)** — Architecture, tech stack, and phase progress
 - **[Supabase Setup](docs/SUPABASE_SETUP.md)** — Database, migrations, scripts reference
 
-- **[Version 1 AI Pipeline](docs/AI_PIPELINE.md)** — two-steps analysis workflow
+## Roadmap documentation
+
+### **[Version 1 AI Pipeline](docs/AI_PIPELINE.md)** — two-steps analysis workflow
 
 ![Version 1 AI Pipeline Diagram](docs/ai-analysis-pipeline.png)
 
-- **[Version 2 AI Pipeline](https://github.com/web3web4/uxicai/blob/feat/iterative-refinement/docs/v2-todo/AI_PIPELINE_V2.md)** — multi-steps consensus-based iterative analysis workflow
+### **[Version 2 AI Pipeline](docs/v2-todo/AI_PIPELINE_V2.md)** — multi-steps consensus-based iterative analysis workflow
 
-![Version 2 AI Pipeline Diagram](https://raw.githubusercontent.com/web3web4/uxicai/refs/heads/feat/iterative-refinement/docs/v2-todo/ai-pipeline-v2.png?token=GHSAT0AAAAAADH6HKLFSJQUES6UI2XU7QRI2LXK3LQ)
+![Version 2 AI Pipeline Diagram](docs/v2-todo/ai-pipeline-v2.png)
+
+### **Next Steps: Abstracted Engine or Extended UI**
+
+To be discussed after MVP release. More at: [Discuss V3: Abstracted Engine or Extended UI](https://github.com/web3web4/uxicai/issues/6)
 
 ---
 
