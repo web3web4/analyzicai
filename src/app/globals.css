@@ -1,6 +1,13 @@
 @import "tailwindcss";
 
 :root {
+  /* Web3Web4 Official Brand Colors */
+  --brand-web3-cyan: #00ffd1;
+  --brand-web4-purple: #FF75FF;
+  --brand-black: #000000;
+  --brand-white: #ffffff;
+
+  /* UXicAI Official Brand Colors */
   --background: #0a0a0a;
   --foreground: #ededed;
   --primary: #7c3aed;
@@ -32,6 +39,7 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-error: var(--error);
+  --color-brand-web4-purple: var(--brand-web4-purple);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -48,7 +56,7 @@ body {
 
 /* Gradient text utility */
 .gradient-text {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  background: linear-gradient(135deg, var(--brand-web4-purple) 0%, var(--primary-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -58,8 +66,8 @@ body {
 .gradient-bg {
   background: linear-gradient(
     135deg,
-    var(--primary-dark) 0%,
-    var(--accent) 100%
+    var(--brand-web4-purple) 0%,
+    var(--primary-dark) 100%
   );
 }
 
