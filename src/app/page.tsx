@@ -16,8 +16,13 @@ export default function Home() {
 
         <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">U</span>
+            <div className="w-10 h-10 rounded-xl bg-surface-light flex flex-col items-center justify-center">
+              <div className="text-primary-light leading-4 font-bold text-sm">
+                UXic
+              </div>
+              <div className="text-brand-web4-purple leading-4 font-bold text-sm">
+                AI
+              </div>
             </div>
             <span className="text-xl font-semibold">UXicAI</span>
           </div>

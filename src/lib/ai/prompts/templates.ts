@@ -47,10 +47,13 @@ export const INITIAL_USER_PROMPT = `Analyze this UI screenshot and provide your 
   "recommendations": [
     { "severity": "high", "category": "accessibility", "title": "...", "description": "..." }
   ],
+  "comments": [
+    { "comment": "... only if needed to tell something about the design that is not covered by the other fields" }
+  ],
   "summary": "..."
 }
 
-Provide only the JSON object, no additional text.`;
+Provide only the JSON object, no additional text or comments before or after the JSON object.`;
 
 // ============================================
 // STEP 2: RETHINK PROMPTS
@@ -84,6 +87,9 @@ Provide your revised assessment as a JSON object with the same structure as befo
   },
   "recommendations": [
     { "severity": "high", "category": "accessibility", "title": "...", "description": "..." }
+  ],
+  "comments": [
+    { "comment": "... only if needed to tell something about the design that is not covered by the other fields" }
   ],
   "summary": "..."
 }
@@ -123,6 +129,9 @@ Provide your final synthesis as a JSON object:
   },
   "recommendations": [
     { "severity": "critical", "category": "accessibility", "title": "...", "description": "..." }
+  ],
+  "comments": [
+    { "comment": "... only if needed to tell something about the design that is not covered by the other fields" }
   ],
   "summary": "..."
 }
@@ -166,7 +175,7 @@ export const DEFAULT_TEMPLATES: Record<string, PromptTemplate> = {
  */
 export function buildPrompt(
   template: string,
-  context: Record<string, unknown>,
+  context: Record<string, unknown>
 ): string {
   let result = template;
   for (const [key, value] of Object.entries(context)) {

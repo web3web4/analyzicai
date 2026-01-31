@@ -79,6 +79,8 @@ export abstract class BaseAIProvider {
     try {
       return JSON.parse(jsonContent);
     } catch (error) {
+      console.error(this.name, "Content:", content);
+      console.error(this.name, "JSON content:", jsonContent);
       const preview = content.substring(0, 200).replace(/\n/g, " ");
       throw new Error(
         `Failed to parse ${this.name} response as JSON. ` +
