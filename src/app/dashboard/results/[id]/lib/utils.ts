@@ -1,14 +1,23 @@
 import { CATEGORY_LABELS, SEVERITY_STYLES, SCORE_THRESHOLDS } from "./constants";
 import type { Recommendation } from "@/lib/ai/types";
 
+// Round score to integer for display
+// AI providers sometimes return decimal scores (e.g., 86.5)
+// We store them as decimals but display as integers
+export function roundScore(score: number | undefined | null): number {
+  if (score === undefined || score === null) return 0;
+  return Math.round(score);
+}
+
 // Get score-based color (returns CSS variable or Tailwind class)
 export function getScoreColorClass(
   score: number,
   type: "text" | "bg" = "text"
 ): string {
+  const roundedScore = roundScore(score);
   if (type === "text") {
-    if (score >= SCORE_THRESHOLDS.excellent) return "text-success";
-    if (score >= SCORE_THRESHOLDS.good) return "text-warning";
+    if (roundedScore >= SCORE_THRESHOLDS.excellent) return "text-success";
+    if (roundedScore >= SCORE_THRESHOLDS.good) return "text-warning";
     return "text-error";
   }
   // For bg, we return empty string and use getScoreColor for inline styles
@@ -17,8 +26,9 @@ export function getScoreColorClass(
 
 // Get score-based color value (for inline styles)
 export function getScoreColor(score: number): string {
-  if (score >= SCORE_THRESHOLDS.excellent) return "var(--success)";
-  if (score >= SCORE_THRESHOLDS.good) return "var(--warning)";
+  const roundedScore = roundScore(score);
+  if (roundedScore >= SCORE_THRESHOLDS.excellent) return "var(--success)";
+  if (roundedScore >= SCORE_THRESHOLDS.good) return "var(--warning)";
   return "var(--error)";
 }
 

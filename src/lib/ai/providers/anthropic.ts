@@ -43,11 +43,11 @@ export class AnthropicProvider extends BaseAIProvider {
     // Set max tokens based on model capabilities
     // Haiku: 4096, Sonnet: 8192, Opus: 4096
     if (this.model.includes("haiku")) {
-      this.maxTokens = 16384;
+      this.maxTokens = 4096;
     } else if (this.model.includes("sonnet")) {
-      this.maxTokens = 32768;
+      this.maxTokens = 8192;
     } else {
-      this.maxTokens = 32768; // Same as sonnet for now
+      this.maxTokens = 4096; // Default safe value
     }
   }
 

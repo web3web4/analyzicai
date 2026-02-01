@@ -18,6 +18,26 @@ export const recommendationSchema = z.object({
 
 export type Recommendation = z.infer<typeof recommendationSchema>;
 
+// Per-image result schema (for multi-image analysis) - MUST be declared before analysisResultSchema
+export const perImageResultSchema = z.object({
+  imageIndex: z.number().min(0),
+  overallScore: z.number().min(0).max(100),
+  categories: z.object({
+    colorContrast: categoryScoreSchema,
+    typography: categoryScoreSchema,
+    layoutComposition: categoryScoreSchema,
+    navigation: categoryScoreSchema,
+    accessibility: categoryScoreSchema,
+    visualHierarchy: categoryScoreSchema,
+    whitespace: categoryScoreSchema,
+    consistency: categoryScoreSchema,
+  }),
+  recommendations: z.array(recommendationSchema),
+  summary: z.string().optional(), // Made optional - some AI providers may omit it
+});
+
+export type PerImageResult = z.infer<typeof perImageResultSchema>;
+
 // Analysis result from a single provider
 export const analysisResultSchema = z.object({
   provider: z.string(),
@@ -34,29 +54,12 @@ export const analysisResultSchema = z.object({
   }),
   recommendations: z.array(recommendationSchema),
   summary: z.string(),
+  // Multi-image support: per-image results (optional for backward compatibility)
+  perImageResults: z.array(perImageResultSchema).optional(),
+  imageCount: z.number().min(1).optional(),
 });
 
 export type AnalysisResult = z.infer<typeof analysisResultSchema>;
-
-// Per-image result schema (for multi-image analysis)
-export const perImageResultSchema = z.object({
-  imageIndex: z.number().min(0),
-  overallScore: z.number().min(0).max(100),
-  categories: z.object({
-    colorContrast: categoryScoreSchema,
-    typography: categoryScoreSchema,
-    layoutComposition: categoryScoreSchema,
-    navigation: categoryScoreSchema,
-    accessibility: categoryScoreSchema,
-    visualHierarchy: categoryScoreSchema,
-    whitespace: categoryScoreSchema,
-    consistency: categoryScoreSchema,
-  }),
-  recommendations: z.array(recommendationSchema),
-  summary: z.string(),
-});
-
-export type PerImageResult = z.infer<typeof perImageResultSchema>;
 
 // Synthesized result (final output)
 export const synthesizedResultSchema = z.object({

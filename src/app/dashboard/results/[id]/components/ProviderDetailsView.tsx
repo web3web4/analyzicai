@@ -3,6 +3,7 @@ import type {
   AnalysisResult,
 } from "@/lib/ai/types";
 import { ProviderResponseCard } from "./ProviderResponseCard";
+import { roundScore } from "../lib/utils";
 
 interface ProviderDetailsViewProps {
   v1Responses: AnalysisResponseRecord[];
@@ -22,11 +23,31 @@ export function ProviderDetailsView({
       recommendations: result.recommendations.length,
       tokens: response.tokens_used,
       latency: response.latency_ms,
+      hasPerImageResults: result.perImageResults && result.perImageResults.length > 0,
+      imageCount: result.imageCount || 0,
     };
   });
 
+  const hasAnyPerImageResults = comparisonData.some(d => d.hasPerImageResults);
+
   return (
     <div className="space-y-8">
+      {/* Per-image results info banner */}
+      {hasAnyPerImageResults && (
+        <div className="bg-primary/10 border border-primary/20 px-6 py-4 rounded-xl">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🖼️</span>
+            <div>
+              <p className="font-medium">
+                Per-Image Results Available
+              </p>
+              <p className="text-sm text-muted">
+                Each provider analyzed individual images. Use the &quot;Per-Image Results&quot; / &quot;Overall Results&quot; toggle in each provider card below.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Provider Comparison */}
       {comparisonData.length > 0 && (
         <div className="glass-card rounded-2xl p-8">
@@ -62,7 +83,7 @@ export function ProviderDetailsView({
                       {data.provider}
                     </td>
                     <td className="py-3 px-4 text-center text-xl font-bold">
-                      {data.score}
+                      {roundScore(data.score)}
                     </td>
                     <td className="py-3 px-4 text-center">
                       {data.recommendations}

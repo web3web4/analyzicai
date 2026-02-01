@@ -14,9 +14,10 @@ interface ImageItem {
   id: string;
 }
 
-const MAX_IMAGES = 10;
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB per image
-const MAX_TOTAL_SIZE = 50 * 1024 * 1024; // 50MB total
+// Get upload limits from environment variables with sensible defaults
+const MAX_IMAGES = parseInt(process.env.NEXT_PUBLIC_MAX_IMAGES || "10", 10);
+const MAX_FILE_SIZE = parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE_MB || "10", 10) * 1024 * 1024;
+const MAX_TOTAL_SIZE = parseInt(process.env.NEXT_PUBLIC_MAX_TOTAL_SIZE_MB || "50", 10) * 1024 * 1024;
 
 export default function AnalyzePage() {
   const [sourceType, setSourceType] = useState<SourceType>("upload");
@@ -60,6 +61,9 @@ export default function AnalyzePage() {
 
       const currentCount = images.length;
       const currentSize = images.reduce((sum, img) => sum + img.file.size, 0);
+      
+      const maxFileSizeMB = Math.round(MAX_FILE_SIZE / (1024 * 1024));
+      const maxTotalSizeMB = Math.round(MAX_TOTAL_SIZE / (1024 * 1024));
 
       for (const file of files) {
         // Check file type
@@ -70,7 +74,7 @@ export default function AnalyzePage() {
 
         // Check individual file size
         if (file.size > MAX_FILE_SIZE) {
-          errors.push(`${file.name}: File size exceeds 10MB`);
+          errors.push(`${file.name}: File size exceeds ${maxFileSizeMB}MB`);
           continue;
         }
 
@@ -86,7 +90,7 @@ export default function AnalyzePage() {
           valid.reduce((sum, f) => sum + f.size, 0) +
           file.size;
         if (newTotalSize > MAX_TOTAL_SIZE) {
-          errors.push(`Total size exceeds 50MB`);
+          errors.push(`Total size exceeds ${maxTotalSizeMB}MB`);
           break;
         }
 

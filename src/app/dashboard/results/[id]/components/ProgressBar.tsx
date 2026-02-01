@@ -1,4 +1,4 @@
-import { getScoreColorClass, getScoreColor } from "../lib/utils";
+import { getScoreColorClass, getScoreColor, roundScore } from "../lib/utils";
 
 interface ProgressBarProps {
   score: number;
@@ -6,12 +6,14 @@ interface ProgressBarProps {
 }
 
 export function ProgressBar({ score, showLabel = false }: ProgressBarProps) {
+  const displayScore = roundScore(score);
+  
   return (
     <div className="w-full">
       {showLabel && (
         <div className="flex items-center justify-between mb-1">
           <span className={`text-sm font-medium ${getScoreColorClass(score)}`}>
-            {score}
+            {displayScore}
           </span>
         </div>
       )}
@@ -19,7 +21,7 @@ export function ProgressBar({ score, showLabel = false }: ProgressBarProps) {
         <div
           className="h-full transition-all duration-500"
           style={{ 
-            width: `${score}%`,
+            width: `${score}%`,  // Use precise score for visual accuracy
             backgroundColor: getScoreColor(score)
           }}
         />

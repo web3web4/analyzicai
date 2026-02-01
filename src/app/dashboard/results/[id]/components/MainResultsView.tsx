@@ -47,7 +47,7 @@ export function MainResultsView({
       )}
 
       {/* Single image preview (collapsible) */}
-      {!hasMultipleImages && imageUrls.length > 0 && (
+      {!hasMultipleImages && imageUrls.length > 0 && imageUrls[0] && (
         <div className="glass-card rounded-2xl overflow-hidden">
           <button
             onClick={() => setShowImage(!showImage)}
@@ -62,6 +62,10 @@ export function MainResultsView({
                 src={imageUrls[0]}
                 alt="Analyzed screenshot"
                 className="w-full max-h-96 object-contain rounded-lg bg-surface-light"
+                onError={(e) => {
+                  console.error("[MainResultsView] Failed to load image:", imageUrls[0]);
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
               />
             </div>
           )}

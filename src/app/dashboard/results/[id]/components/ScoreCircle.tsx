@@ -1,9 +1,12 @@
+import { roundScore } from "../lib/utils";
+
 interface ScoreCircleProps {
   score?: number;
 }
 
 export function ScoreCircle({ score }: ScoreCircleProps) {
-  const displayScore = score ?? 0;
+  const roundedScore = score !== undefined && score !== null ? roundScore(score) : 0;
+  const displayValue = score !== undefined && score !== null ? roundedScore : "-";
 
   return (
     <div className="relative w-40 h-40 shrink-0">
@@ -24,7 +27,7 @@ export function ScoreCircle({ score }: ScoreCircleProps) {
           stroke="url(#scoreGradient)"
           strokeWidth="12"
           strokeLinecap="round"
-          strokeDasharray={`${displayScore * 4.4} 440`}
+          strokeDasharray={`${roundedScore * 4.4} 440`}
         />
         <defs>
           <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -34,7 +37,7 @@ export function ScoreCircle({ score }: ScoreCircleProps) {
         </defs>
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-bold">{score ?? "-"}</span>
+        <span className="text-4xl font-bold">{displayValue}</span>
         <span className="text-muted text-sm">/ 100</span>
       </div>
     </div>

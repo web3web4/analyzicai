@@ -62,7 +62,7 @@ export abstract class BaseAIProvider {
         escapeNext = false;
         continue;
       }
-      if (char === '\\' && inString) {
+      if (char === "\\" && inString) {
         escapeNext = true;
         continue;
       }
@@ -71,11 +71,11 @@ export abstract class BaseAIProvider {
         continue;
       }
       if (inString) continue;
-      
-      if (char === '{') openBraces++;
-      if (char === '}') openBraces--;
-      if (char === '[') openBrackets++;
-      if (char === ']') openBrackets--;
+
+      if (char === "{") openBraces++;
+      if (char === "}") openBraces--;
+      if (char === "[") openBrackets++;
+      if (char === "]") openBrackets--;
     }
 
     // If we're in a string, close it
@@ -86,11 +86,11 @@ export abstract class BaseAIProvider {
 
     // Close any open brackets/braces
     while (openBrackets > 0) {
-      repaired += ']';
+      repaired += "]";
       openBrackets--;
     }
     while (openBraces > 0) {
-      repaired += '}';
+      repaired += "}";
       openBraces--;
     }
 
@@ -137,12 +137,22 @@ export abstract class BaseAIProvider {
       } catch (repairError) {
         // Repair failed, throw original error with details
         console.error(this.name, "Content length:", content.length);
-        console.error(this.name, "JSON content (last 500 chars):", jsonContent.slice(-500));
+        console.error(
+          this.name,
+          "JSON content (last 500 chars):",
+          jsonContent.slice(-500),
+        );
         const preview = content.substring(0, 200).replace(/\n/g, " ");
         throw new Error(
           `Failed to parse ${this.name} response as JSON. ` +
-            `Response preview: "${preview}${content.length > 200 ? "..." : ""}" ` +
-            `Parse error: ${firstError instanceof Error ? firstError.message : String(firstError)}. ` +
+            `Response preview: "${preview}${
+              content.length > 200 ? "..." : ""
+            }" ` +
+            `Parse error: ${
+              firstError instanceof Error
+                ? firstError.message
+                : String(firstError)
+            }. ` +
             `Tip: Ensure the system prompt explicitly requires JSON-only output.`,
         );
       }
@@ -280,7 +290,9 @@ export abstract class BaseAIProvider {
           const mimeType = img.match(/^data:(.+);base64,/)?.[1] || "unknown";
           txtContent += `Image ${idx + 1}: ${mimeType}, ~${sizeKB}KB\n`;
           // Use imageResults to maintain index alignment
-          txtContent += `  Saved as: ${imageResults[idx] || "[failed to save]"}\n`;
+          txtContent += `  Saved as: ${
+            imageResults[idx] || "[failed to save]"
+          }\n`;
         });
         txtContent += "\n";
       }
@@ -419,7 +431,9 @@ export abstract class BaseAIProvider {
 ${JSON.stringify(previousResult, null, 2)}
 
 ## Other AI Perspectives
-${otherResults.map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`).join("\n\n")}
+${otherResults
+  .map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`)
+  .join("\n\n")}
 
 Based on these other perspectives, reconsider your analysis. Where do you agree or disagree? Provide your revised assessment.`;
 
@@ -444,9 +458,11 @@ Based on these other perspectives, reconsider your analysis. Where do you agree 
     const synthesisPrompt = `${userPrompt}
 
 ## All Provider Analyses
-${allResults.map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`).join("\n\n")}
+${allResults
+  .map((r) => `### ${r.provider}\n${JSON.stringify(r, null, 2)}`)
+  .join("\n\n")}
 
-Synthesize these analyses into a final, comprehensive result. Resolve any disagreements between providers, and provide weighted scores based on the consensus. Highlight areas of high agreement and areas where providers significantly disagreed.`;
+Synthesize these analyses into a final, comprehensive result. Resolve any disagreements between providers, and provide weighted scores based on the consensus. Highlight areas of high agreement and areas where providers significantly disagreed. Provide only the JSON object.`;
 
     return this.executeWithLogging(
       "synthesize",

@@ -4,7 +4,7 @@ import type { PerImageResult, CategoryScore } from "@/lib/ai/types";
 import { ScoreCircle } from "./ScoreCircle";
 import { CategoryCard } from "./CategoryCard";
 import { RecommendationCard } from "./RecommendationCard";
-import { sortRecommendationsBySeverity } from "../lib/utils";
+import { sortRecommendationsBySeverity, roundScore } from "../lib/utils";
 
 interface PerImageResultsViewProps {
   perImageResults: PerImageResult[];
@@ -65,7 +65,9 @@ export function PerImageResultsView({
           <h3 className="text-xl font-semibold mb-2">
             Image {selectedImageIndex + 1} Analysis
           </h3>
-          <p className="text-muted">{result.summary}</p>
+          {result.summary && (
+            <p className="text-muted">{result.summary}</p>
+          )}
         </div>
       </div>
 
@@ -156,16 +158,18 @@ export function PerImageResultsCompact({
             </defs>
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-lg font-bold">{result.overallScore}</span>
+            <span className="text-lg font-bold">{roundScore(result.overallScore)}</span>
           </div>
         </div>
         <div>
           <h4 className="font-medium">Image {imageIndex + 1}</h4>
-          <p className="text-sm text-muted">Score: {result.overallScore}/100</p>
+          <p className="text-sm text-muted">Score: {roundScore(result.overallScore)}/100</p>
         </div>
       </div>
 
-      <p className="text-sm text-muted line-clamp-2">{result.summary}</p>
+      {result.summary && (
+        <p className="text-sm text-muted line-clamp-2">{result.summary}</p>
+      )}
 
       {result.recommendations.length > 0 && (
         <div className="text-sm">

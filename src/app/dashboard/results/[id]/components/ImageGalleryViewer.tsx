@@ -38,13 +38,27 @@ export function ImageGalleryViewer({
     }
   };
 
-  if (imageUrls.length === 0) {
+  // Filter out empty URLs and check if we have valid images
+  const validImageUrls = imageUrls.filter(url => url && url.trim() !== "");
+  
+  if (validImageUrls.length === 0) {
     return (
       <div className="aspect-video bg-surface-light rounded-lg flex items-center justify-center">
-        <p className="text-muted">No images available</p>
+        <div className="text-center">
+          <span className="text-4xl block mb-2">🖼️</span>
+          <p className="text-muted">No images available</p>
+          <p className="text-xs text-muted mt-2">
+            {imageUrls.length > 0 
+              ? "Failed to load image URLs from storage"
+              : "No image paths in analysis record"}
+          </p>
+        </div>
       </div>
     );
   }
+
+  const currentImageUrl = imageUrls[selectedIndex];
+  const isEmptyUrl = !currentImageUrl || currentImageUrl.trim() === "";
 
   return (
     <div 
@@ -54,16 +68,19 @@ export function ImageGalleryViewer({
     >
       {/* Main image display */}
       <div className="relative aspect-video bg-surface-light rounded-lg overflow-hidden group">
-        {imageLoadErrors.has(selectedIndex) ? (
+        {imageLoadErrors.has(selectedIndex) || isEmptyUrl ? (
           <div className="w-full h-full flex items-center justify-center text-muted">
             <div className="text-center">
               <span className="text-4xl block mb-2">🖼️</span>
-              <p>Image unavailable</p>
+              <p>Image {selectedIndex + 1} unavailable</p>
+              {isEmptyUrl && (
+                <p className="text-xs mt-2">Failed to load URL</p>
+              )}
             </div>
           </div>
         ) : (
           <img
-            src={imageUrls[selectedIndex]}
+            src={currentImageUrl}
             alt={`Screenshot ${selectedIndex + 1}`}
             className="w-full h-full object-contain cursor-pointer"
             onClick={() => setIsFullscreen(true)}
