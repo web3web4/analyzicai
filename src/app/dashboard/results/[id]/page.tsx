@@ -31,6 +31,17 @@ export default async function ResultsPage({ params }: PageProps) {
     notFound();
   }
 
+  // Get all image URLs (multi-image support)
+  const imagePaths = (analysis.image_paths as string[]) || [];
+  const imageCount = analysis.image_count || imagePaths.length || 1;
+  
+  const imageUrls = imagePaths.map((path: string) => {
+    const { data } = supabase.storage
+      .from("analysis-images")
+      .getPublicUrl(path);
+    return data.publicUrl;
+  });
+
   // Get all responses for this analysis
   const { data: responses } = await supabase
     .from("analysis_responses")
@@ -68,6 +79,7 @@ export default async function ResultsPage({ params }: PageProps) {
                 <p className="text-warning">
                   Analysis in progress:{" "}
                   {analysis.status.replace("step", "Step ")}
+                  {imageCount > 1 && ` (${imageCount} images)`}
                 </p>
               </div>
             )}
@@ -82,6 +94,7 @@ export default async function ResultsPage({ params }: PageProps) {
             providers={analysis.providers_used || []}
             finalResult={finalResult}
             responses={responses || []}
+            imageCount={imageCount}
           />
         </div>
 
@@ -91,6 +104,8 @@ export default async function ResultsPage({ params }: PageProps) {
             finalResult={finalResult}
             v1Responses={v1Responses}
             v2Responses={v2Responses}
+            imageUrls={imageUrls}
+            imageCount={imageCount}
           />
         ) : (
           /* Empty State for Pending */

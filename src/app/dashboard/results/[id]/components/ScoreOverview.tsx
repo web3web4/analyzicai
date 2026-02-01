@@ -8,6 +8,7 @@ interface ScoreOverviewProps {
   providers: string[];
   finalResult?: SynthesizedResult;
   responses: AnalysisResponseRecord[];
+  imageCount?: number;
 }
 
 export function ScoreOverview({
@@ -16,6 +17,7 @@ export function ScoreOverview({
   providers,
   finalResult,
   responses,
+  imageCount = 1,
 }: ScoreOverviewProps) {
   // Calculate total latency
   const totalLatency = responses.reduce(
@@ -32,6 +34,11 @@ export function ScoreOverview({
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-2xl font-bold mb-2">Analysis Results</h1>
             <p className="text-muted mb-4">
+              {imageCount > 1 && (
+                <span className="inline-flex items-center gap-1.5 mr-2 px-2 py-0.5 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                  {imageCount} images
+                </span>
+              )}
               Analyzed on {new Date(createdAt).toLocaleDateString()} using{" "}
               {providers.join(", ")}
             </p>

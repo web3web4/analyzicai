@@ -38,6 +38,26 @@ export const analysisResultSchema = z.object({
 
 export type AnalysisResult = z.infer<typeof analysisResultSchema>;
 
+// Per-image result schema (for multi-image analysis)
+export const perImageResultSchema = z.object({
+  imageIndex: z.number().min(0),
+  overallScore: z.number().min(0).max(100),
+  categories: z.object({
+    colorContrast: categoryScoreSchema,
+    typography: categoryScoreSchema,
+    layoutComposition: categoryScoreSchema,
+    navigation: categoryScoreSchema,
+    accessibility: categoryScoreSchema,
+    visualHierarchy: categoryScoreSchema,
+    whitespace: categoryScoreSchema,
+    consistency: categoryScoreSchema,
+  }),
+  recommendations: z.array(recommendationSchema),
+  summary: z.string(),
+});
+
+export type PerImageResult = z.infer<typeof perImageResultSchema>;
+
 // Synthesized result (final output)
 export const synthesizedResultSchema = z.object({
   overallScore: z.number().min(0).max(100),
@@ -50,6 +70,9 @@ export const synthesizedResultSchema = z.object({
       agreement: z.enum(["high", "medium", "low"]),
     }),
   ),
+  // Multi-image support: per-image results (optional for backward compatibility)
+  perImageResults: z.array(perImageResultSchema).optional(),
+  imageCount: z.number().min(1).optional(),
 });
 
 export type SynthesizedResult = z.infer<typeof synthesizedResultSchema>;
@@ -72,7 +95,8 @@ export interface AnalysisRecord {
   user_id: string;
   source_type: "upload" | "screen_capture" | "url";
   source_url?: string;
-  image_path: string;
+  image_paths: string[]; // Array of image paths (multi-image support)
+  image_count: number; // Number of images in this analysis
   providers_used: string[];
   master_provider: string;
   status: "pending" | "step1" | "step2" | "step3" | "completed" | "failed";
@@ -92,4 +116,5 @@ export interface AnalysisResponseRecord {
   tokens_used: number;
   latency_ms?: number;
   created_at: string;
+  image_indices?: number[]; // Which images this response applies to (null = all)
 }

@@ -48,6 +48,56 @@ export abstract class BaseAIProvider {
   ): Promise<{ content: string; tokensUsed: number }>;
 
   /**
+   * Attempt to repair truncated JSON by closing open brackets/braces
+   */
+  private repairTruncatedJSON(json: string): string {
+    // Count open brackets and braces
+    let openBraces = 0;
+    let openBrackets = 0;
+    let inString = false;
+    let escapeNext = false;
+
+    for (const char of json) {
+      if (escapeNext) {
+        escapeNext = false;
+        continue;
+      }
+      if (char === '\\' && inString) {
+        escapeNext = true;
+        continue;
+      }
+      if (char === '"') {
+        inString = !inString;
+        continue;
+      }
+      if (inString) continue;
+      
+      if (char === '{') openBraces++;
+      if (char === '}') openBraces--;
+      if (char === '[') openBrackets++;
+      if (char === ']') openBrackets--;
+    }
+
+    // If we're in a string, close it
+    let repaired = json;
+    if (inString) {
+      repaired += '"';
+    }
+
+    // Close any open brackets/braces
+    while (openBrackets > 0) {
+      repaired += ']';
+      openBrackets--;
+    }
+    while (openBraces > 0) {
+      repaired += '}';
+      openBraces--;
+    }
+
+    return repaired;
+  }
+
+  /**
    * Hook for parsing response content.
    * Override this if provider needs special handling beyond the default strategies.
    * Default implementation tries multiple strategies to extract JSON from various formats.
@@ -78,16 +128,24 @@ export abstract class BaseAIProvider {
     // Attempt to parse with helpful error messages
     try {
       return JSON.parse(jsonContent);
-    } catch (error) {
-      console.error(this.name, "Content:", content);
-      console.error(this.name, "JSON content:", jsonContent);
-      const preview = content.substring(0, 200).replace(/\n/g, " ");
-      throw new Error(
-        `Failed to parse ${this.name} response as JSON. ` +
-          `Response preview: "${preview}${content.length > 200 ? "..." : ""}" ` +
-          `Parse error: ${error instanceof Error ? error.message : String(error)}. ` +
-          `Tip: Ensure the system prompt explicitly requires JSON-only output.`,
-      );
+    } catch (firstError) {
+      // Strategy 4: Try to repair truncated JSON
+      try {
+        const repaired = this.repairTruncatedJSON(jsonContent);
+        console.warn(this.name, "Attempting to repair truncated JSON response");
+        return JSON.parse(repaired);
+      } catch (repairError) {
+        // Repair failed, throw original error with details
+        console.error(this.name, "Content length:", content.length);
+        console.error(this.name, "JSON content (last 500 chars):", jsonContent.slice(-500));
+        const preview = content.substring(0, 200).replace(/\n/g, " ");
+        throw new Error(
+          `Failed to parse ${this.name} response as JSON. ` +
+            `Response preview: "${preview}${content.length > 200 ? "..." : ""}" ` +
+            `Parse error: ${firstError instanceof Error ? firstError.message : String(firstError)}. ` +
+            `Tip: Ensure the system prompt explicitly requires JSON-only output.`,
+        );
+      }
     }
   }
 

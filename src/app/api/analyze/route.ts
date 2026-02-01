@@ -64,28 +64,39 @@ export async function POST(request: NextRequest) {
       .update({ status: "step1" })
       .eq("id", analysisId);
 
-    // Get image from storage
-    const { data: imageData } = await supabase.storage
-      .from("analysis-images")
-      .download(analysis.image_path);
+    // Get all images from storage (multi-image support)
+    const imagePaths = analysis.image_paths as string[];
+    const imagesBase64: string[] = [];
 
-    if (!imageData) {
-      await supabase
-        .from("analyses")
-        .update({ status: "failed" })
-        .eq("id", analysisId);
+    console.log(`[API] Downloading ${imagePaths.length} image(s) for analysis ${analysisId}`);
 
-      return NextResponse.json(
-        { error: "Failed to retrieve image" },
-        { status: 500 },
-      );
+    for (let i = 0; i < imagePaths.length; i++) {
+      const imagePath = imagePaths[i];
+      const { data: imageData, error: downloadError } = await supabase.storage
+        .from("analysis-images")
+        .download(imagePath);
+
+      if (downloadError || !imageData) {
+        console.error(`[API] Failed to download image ${i + 1}:`, downloadError);
+        await supabase
+          .from("analyses")
+          .update({ status: "failed" })
+          .eq("id", analysisId);
+
+        return NextResponse.json(
+          { error: `Failed to retrieve image ${i + 1}` },
+          { status: 500 },
+        );
+      }
+
+      // Convert image to base64
+      const arrayBuffer = await imageData.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString("base64");
+      const mimeType = imageData.type || "image/png";
+      imagesBase64.push(`data:${mimeType};base64,${base64}`);
     }
 
-    // Convert image to base64
-    const arrayBuffer = await imageData.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const mimeType = imageData.type || "image/png";
-    const imageBase64 = `data:${mimeType};base64,${base64}`;
+    console.log(`[API] Successfully downloaded ${imagesBase64.length} image(s)`);
 
     // Run AI analysis pipeline
     const providers = analysis.providers_used as AIProvider[];
@@ -113,7 +124,7 @@ export async function POST(request: NextRequest) {
           providers,
           masterProvider,
         },
-        [imageBase64],
+        imagesBase64,
       );
 
       // Store all AI responses in database
@@ -160,6 +171,7 @@ export async function POST(request: NextRequest) {
       console.log("[API] Analysis pipeline completed successfully", {
         analysisId,
         finalScore: results.finalScore,
+        imageCount: imagesBase64.length,
         providers: Array.from(results.v1Results.keys()),
       });
 
@@ -168,6 +180,7 @@ export async function POST(request: NextRequest) {
         analysisId,
         status: "completed",
         score: results.finalScore,
+        imageCount: imagesBase64.length,
       });
     } catch (aiError) {
       console.error("AI pipeline error:", aiError);

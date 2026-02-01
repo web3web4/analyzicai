@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { SynthesizedResult } from "@/lib/ai/types";
 import { CategorySection } from "./CategorySection";
 import { RecommendationsSection } from "./RecommendationsSection";
@@ -8,16 +9,65 @@ import { Badge } from "./Badge";
 
 interface MainResultsViewProps {
   finalResult: SynthesizedResult;
+  imageUrls?: string[];
+  imageCount?: number;
 }
 
-export function MainResultsView({ finalResult }: MainResultsViewProps) {
+export function MainResultsView({ 
+  finalResult, 
+  imageUrls = [], 
+  imageCount = 1 
+}: MainResultsViewProps) {
+  const [showImage, setShowImage] = useState(false);
+  
   // Get top 5 recommendations by severity
   const topRecommendations = sortRecommendationsBySeverity(
     finalResult.recommendations
   ).slice(0, 5);
 
+  const hasMultipleImages = imageCount > 1;
+
   return (
     <div className="space-y-8">
+      {/* Multi-image info banner */}
+      {hasMultipleImages && (
+        <div className="bg-primary/10 border border-primary/20 px-6 py-4 rounded-xl">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🖼️</span>
+            <div>
+              <p className="font-medium">
+                Combined Analysis of {imageCount} Images
+              </p>
+              <p className="text-sm text-muted">
+                This is the overall analysis across all images. Switch to the &quot;Per Image&quot; tab to see individual results.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Single image preview (collapsible) */}
+      {!hasMultipleImages && imageUrls.length > 0 && (
+        <div className="glass-card rounded-2xl overflow-hidden">
+          <button
+            onClick={() => setShowImage(!showImage)}
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-surface-light/50 transition-colors"
+          >
+            <span className="font-medium">Analyzed Screenshot</span>
+            <span className="text-muted">{showImage ? "Hide" : "Show"}</span>
+          </button>
+          {showImage && (
+            <div className="px-6 pb-6">
+              <img
+                src={imageUrls[0]}
+                alt="Analyzed screenshot"
+                className="w-full max-h-96 object-contain rounded-lg bg-surface-light"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Top Recommendations Preview */}
       {topRecommendations.length > 0 && (
         <div className="glass-card rounded-2xl p-8">

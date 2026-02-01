@@ -16,6 +16,7 @@ interface AnthropicMessage {
 export class AnthropicProvider extends BaseAIProvider {
   private baseUrl = "https://api.anthropic.com/v1";
   private model: string;
+  private maxTokens: number;
 
   constructor(config: AIProviderConfig) {
     super("anthropic", config);
@@ -31,8 +32,22 @@ export class AnthropicProvider extends BaseAIProvider {
 
     if (!this.model) {
       throw new Error(
-        `Anthropic model not configured. Set ${isProduction ? "ANTHROPIC_MODEL_FOR_PRODUCTION" : "ANTHROPIC_MODEL_FOR_TESTING"} in .env.local`,
+        `Anthropic model not configured. Set ${
+          isProduction
+            ? "ANTHROPIC_MODEL_FOR_PRODUCTION"
+            : "ANTHROPIC_MODEL_FOR_TESTING"
+        } in .env.local`,
       );
+    }
+
+    // Set max tokens based on model capabilities
+    // Haiku: 4096, Sonnet: 8192, Opus: 4096
+    if (this.model.includes("haiku")) {
+      this.maxTokens = 16384;
+    } else if (this.model.includes("sonnet")) {
+      this.maxTokens = 32768;
+    } else {
+      this.maxTokens = 32768; // Same as sonnet for now
     }
   }
 
@@ -81,7 +96,7 @@ export class AnthropicProvider extends BaseAIProvider {
       },
       body: JSON.stringify({
         model: this.model,
-        max_tokens: 4096,
+        max_tokens: this.maxTokens,
         system: systemPrompt,
         messages,
       }),

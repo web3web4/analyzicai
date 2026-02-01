@@ -9,12 +9,8 @@ import { OpenAIProvider } from "./providers/openai";
 import { GeminiProvider } from "./providers/gemini";
 import { AnthropicProvider } from "./providers/anthropic";
 import {
-  INITIAL_SYSTEM_PROMPT,
-  INITIAL_USER_PROMPT,
-  RETHINK_SYSTEM_PROMPT,
-  RETHINK_USER_PROMPT,
-  SYNTHESIS_SYSTEM_PROMPT,
-  SYNTHESIS_USER_PROMPT,
+  getTemplates,
+  buildPrompt,
 } from "./prompts/templates";
 
 interface OrchestratorResult {
@@ -93,20 +89,27 @@ export class AnalysisOrchestrator {
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >
   > {
-    onProgress?.("step1", "Starting initial analysis");
+    const imageCount = imagesBase64?.length || 1;
+    const templates = getTemplates(imageCount);
+    
+    onProgress?.("step1", `Starting initial analysis of ${imageCount} image(s)`);
 
     const v1Results = new Map<
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >();
 
+    // Build prompts with image count injected
+    const systemPrompt = templates.initial.systemPrompt;
+    const userPrompt = buildPrompt(templates.initial.userPromptTemplate, { imageCount });
+
     const v1Promises = config.providers.map(async (providerName) => {
       const provider = this.getProvider(providerName);
       onProgress?.("step1", `Analyzing with ${providerName}`);
 
       const result = await provider.analyze(
-        INITIAL_SYSTEM_PROMPT,
-        INITIAL_USER_PROMPT,
+        systemPrompt,
+        userPrompt,
         imagesBase64,
       );
 
@@ -134,12 +137,18 @@ export class AnalysisOrchestrator {
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >
   > {
+    const imageCount = imagesBase64?.length || 1;
+    const templates = getTemplates(imageCount);
+    
     onProgress?.("step2", "Starting cross-provider rethink");
 
     const v2Results = new Map<
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >();
+
+    const systemPrompt = templates.rethink.systemPrompt;
+    const userPrompt = buildPrompt(templates.rethink.userPromptTemplate, { imageCount });
 
     const v2Promises = config.providers.map(async (providerName) => {
       const provider = this.getProvider(providerName);
@@ -156,8 +165,8 @@ export class AnalysisOrchestrator {
       onProgress?.("step2", `Rethinking with ${providerName}`);
 
       const result = await provider.rethink(
-        RETHINK_SYSTEM_PROMPT,
-        RETHINK_USER_PROMPT,
+        systemPrompt,
+        userPrompt,
         myV1.result,
         otherV1Results,
         imagesBase64,
@@ -185,6 +194,9 @@ export class AnalysisOrchestrator {
     tokensUsed: number;
     latencyMs: number;
   }> {
+    const imageCount = imagesBase64?.length || 1;
+    const templates = getTemplates(imageCount);
+    
     onProgress?.("step3", `Master synthesis with ${config.masterProvider}`);
 
     const masterProvider = this.getProvider(config.masterProvider);
@@ -192,9 +204,12 @@ export class AnalysisOrchestrator {
       providerResults.values(),
     ).map((v) => v.result);
 
+    const systemPrompt = templates.synthesis.systemPrompt;
+    const userPrompt = buildPrompt(templates.synthesis.userPromptTemplate, { imageCount });
+
     return await masterProvider.synthesize(
-      SYNTHESIS_SYSTEM_PROMPT,
-      SYNTHESIS_USER_PROMPT,
+      systemPrompt,
+      userPrompt,
       allResults,
       imagesBase64,
     );
