@@ -175,7 +175,7 @@ export const DEFAULT_TEMPLATES: Record<string, PromptTemplate> = {
  */
 export function buildPrompt(
   template: string,
-  context: Record<string, unknown>
+  context: Record<string, unknown>,
 ): string {
   let result = template;
   for (const [key, value] of Object.entries(context)) {
