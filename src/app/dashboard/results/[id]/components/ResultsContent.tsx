@@ -43,12 +43,14 @@ export function ResultsContent({
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // Debug logging for image URLs
-  console.log("[ResultsContent] Image URLs:", {
-    count: imageUrls.length,
-    urls: imageUrls,
-    hasValidUrls: imageUrls.filter(url => url && url.trim() !== "").length,
-  });
+  // Debug logging for image URLs (development only)
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[ResultsContent] Image URLs:", {
+      count: imageUrls.length,
+      urls: imageUrls,
+      hasValidUrls: imageUrls.filter(url => url && url.trim() !== "").length,
+    });
+  }
 
   return (
     <div className="space-y-6">

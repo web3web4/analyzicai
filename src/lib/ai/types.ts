@@ -102,7 +102,7 @@ export interface AnalysisRecord {
   image_count: number; // Number of images in this analysis
   providers_used: string[];
   master_provider: string;
-  status: "pending" | "step1" | "step2" | "step3" | "completed" | "failed";
+  status: "pending" | "step1" | "step2" | "step3" | "completed" | "failed" | "partial";
   final_score?: number;
   created_at: string;
   completed_at?: string;
@@ -119,5 +119,5 @@ export interface AnalysisResponseRecord {
   tokens_used: number;
   latency_ms?: number;
   created_at: string;
-  image_indices?: number[]; // Which images this response applies to (null = all)
+  image_indices: number[] | null; // Which images this response applies to (null = all)
 }

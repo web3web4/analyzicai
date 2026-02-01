@@ -31,13 +31,15 @@ export default async function ResultsPage({ params }: PageProps) {
     notFound();
   }
 
-  // Debug logging
-  console.log("[Results Page] Analysis record:", {
-    id: analysis.id,
-    has_image_paths: !!analysis.image_paths,
-    has_image_path: !!(analysis as any).image_path,
-    image_count: analysis.image_count,
-  });
+  // Debug logging (development only)
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[Results Page] Analysis record:", {
+      id: analysis.id,
+      has_image_paths: !!analysis.image_paths,
+      has_image_path: !!(analysis as any).image_path,
+      image_count: analysis.image_count,
+    });
+  }
 
   // Get all image URLs (multi-image support)
   // Support both old (image_path) and new (image_paths) schema
@@ -45,11 +47,15 @@ export default async function ResultsPage({ params }: PageProps) {
   
   if (analysis.image_paths) {
     imagePaths = analysis.image_paths as string[];
-    console.log("[Results Page] Using image_paths:", imagePaths);
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[Results Page] Using image_paths:", imagePaths);
+    }
   } else if ((analysis as any).image_path) {
     // Fallback for old analyses before migration
     imagePaths = [(analysis as any).image_path];
-    console.log("[Results Page] Using legacy image_path:", imagePaths);
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[Results Page] Using legacy image_path:", imagePaths);
+    }
   } else {
     console.warn("[Results Page] No image paths found in analysis record!");
   }
@@ -72,7 +78,9 @@ export default async function ResultsPage({ params }: PageProps) {
     })
   );
   
-  console.log(`[Results Page] Loaded ${imageUrls.filter(url => url).length}/${imagePaths.length} image URLs for analysis ${id}`);
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[Results Page] Loaded ${imageUrls.filter(url => url).length}/${imagePaths.length} image URLs for analysis ${id}`);
+  }
 
   // Get all responses for this analysis
   const { data: responses } = await supabase

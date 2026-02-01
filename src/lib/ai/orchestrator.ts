@@ -75,7 +75,7 @@ export class AnalysisOrchestrator {
     }
   }
 
-  private getProvider(name: AIProvider): BaseAIProvider {
+  public getProvider(name: AIProvider): BaseAIProvider {
     const provider = this.providers.get(name);
     if (!provider) {
       throw new Error(`Provider ${name} not configured`);

@@ -91,7 +91,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const providers = analysis.providers_used as AIProvider[];
     const masterProvider = analysis.master_provider as AIProvider;
 
     try {
@@ -118,7 +117,7 @@ export async function POST(request: NextRequest) {
         
         for (const [originalProvider, selectedProvider] of retryMap.entries()) {
           try {
-            const provider = (orchestrator as any).getProvider(selectedProvider);
+            const provider = orchestrator.getProvider(selectedProvider as AIProvider);
             const result = await provider.analyze(systemPrompt, userPrompt, imagesBase64);
             
             newRecords.push({
@@ -142,6 +141,35 @@ export async function POST(request: NextRequest) {
           await supabase.from("analysis_responses").insert(newRecords);
         }
 
+        // Update providers_used if any substitutions were made
+        // This ensures the analysis record reflects the actual providers that succeeded
+        const originalProviders = analysis.providers_used as string[];
+        const updatedProviders = [...originalProviders];
+        let providersChanged = false;
+
+        for (const [originalProvider, selectedProvider] of retryMap.entries()) {
+          // Only update if substitution was made AND the retry succeeded
+          if (originalProvider !== selectedProvider && 
+              newRecords.some(r => r.provider === selectedProvider)) {
+            const index = updatedProviders.indexOf(originalProvider);
+            if (index !== -1) {
+              updatedProviders[index] = selectedProvider;
+              providersChanged = true;
+            }
+          }
+        }
+
+        if (providersChanged) {
+          await supabase
+            .from("analyses")
+            .update({ providers_used: updatedProviders })
+            .eq("id", analysisId);
+          
+          if (process.env.NODE_ENV !== "production") {
+            console.log(`[Retry API] Updated providers_used from`, originalProviders, "to", updatedProviders);
+          }
+        }
+
         // Now retry synthesis if we have enough providers
         const allV1Responses = [
           ...(existingResponses?.filter(r => r.step === "v1_initial") || []),
@@ -163,7 +191,7 @@ export async function POST(request: NextRequest) {
           const userPrompt = buildPrompt(templates.synthesis.userPromptTemplate, { imageCount: imagesBase64.length });
 
           try {
-            const provider = (orchestrator as any).getProvider(masterProvider);
+            const provider = orchestrator.getProvider(masterProvider);
             const allResults = allV1Responses.map(r => r.result);
             const synthesisResult = await provider.synthesize(systemPrompt, userPrompt, allResults, imagesBase64);
 
@@ -234,7 +262,7 @@ export async function POST(request: NextRequest) {
         const systemPrompt = templates.synthesis.systemPrompt;
         const userPrompt = buildPrompt(templates.synthesis.userPromptTemplate, { imageCount: imagesBase64.length });
 
-        const provider = (orchestrator as any).getProvider(synthesisProvider);
+        const provider = orchestrator.getProvider(synthesisProvider);
         const allResults = v1Responses.map(r => r.result);
         const synthesisResult = await provider.synthesize(systemPrompt, userPrompt, allResults, imagesBase64);
 

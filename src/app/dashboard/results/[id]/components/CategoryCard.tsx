@@ -1,5 +1,9 @@
 import type { CategoryScore } from "@/lib/ai/types";
-import { formatCategoryName, getScoreColorClass, roundScore } from "../lib/utils";
+import {
+  formatCategoryName,
+  getScoreColorClass,
+  roundScore,
+} from "../lib/utils";
 import { ProgressBar } from "./ProgressBar";
 
 interface CategoryCardProps {
@@ -9,7 +13,7 @@ interface CategoryCardProps {
 
 export function CategoryCard({ categoryKey, category }: CategoryCardProps) {
   const displayScore = roundScore(category.score);
-  
+
   return (
     <div className="p-4 rounded-xl bg-surface-light">
       <div className="flex items-center justify-between mb-2">

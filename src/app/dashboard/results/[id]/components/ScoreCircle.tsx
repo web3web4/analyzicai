@@ -5,8 +5,10 @@ interface ScoreCircleProps {
 }
 
 export function ScoreCircle({ score }: ScoreCircleProps) {
-  const roundedScore = score !== undefined && score !== null ? roundScore(score) : 0;
-  const displayValue = score !== undefined && score !== null ? roundedScore : "-";
+  const roundedScore =
+    score !== undefined && score !== null ? roundScore(score) : 0;
+  const displayValue =
+    score !== undefined && score !== null ? roundedScore : "-";
 
   return (
     <div className="relative w-40 h-40 shrink-0">
