@@ -63,18 +63,26 @@ export class OpenAIProvider extends BaseAIProvider {
       },
     ];
 
+    // OpenAI vision models don't support response_format when images are present
+    // Only use json_object mode when there are no images
+    const requestBody: Record<string, unknown> = {
+      model: this.model,
+      messages,
+      max_completion_tokens: 8192,
+    };
+
+    // Only add response_format if no images (vision models don't support it)
+    if (!imagesBase64 || imagesBase64.length === 0) {
+      requestBody.response_format = { type: "json_object" };
+    }
+
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.config.apiKey}`,
       },
-      body: JSON.stringify({
-        model: this.model,
-        messages,
-        max_completion_tokens: 4096,
-        response_format: { type: "json_object" },
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

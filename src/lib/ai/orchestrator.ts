@@ -9,13 +9,15 @@ import { OpenAIProvider } from "./providers/openai";
 import { GeminiProvider } from "./providers/gemini";
 import { AnthropicProvider } from "./providers/anthropic";
 import {
-  INITIAL_SYSTEM_PROMPT,
-  INITIAL_USER_PROMPT,
-  RETHINK_SYSTEM_PROMPT,
-  RETHINK_USER_PROMPT,
-  SYNTHESIS_SYSTEM_PROMPT,
-  SYNTHESIS_USER_PROMPT,
+  getTemplates,
+  buildPrompt,
 } from "./prompts/templates";
+
+interface ProviderError {
+  provider: AIProvider;
+  error: Error;
+  step: "v1_initial" | "v2_rethink" | "v3_synthesis";
+}
 
 interface OrchestratorResult {
   v1Results: Map<
@@ -30,8 +32,10 @@ interface OrchestratorResult {
     result: AnalysisResult;
     tokensUsed: number;
     latencyMs: number;
-  };
+  } | null;
   finalScore: number;
+  errors: ProviderError[];
+  hasPartialResults: boolean;
 }
 
 export class AnalysisOrchestrator {
@@ -42,27 +46,36 @@ export class AnalysisOrchestrator {
   }) {
     this.providers = new Map();
 
+    console.log("[Orchestrator] Initializing with API keys:", {
+      hasOpenAI: !!options.apiKeys.openai,
+      hasGemini: !!options.apiKeys.gemini,
+      hasAnthropic: !!options.apiKeys.anthropic,
+    });
+
     if (options.apiKeys.openai) {
       this.providers.set(
         "openai",
         new OpenAIProvider({ apiKey: options.apiKeys.openai }),
       );
+      console.log("[Orchestrator] OpenAI provider configured");
     }
     if (options.apiKeys.gemini) {
       this.providers.set(
         "gemini",
         new GeminiProvider({ apiKey: options.apiKeys.gemini }),
       );
+      console.log("[Orchestrator] Gemini provider configured");
     }
     if (options.apiKeys.anthropic) {
       this.providers.set(
         "anthropic",
         new AnthropicProvider({ apiKey: options.apiKeys.anthropic }),
       );
+      console.log("[Orchestrator] Anthropic provider configured");
     }
   }
 
-  private getProvider(name: AIProvider): BaseAIProvider {
+  public getProvider(name: AIProvider): BaseAIProvider {
     const provider = this.providers.get(name);
     if (!provider) {
       throw new Error(`Provider ${name} not configured`);
@@ -71,51 +84,88 @@ export class AnalysisOrchestrator {
   }
 
   private validateProviders(config: AnalysisConfig): void {
+    console.log("[Orchestrator] Validating providers:", {
+      requested: config.providers,
+      master: config.masterProvider,
+      configured: Array.from(this.providers.keys()),
+    });
+
     for (const providerName of config.providers) {
       if (!this.providers.has(providerName)) {
-        throw new Error(`Provider ${providerName} not configured`);
+        const error = `Provider ${providerName} not configured (missing API key?)`;
+        console.error("[Orchestrator]", error);
+        throw new Error(error);
       }
     }
     if (!this.providers.has(config.masterProvider)) {
-      throw new Error(
-        `Master provider ${config.masterProvider} not configured`,
-      );
+      const error = `Master provider ${config.masterProvider} not configured (missing API key?)`;
+      console.error("[Orchestrator]", error);
+      throw new Error(error);
     }
+    
+    console.log("[Orchestrator] All providers validated successfully");
   }
 
   private async runStep1InitialAnalysis(
     config: AnalysisConfig,
     imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
-  ): Promise<
-    Map<
+  ): Promise<{
+    results: Map<
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
-    >
-  > {
-    onProgress?.("step1", "Starting initial analysis");
+    >;
+    errors: ProviderError[];
+  }> {
+    const imageCount = imagesBase64?.length || 1;
+    const templates = getTemplates(imageCount);
+    
+    onProgress?.("step1", `Starting initial analysis of ${imageCount} image(s)`);
 
     const v1Results = new Map<
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >();
+    const errors: ProviderError[] = [];
+
+    // Build prompts with image count injected
+    const systemPrompt = templates.initial.systemPrompt;
+    const userPrompt = buildPrompt(templates.initial.userPromptTemplate, { imageCount });
 
     const v1Promises = config.providers.map(async (providerName) => {
-      const provider = this.getProvider(providerName);
-      onProgress?.("step1", `Analyzing with ${providerName}`);
+      try {
+        console.log(`[Orchestrator] Starting analysis with ${providerName}`);
+        const provider = this.getProvider(providerName);
+        onProgress?.("step1", `Analyzing with ${providerName}`);
 
-      const result = await provider.analyze(
-        INITIAL_SYSTEM_PROMPT,
-        INITIAL_USER_PROMPT,
-        imagesBase64,
-      );
+        const result = await provider.analyze(
+          systemPrompt,
+          userPrompt,
+          imagesBase64,
+        );
 
-      v1Results.set(providerName, result);
-      return result;
+        console.log(`[Orchestrator] ${providerName} analysis succeeded with score ${result.result.overallScore}`);
+        v1Results.set(providerName, result);
+        return { success: true, providerName };
+      } catch (error) {
+        console.error(`[Orchestrator] Provider ${providerName} failed in step1:`, error);
+        console.error(`[Orchestrator] ${providerName} error details:`, {
+          name: error instanceof Error ? error.name : "Unknown",
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+        errors.push({
+          provider: providerName,
+          error: error instanceof Error ? error : new Error(String(error)),
+          step: "v1_initial",
+        });
+        return { success: false, providerName };
+      }
     });
 
     await Promise.all(v1Promises);
-    return v1Results;
+    
+    return { results: v1Results, errors };
   }
 
   // TODO: Version 2 - This method will be re-enabled in version 2
@@ -134,12 +184,18 @@ export class AnalysisOrchestrator {
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >
   > {
+    const imageCount = imagesBase64?.length || 1;
+    const templates = getTemplates(imageCount);
+    
     onProgress?.("step2", "Starting cross-provider rethink");
 
     const v2Results = new Map<
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >();
+
+    const systemPrompt = templates.rethink.systemPrompt;
+    const userPrompt = buildPrompt(templates.rethink.userPromptTemplate, { imageCount });
 
     const v2Promises = config.providers.map(async (providerName) => {
       const provider = this.getProvider(providerName);
@@ -156,8 +212,8 @@ export class AnalysisOrchestrator {
       onProgress?.("step2", `Rethinking with ${providerName}`);
 
       const result = await provider.rethink(
-        RETHINK_SYSTEM_PROMPT,
-        RETHINK_USER_PROMPT,
+        systemPrompt,
+        userPrompt,
         myV1.result,
         otherV1Results,
         imagesBase64,
@@ -184,20 +240,38 @@ export class AnalysisOrchestrator {
     result: AnalysisResult;
     tokensUsed: number;
     latencyMs: number;
-  }> {
-    onProgress?.("step3", `Master synthesis with ${config.masterProvider}`);
+  } | null> {
+    // Check if we have any results to synthesize
+    if (providerResults.size === 0) {
+      console.error("[Orchestrator] No provider results available for synthesis");
+      return null;
+    }
 
-    const masterProvider = this.getProvider(config.masterProvider);
-    const allResults: AnalysisResult[] = Array.from(
-      providerResults.values(),
-    ).map((v) => v.result);
+    const imageCount = imagesBase64?.length || 1;
+    const templates = getTemplates(imageCount);
+    
+    try {
+      onProgress?.("step3", `Master synthesis with ${config.masterProvider}`);
 
-    return await masterProvider.synthesize(
-      SYNTHESIS_SYSTEM_PROMPT,
-      SYNTHESIS_USER_PROMPT,
-      allResults,
-      imagesBase64,
-    );
+      const masterProvider = this.getProvider(config.masterProvider);
+      const allResults: AnalysisResult[] = Array.from(
+        providerResults.values(),
+      ).map((v) => v.result);
+
+      const systemPrompt = templates.synthesis.systemPrompt;
+      const userPrompt = buildPrompt(templates.synthesis.userPromptTemplate, { imageCount });
+
+      return await masterProvider.synthesize(
+        systemPrompt,
+        userPrompt,
+        allResults,
+        imagesBase64,
+      );
+    } catch (error) {
+      console.error(`[Orchestrator] Synthesis failed with ${config.masterProvider}:`, error);
+      // Return null to indicate synthesis failure but preserve partial results
+      return null;
+    }
   }
 
   async runPipeline(
@@ -208,12 +282,24 @@ export class AnalysisOrchestrator {
     // Validate providers
     this.validateProviders(config);
 
+    const allErrors: ProviderError[] = [];
+
     // Step 1: Initial Analysis from all providers (parallel)
-    const v1Results = await this.runStep1InitialAnalysis(
+    const step1 = await this.runStep1InitialAnalysis(
       config,
       imagesBase64,
       onProgress,
     );
+    
+    const v1Results = step1.results;
+    allErrors.push(...step1.errors);
+
+    console.log(`[Orchestrator] Step 1 complete: ${v1Results.size} successful, ${step1.errors.length} failed`);
+
+    // If all providers failed in step 1, throw error
+    if (v1Results.size === 0) {
+      throw new Error(`All providers failed in initial analysis. Errors: ${step1.errors.map(e => `${e.provider}: ${e.error.message}`).join("; ")}`);
+    }
 
     // Step 2: Cross-Provider Rethink (parallel)
     // TODO: Version 2 - This step will be implemented in a future version
@@ -222,15 +308,8 @@ export class AnalysisOrchestrator {
       AIProvider,
       { result: AnalysisResult; tokensUsed: number; latencyMs: number }
     >();
-    // const v2Results = await this.runStep2Rethink(
-    //   imageBase64,
-    //   config,
-    //   v1Results,
-    //   onProgress,
-    // );
 
     // Step 3: Master Synthesis
-    // TODO: Version 2 - Currently using v1 results instead of v2 results
     const synthesisResult = await this.runStep3Synthesis(
       config,
       v1Results, // Using v1Results directly instead of v2Results for now
@@ -238,14 +317,35 @@ export class AnalysisOrchestrator {
       onProgress,
     );
 
-    // Calculate final score (synthesis result's overall score)
-    const finalScore = synthesisResult.result.overallScore;
+    // If synthesis failed, add error but continue with partial results
+    if (!synthesisResult) {
+      allErrors.push({
+        provider: config.masterProvider,
+        error: new Error("Synthesis step failed"),
+        step: "v3_synthesis",
+      });
+    }
+
+    // Calculate final score (synthesis result's overall score or average of v1 scores if synthesis failed)
+    let finalScore = 0;
+    if (synthesisResult) {
+      finalScore = synthesisResult.result.overallScore;
+    } else if (v1Results.size > 0) {
+      // Use average of successful providers as fallback
+      const scores = Array.from(v1Results.values()).map(r => r.result.overallScore);
+      finalScore = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
+      console.log(`[Orchestrator] Using average score from ${v1Results.size} providers: ${finalScore}`);
+    }
+
+    const hasPartialResults = allErrors.length > 0;
 
     return {
       v1Results,
       v2Results,
       synthesisResult,
       finalScore,
+      errors: allErrors,
+      hasPartialResults,
     };
   }
 
@@ -274,7 +374,7 @@ export class AnalysisOrchestrator {
       latency_ms: number;
     }> = [];
 
-    // V1 results
+    // V1 results (only successful ones)
     for (const [provider, data] of results.v1Results) {
       records.push({
         analysis_id: analysisId,
@@ -301,17 +401,21 @@ export class AnalysisOrchestrator {
     //   });
     // }
 
-    // Synthesis result
-    records.push({
-      analysis_id: analysisId,
-      provider: results.synthesisResult.result.provider,
-      step: "v3_synthesis",
-      result: results.synthesisResult.result,
-      score: results.synthesisResult.result.overallScore,
-      tokens_used: results.synthesisResult.tokensUsed,
-      latency_ms: results.synthesisResult.latencyMs,
-    });
+    // Synthesis result (only if successful)
+    if (results.synthesisResult) {
+      records.push({
+        analysis_id: analysisId,
+        provider: results.synthesisResult.result.provider,
+        step: "v3_synthesis",
+        result: results.synthesisResult.result,
+        score: results.synthesisResult.result.overallScore,
+        tokens_used: results.synthesisResult.tokensUsed,
+        latency_ms: results.synthesisResult.latencyMs,
+      });
+    }
 
     return records;
   }
 }
+
+export type { OrchestratorResult, ProviderError };

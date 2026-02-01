@@ -42,6 +42,21 @@ GEMINI_MODEL_FOR_PRODUCTION=gemini-pro-latest
 NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER=openai
 
 # ═══════════════════════════════════════════════════════════════════════
+# 📸 Image Upload Configuration
+# ═══════════════════════════════════════════════════════════════════════
+# Multi-image upload limits (affects both upload and analysis)
+# Note: NEXT_PUBLIC prefix is required for use in client components
+
+# Maximum number of images per analysis (default: 10)
+NEXT_PUBLIC_MAX_IMAGES=10
+
+# Maximum file size per image in MB (default: 10)
+NEXT_PUBLIC_MAX_FILE_SIZE_MB=10
+
+# Maximum total size of all images in MB (default: 50)
+NEXT_PUBLIC_MAX_TOTAL_SIZE_MB=50
+
+# ═══════════════════════════════════════════════════════════════════════
 # 🗄️ Supabase Configuration
 # ═══════════════════════════════════════════════════════════════════════
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331

@@ -2,16 +2,26 @@
 
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
 
+interface ImageItem {
+  file: File;
+  preview: string;
+  id: string;
+}
+
+// Get upload limits from environment variables with sensible defaults
+const MAX_IMAGES = parseInt(process.env.NEXT_PUBLIC_MAX_IMAGES || "10", 10);
+const MAX_FILE_SIZE = parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE_MB || "10", 10) * 1024 * 1024;
+const MAX_TOTAL_SIZE = parseInt(process.env.NEXT_PUBLIC_MAX_TOTAL_SIZE_MB || "50", 10) * 1024 * 1024;
+
 export default function AnalyzePage() {
   const [sourceType, setSourceType] = useState<SourceType>("upload");
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [images, setImages] = useState<ImageItem[]>([]);
   const [selectedProviders, setSelectedProviders] = useState<AIProvider[]>([
     "openai",
   ]);
@@ -19,6 +29,7 @@ export default function AnalyzePage() {
     (process.env.NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER as AIProvider) || "openai",
   );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>("");
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -41,41 +52,119 @@ export default function AnalyzePage() {
     },
   ];
 
+  const generateId = () => Math.random().toString(36).substring(2, 9);
+
+  const validateFiles = useCallback(
+    (files: File[]): { valid: File[]; errors: string[] } => {
+      const errors: string[] = [];
+      const valid: File[] = [];
+
+      const currentCount = images.length;
+      const currentSize = images.reduce((sum, img) => sum + img.file.size, 0);
+      
+      const maxFileSizeMB = Math.round(MAX_FILE_SIZE / (1024 * 1024));
+      const maxTotalSizeMB = Math.round(MAX_TOTAL_SIZE / (1024 * 1024));
+
+      for (const file of files) {
+        // Check file type
+        if (!file.type.startsWith("image/")) {
+          errors.push(`${file.name}: Not an image file`);
+          continue;
+        }
+
+        // Check individual file size
+        if (file.size > MAX_FILE_SIZE) {
+          errors.push(`${file.name}: File size exceeds ${maxFileSizeMB}MB`);
+          continue;
+        }
+
+        // Check total count
+        if (currentCount + valid.length >= MAX_IMAGES) {
+          errors.push(`Maximum ${MAX_IMAGES} images allowed`);
+          break;
+        }
+
+        // Check total size
+        const newTotalSize =
+          currentSize +
+          valid.reduce((sum, f) => sum + f.size, 0) +
+          file.size;
+        if (newTotalSize > MAX_TOTAL_SIZE) {
+          errors.push(`Total size exceeds ${maxTotalSizeMB}MB`);
+          break;
+        }
+
+        valid.push(file);
+      }
+
+      return { valid, errors };
+    },
+    [images],
+  );
+
+  const addImages = useCallback(
+    async (files: File[]) => {
+      const { valid, errors } = validateFiles(files);
+
+      if (errors.length > 0) {
+        setError(errors.join(". "));
+      } else {
+        setError("");
+      }
+
+      if (valid.length === 0) return;
+
+      // Create preview URLs for valid files
+      const newImages: ImageItem[] = await Promise.all(
+        valid.map(
+          (file) =>
+            new Promise<ImageItem>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                resolve({
+                  file,
+                  preview: e.target?.result as string,
+                  id: generateId(),
+                });
+              };
+              reader.readAsDataURL(file);
+            }),
+        ),
+      );
+
+      setImages((prev) => [...prev, ...newImages]);
+      setSourceType("upload");
+    },
+    [validateFiles],
+  );
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        setError("File size must be less than 10MB");
-        return;
-      }
-      if (!file.type.startsWith("image/")) {
-        setError("Please upload an image file");
-        return;
-      }
-      setError("");
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      addImages(files);
+    }
+    // Reset input so the same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   }
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      const input = fileInputRef.current;
-      if (input) {
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        input.files = dt.files;
-        handleFileChange({
-          target: input,
-        } as React.ChangeEvent<HTMLInputElement>);
-      }
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      addImages(files);
     }
+  }
+
+  function removeImage(id: string) {
+    setImages((prev) => prev.filter((img) => img.id !== id));
+    setError("");
+  }
+
+  function clearAllImages() {
+    setImages([]);
+    setError("");
   }
 
   async function captureScreen() {
@@ -106,10 +195,27 @@ export default function AnalyzePage() {
         canvas.toBlob((blob) => resolve(blob!), "image/png");
       });
 
-      const file = new File([blob], "screenshot.png", { type: "image/png" });
-      setImageFile(file);
-      setImagePreview(canvas.toDataURL("image/png"));
-      setSourceType("screen_capture");
+      const file = new File(
+        [blob],
+        `screenshot-${Date.now()}.png`,
+        { type: "image/png" },
+      );
+
+      // Validate the captured image
+      const { valid, errors } = validateFiles([file]);
+      if (errors.length > 0) {
+        setError(errors.join(". "));
+        return;
+      }
+
+      if (valid.length > 0) {
+        const preview = canvas.toDataURL("image/png");
+        setImages((prev) => [
+          ...prev,
+          { file: valid[0], preview, id: generateId() },
+        ]);
+        setSourceType("screen_capture");
+      }
     } catch (err) {
       if ((err as Error).name !== "NotAllowedError") {
         setError("Failed to capture screen. Please try again.");
@@ -140,13 +246,14 @@ export default function AnalyzePage() {
   }
 
   async function handleAnalyze() {
-    if (!imageFile) {
-      setError("Please upload or capture an image first");
+    if (images.length === 0) {
+      setError("Please upload or capture at least one image");
       return;
     }
 
     setIsAnalyzing(true);
     setError("");
+    setUploadProgress("Preparing...");
 
     try {
       const supabase = createClient();
@@ -159,23 +266,34 @@ export default function AnalyzePage() {
         return;
       }
 
-      // Upload image
-      const fileName = `${user.id}/${Date.now()}-${imageFile.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("analysis-images")
-        .upload(fileName, imageFile);
+      // Upload all images
+      const imagePaths: string[] = [];
+      for (let i = 0; i < images.length; i++) {
+        setUploadProgress(`Uploading image ${i + 1} of ${images.length}...`);
+        
+        const image = images[i];
+        const fileName = `${user.id}/${Date.now()}-${i}-${image.file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from("analysis-images")
+          .upload(fileName, image.file);
 
-      if (uploadError) {
-        throw new Error("Failed to upload image");
+        if (uploadError) {
+          throw new Error(`Failed to upload image ${i + 1}: ${uploadError.message}`);
+        }
+
+        imagePaths.push(fileName);
       }
 
-      // Create analysis record
+      setUploadProgress("Creating analysis...");
+
+      // Create analysis record with multiple images
       const { data: analysis, error: insertError } = await supabase
         .from("analyses")
         .insert({
           user_id: user.id,
           source_type: sourceType,
-          image_path: fileName,
+          image_paths: imagePaths,
+          image_count: imagePaths.length,
           providers_used: selectedProviders,
           master_provider: masterProvider,
           status: "pending",
@@ -184,8 +302,10 @@ export default function AnalyzePage() {
         .single();
 
       if (insertError) {
-        throw new Error("Failed to create analysis");
+        throw new Error("Failed to create analysis: " + insertError.message);
       }
+
+      setUploadProgress("Starting analysis...");
 
       // Trigger analysis via API
       const response = await fetch("/api/analyze", {
@@ -202,16 +322,22 @@ export default function AnalyzePage() {
         throw new Error(data.error || "Failed to start analysis");
       }
 
-      const responseData = await response.json();
-
       // Redirect to results page where user can watch progress
       router.push(`/dashboard/results/${analysis.id}`);
     } catch (err) {
       console.error("[Client] Error in handleAnalyze:", err);
       setError((err as Error).message);
       setIsAnalyzing(false);
+      setUploadProgress("");
     }
   }
+
+  const totalSize = images.reduce((sum, img) => sum + img.file.size, 0);
+  const formatSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -246,10 +372,26 @@ export default function AnalyzePage() {
 
         {/* Image Input */}
         <div className="glass-card rounded-2xl p-8 mb-8">
-          <h2 className="text-lg font-semibold mb-4">1. Add your design</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">1. Add your designs</h2>
+            {images.length > 0 && (
+              <div className="flex items-center gap-4 text-sm text-muted">
+                <span>
+                  {images.length}/{MAX_IMAGES} images ({formatSize(totalSize)})
+                </span>
+                <button
+                  onClick={clearAllImages}
+                  className="text-error hover:text-error/80 transition-colors"
+                >
+                  Clear all
+                </button>
+              </div>
+            )}
+          </div>
 
-          {!imagePreview ? (
-            <div className="flex flex-col md:flex-row gap-4">
+          {/* Upload Zone - always visible when under limit */}
+          {images.length < MAX_IMAGES && (
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
               {/* Upload Zone */}
               <div
                 onClick={() => fileInputRef.current?.click()}
@@ -260,14 +402,15 @@ export default function AnalyzePage() {
                 <div className="w-12 h-12 rounded-xl bg-surface-light flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">📁</span>
                 </div>
-                <p className="font-medium mb-1">Upload an image</p>
+                <p className="font-medium mb-1">Upload images</p>
                 <p className="text-sm text-muted">
-                  Drag & drop or click to browse
+                  Drag & drop or click to browse (up to {MAX_IMAGES} images)
                 </p>
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={handleFileChange}
                   className="hidden"
                 />
@@ -287,23 +430,45 @@ export default function AnalyzePage() {
                 </p>
               </button>
             </div>
-          ) : (
-            <div className="relative">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="max-h-96 mx-auto rounded-lg"
-              />
-              <button
-                onClick={() => {
-                  setImagePreview(null);
-                  setImageFile(null);
-                }}
-                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface flex items-center justify-center hover:bg-error/20 transition-colors"
-              >
-                ✕
-              </button>
+          )}
+
+          {/* Image Gallery */}
+          {images.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {images.map((image, index) => (
+                <div
+                  key={image.id}
+                  className="relative group aspect-video bg-surface-light rounded-lg overflow-hidden"
+                >
+                  <img
+                    src={image.preview}
+                    alt={`Image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Image index badge */}
+                  <div className="absolute top-2 left-2 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center font-medium">
+                    {index + 1}
+                  </div>
+                  {/* Remove button */}
+                  <button
+                    onClick={() => removeImage(image.id)}
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error"
+                  >
+                    ✕
+                  </button>
+                  {/* File info */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs px-2 py-1 truncate">
+                    {image.file.name} ({formatSize(image.file.size)})
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
+
+          {images.length === 0 && (
+            <p className="text-center text-muted text-sm">
+              No images added yet. Upload or capture screenshots to analyze.
+            </p>
           )}
         </div>
 
@@ -349,19 +514,37 @@ export default function AnalyzePage() {
           </div>
         </div>
 
+        {/* Multi-image info */}
+        {images.length > 1 && (
+          <div className="bg-primary/10 border border-primary/20 px-4 py-3 rounded-lg mb-6">
+            <p className="text-sm">
+              <strong>Multi-image analysis:</strong> All {images.length} images will be
+              analyzed together. You&apos;ll receive both individual feedback for each
+              image and an overall analysis of common patterns.
+            </p>
+          </div>
+        )}
+
         {/* Submit */}
         <button
           onClick={handleAnalyze}
-          disabled={!imageFile || isAnalyzing}
+          disabled={images.length === 0 || isAnalyzing}
           className="w-full btn-primary py-4 rounded-xl text-white font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isAnalyzing ? (
             <span className="flex items-center justify-center gap-2">
               <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Analyzing...
+              {uploadProgress || "Analyzing..."}
             </span>
           ) : (
-            "Start Analysis"
+            <>
+              Start Analysis
+              {images.length > 0 && (
+                <span className="ml-2 opacity-75">
+                  ({images.length} image{images.length !== 1 ? "s" : ""})
+                </span>
+              )}
+            </>
           )}
         </button>
       </main>

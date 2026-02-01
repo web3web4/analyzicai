@@ -64,32 +64,57 @@ export async function POST(request: NextRequest) {
       .update({ status: "step1" })
       .eq("id", analysisId);
 
-    // Get image from storage
-    const { data: imageData } = await supabase.storage
-      .from("analysis-images")
-      .download(analysis.image_path);
+    // Get all images from storage (multi-image support)
+    const imagePaths = analysis.image_paths as string[];
+    const imagesBase64: string[] = [];
 
-    if (!imageData) {
-      await supabase
-        .from("analyses")
-        .update({ status: "failed" })
-        .eq("id", analysisId);
+    console.log(`[API] Downloading ${imagePaths.length} image(s) for analysis ${analysisId}`);
 
-      return NextResponse.json(
-        { error: "Failed to retrieve image" },
-        { status: 500 },
-      );
+    for (let i = 0; i < imagePaths.length; i++) {
+      const imagePath = imagePaths[i];
+      const { data: imageData, error: downloadError } = await supabase.storage
+        .from("analysis-images")
+        .download(imagePath);
+
+      if (downloadError || !imageData) {
+        console.error(`[API] Failed to download image ${i + 1}:`, downloadError);
+        await supabase
+          .from("analyses")
+          .update({ status: "failed" })
+          .eq("id", analysisId);
+
+        return NextResponse.json(
+          { error: `Failed to retrieve image ${i + 1}` },
+          { status: 500 },
+        );
+      }
+
+      // Convert image to base64
+      const arrayBuffer = await imageData.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString("base64");
+      const mimeType = imageData.type || "image/png";
+      imagesBase64.push(`data:${mimeType};base64,${base64}`);
     }
 
-    // Convert image to base64
-    const arrayBuffer = await imageData.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const mimeType = imageData.type || "image/png";
-    const imageBase64 = `data:${mimeType};base64,${base64}`;
+    console.log(`[API] Successfully downloaded ${imagesBase64.length} image(s)`);
 
     // Run AI analysis pipeline
     const providers = analysis.providers_used as AIProvider[];
     const masterProvider = analysis.master_provider as AIProvider;
+
+    console.log("[API] Starting analysis with config:", {
+      analysisId,
+      providers,
+      masterProvider,
+      imageCount: imagesBase64.length,
+    });
+
+    // Check API keys availability (without logging the actual keys)
+    console.log("[API] API keys available:", {
+      openai: !!process.env.OPENAI_API_KEY,
+      gemini: !!process.env.GEMINI_API_KEY,
+      anthropic: !!process.env.ANTHROPIC_API_KEY,
+    });
 
     try {
       // Initialize orchestrator with API keys
@@ -113,78 +138,159 @@ export async function POST(request: NextRequest) {
           providers,
           masterProvider,
         },
-        [imageBase64],
+        imagesBase64,
       );
 
-      // Store all AI responses in database
+      console.log("[API] Pipeline completed", {
+        v1Count: results.v1Results.size,
+        hasSynthesis: !!results.synthesisResult,
+        errorCount: results.errors.length,
+        hasPartialResults: results.hasPartialResults,
+      });
+
+      // Store all AI responses in database (including partial results)
       const responseRecords = AnalysisOrchestrator.formatForDatabase(
         analysisId,
         results,
       );
 
-      const { error: insertError } = await supabase
-        .from("analysis_responses")
-        .insert(responseRecords);
+      console.log("[API] Formatted", responseRecords.length, "records for database");
 
-      if (insertError) {
-        console.error("Failed to store analysis responses:", insertError);
-        // Continue anyway - analysis completed successfully
+      if (responseRecords.length > 0) {
+        const { error: insertError } = await supabase
+          .from("analysis_responses")
+          .insert(responseRecords);
+
+        if (insertError) {
+          console.error("[API] Failed to store analysis responses:", insertError);
+          // Continue anyway - we have partial results in memory
+        } else {
+          console.log("[API] Successfully stored", responseRecords.length, "responses");
+        }
       }
 
-      // Update analysis as completed
-      const { error: updateError } = await supabase
-        .from("analyses")
-        .update({
-          status: "completed",
-          final_score: results.finalScore,
-          completed_at: new Date().toISOString(),
-        })
-        .eq("id", analysisId);
+      // Determine final status based on errors
+      const finalStatus = results.hasPartialResults 
+        ? (results.synthesisResult ? "completed" : "partial")
+        : "completed";
 
-      if (updateError) {
-        console.error("[API] Failed to update analysis status:", updateError);
-        throw new Error("Failed to update analysis status");
+      console.log("[API] Determined final status:", finalStatus);
+
+      // Store error information if there were failures
+      const errorDetails = results.errors.length > 0 
+        ? {
+            failed_providers: results.errors.map(e => e.provider),
+            error_details: results.errors.map(e => ({
+              provider: e.provider,
+              step: e.step,
+              message: e.error.message,
+            })),
+          }
+        : null;
+
+      // Update analysis with final status and score
+      // Wrap in try-catch to not lose partial results if update fails
+      try {
+        const { error: updateError } = await supabase
+          .from("analyses")
+          .update({
+            status: finalStatus,
+            final_score: results.finalScore,
+            completed_at: new Date().toISOString(),
+          })
+          .eq("id", analysisId);
+
+        if (updateError) {
+          console.error("[API] Failed to update analysis status:", updateError);
+          // Don't throw - we still have results saved
+        }
+      } catch (updateException) {
+        console.error("[API] Exception updating analysis:", updateException);
+        // Don't throw - we still have results saved
       }
 
-      // Track usage for master provider
-      const masterTokens =
-        responseRecords.find((r) => r.step === "v3_synthesis")?.tokens_used ||
-        0;
-      await supabase.from("usage_tracking").insert({
-        user_id: user.id,
-        analysis_id: analysisId,
-        provider: masterProvider,
-        tokens_used: masterTokens,
-      });
+      // Track usage for successful providers
+      const totalTokens = responseRecords.reduce((sum, r) => sum + r.tokens_used, 0);
+      if (totalTokens > 0) {
+        await supabase.from("usage_tracking").insert({
+          user_id: user.id,
+          analysis_id: analysisId,
+          provider: masterProvider,
+          tokens_used: totalTokens,
+        });
+      }
 
-      console.log("[API] Analysis pipeline completed successfully", {
+      console.log("[API] Analysis pipeline completed", {
         analysisId,
+        finalStatus,
         finalScore: results.finalScore,
-        providers: Array.from(results.v1Results.keys()),
+        imageCount: imagesBase64.length,
+        successfulProviders: Array.from(results.v1Results.keys()),
+        errors: results.errors.length,
       });
 
       return NextResponse.json({
         success: true,
         analysisId,
-        status: "completed",
+        status: finalStatus,
         score: results.finalScore,
+        imageCount: imagesBase64.length,
+        hasPartialResults: results.hasPartialResults,
+        errors: results.errors.length > 0 ? errorDetails : undefined,
       });
     } catch (aiError) {
-      console.error("AI pipeline error:", aiError);
+      console.error("[API] AI pipeline error:", aiError);
 
-      // Mark analysis as failed
-      await supabase
-        .from("analyses")
-        .update({ status: "failed" })
-        .eq("id", analysisId);
+      // Check if we have any saved responses before marking as completely failed
+      const { data: existingResponses } = await supabase
+        .from("analysis_responses")
+        .select("id, step, provider")
+        .eq("analysis_id", analysisId);
 
-      return NextResponse.json(
-        {
-          error: "AI analysis failed",
-          details: aiError instanceof Error ? aiError.message : "Unknown error",
-        },
-        { status: 500 },
-      );
+      const hasAnyResults = existingResponses && existingResponses.length > 0;
+
+      console.log("[API] Error occurred but found", existingResponses?.length || 0, "existing responses");
+
+      if (hasAnyResults) {
+        // We have partial results - don't mark as completely failed
+        const hasSynthesis = existingResponses.some(r => r.step === "v3_synthesis");
+        const finalStatus = hasSynthesis ? "completed" : "partial";
+        
+        await supabase
+          .from("analyses")
+          .update({ status: finalStatus })
+          .eq("id", analysisId);
+
+        console.log("[API] Marked as", finalStatus, "due to partial results");
+
+        return NextResponse.json(
+          {
+            success: true,
+            analysisId,
+            status: finalStatus,
+            hasPartialResults: true,
+            warning: "Analysis completed with errors",
+            details: aiError instanceof Error ? aiError.message : "Unknown error",
+          },
+          { status: 200 }, // Return 200 since we have results
+        );
+      } else {
+        // No results at all - mark as failed
+        await supabase
+          .from("analyses")
+          .update({ status: "failed" })
+          .eq("id", analysisId);
+
+        console.log("[API] Marked as failed - no results saved");
+
+        return NextResponse.json(
+          {
+            error: "AI analysis failed completely",
+            details: aiError instanceof Error ? aiError.message : "Unknown error",
+          },
+          { status: 500 },
+        );
+      }
     }
   } catch (error) {
     console.error("Analyze error:", error);
