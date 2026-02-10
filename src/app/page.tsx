@@ -199,15 +199,13 @@ export default function Home() {
       <footer className="py-4 px-4 border-t border-border">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-13 h-13 rounded-xl bg-surface-light font-extrabold flex flex-col items-center justify-center 
+            <div
+              className="w-13 h-13 rounded-xl bg-surface-light font-extrabold flex flex-col items-center justify-center 
               shadow-[0px_0px_5px_rgba(200,220,255,1)]
-              text-shadow-[2px_2px_6px_rgba(0,0,0,1)]">
-              <div className="text-primary">
-                UXic
-              </div>
-              <div className="text-brand-web4-purple">
-                AI
-              </div>
+              text-shadow-[2px_2px_6px_rgba(0,0,0,1)]"
+            >
+              <div className="text-primary">UXic</div>
+              <div className="text-brand-web4-purple">AI</div>
             </div>
           </div>
           <p className="text-sm text-muted">

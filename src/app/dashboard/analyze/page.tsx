@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Logo } from "@/components/Logo";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
@@ -417,21 +417,7 @@ export default function AnalyzePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Logo />
-          </Link>
-
-          <Link
-            href="/dashboard"
-            className="text-muted hover:text-foreground transition-colors"
-          >
-            ← Back to Dashboard
-          </Link>
-        </div>
-      </header>
+      <DashboardHeader />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-12">

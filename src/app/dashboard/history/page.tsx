@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Logo } from "@/components/Logo";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
 export default async function HistoryPage() {
   const supabase = await createClient();
@@ -22,21 +22,7 @@ export default async function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Logo />
-          </Link>
-
-          <Link
-            href="/dashboard"
-            className="text-muted hover:text-foreground transition-colors"
-          >
-            ← Back to Dashboard
-          </Link>
-        </div>
-      </header>
+      <DashboardHeader />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
