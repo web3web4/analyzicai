@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
+import { Logo } from "@/components/Logo";
 
 type SocialProvider =
   | "github"
@@ -87,10 +88,7 @@ function LoginForm() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">U</span>
-          </div>
-          <span className="text-xl font-semibold">UXicAI</span>
+          <Logo size="md" />
         </Link>
 
         <div className="glass-card rounded-2xl p-8">

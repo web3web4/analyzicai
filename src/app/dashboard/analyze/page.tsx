@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { Logo } from "@/components/Logo";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
@@ -16,8 +17,10 @@ interface ImageItem {
 
 // Get upload limits from environment variables with sensible defaults
 const MAX_IMAGES = parseInt(process.env.NEXT_PUBLIC_MAX_IMAGES || "10", 10);
-const MAX_FILE_SIZE = parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE_MB || "10", 10) * 1024 * 1024;
-const MAX_TOTAL_SIZE = parseInt(process.env.NEXT_PUBLIC_MAX_TOTAL_SIZE_MB || "50", 10) * 1024 * 1024;
+const MAX_FILE_SIZE =
+  parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE_MB || "10", 10) * 1024 * 1024;
+const MAX_TOTAL_SIZE =
+  parseInt(process.env.NEXT_PUBLIC_MAX_TOTAL_SIZE_MB || "50", 10) * 1024 * 1024;
 
 export default function AnalyzePage() {
   const [sourceType, setSourceType] = useState<SourceType>("upload");
@@ -61,7 +64,7 @@ export default function AnalyzePage() {
 
       const currentCount = images.length;
       const currentSize = images.reduce((sum, img) => sum + img.file.size, 0);
-      
+
       const maxFileSizeMB = Math.round(MAX_FILE_SIZE / (1024 * 1024));
       const maxTotalSizeMB = Math.round(MAX_TOTAL_SIZE / (1024 * 1024));
 
@@ -86,9 +89,7 @@ export default function AnalyzePage() {
 
         // Check total size
         const newTotalSize =
-          currentSize +
-          valid.reduce((sum, f) => sum + f.size, 0) +
-          file.size;
+          currentSize + valid.reduce((sum, f) => sum + f.size, 0) + file.size;
         if (newTotalSize > MAX_TOTAL_SIZE) {
           errors.push(`Total size exceeds ${maxTotalSizeMB}MB`);
           break;
@@ -195,11 +196,9 @@ export default function AnalyzePage() {
         canvas.toBlob((blob) => resolve(blob!), "image/png");
       });
 
-      const file = new File(
-        [blob],
-        `screenshot-${Date.now()}.png`,
-        { type: "image/png" },
-      );
+      const file = new File([blob], `screenshot-${Date.now()}.png`, {
+        type: "image/png",
+      });
 
       // Validate the captured image
       const { valid, errors } = validateFiles([file]);
@@ -270,7 +269,7 @@ export default function AnalyzePage() {
       const imagePaths: string[] = [];
       for (let i = 0; i < images.length; i++) {
         setUploadProgress(`Uploading image ${i + 1} of ${images.length}...`);
-        
+
         const image = images[i];
         const fileName = `${user.id}/${Date.now()}-${i}-${image.file.name}`;
         const { error: uploadError } = await supabase.storage
@@ -278,7 +277,9 @@ export default function AnalyzePage() {
           .upload(fileName, image.file);
 
         if (uploadError) {
-          throw new Error(`Failed to upload image ${i + 1}: ${uploadError.message}`);
+          throw new Error(
+            `Failed to upload image ${i + 1}: ${uploadError.message}`,
+          );
         }
 
         imagePaths.push(fileName);
@@ -345,10 +346,7 @@ export default function AnalyzePage() {
       <header className="border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">U</span>
-            </div>
-            <span className="font-semibold">UXicAI</span>
+            <Logo />
           </Link>
 
           <Link
@@ -518,9 +516,10 @@ export default function AnalyzePage() {
         {images.length > 1 && (
           <div className="bg-primary/10 border border-primary/20 px-4 py-3 rounded-lg mb-6">
             <p className="text-sm">
-              <strong>Multi-image analysis:</strong> All {images.length} images will be
-              analyzed together. You&apos;ll receive both individual feedback for each
-              image and an overall analysis of common patterns.
+              <strong>Multi-image analysis:</strong> All {images.length} images
+              will be analyzed together. You&apos;ll receive both individual
+              feedback for each image and an overall analysis of common
+              patterns.
             </p>
           </div>
         )}
