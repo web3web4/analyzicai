@@ -169,6 +169,9 @@ export async function POST(request: NextRequest) {
           masterProvider,
         },
         imagesBase64,
+        analysis.website_context as
+          | import("@/lib/ai/types").WebsiteContext
+          | undefined,
       );
 
       console.log("[API] Pipeline completed", {

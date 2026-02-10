@@ -101,6 +101,17 @@ export interface AnalysisConfig {
   };
 }
 
+// Website context for tailored analysis
+export interface WebsiteContext {
+  targetAge: Array<"kids" | "teenagers" | "middle_age" | "elderly">;
+  targetGender: "any" | "male" | "female" | "other";
+  educationLevel: "any" | "basic" | "high_school" | "college" | "advanced";
+  incomeLevel: "any" | "low" | "middle" | "high";
+  techFriendliness: "any" | "beginners" | "average" | "tech_savvy" | "geeks";
+  businessSector: string[]; // Free-form tags like "fintech", "ecommerce", "ai"
+  additionalContext?: string; // Free-text field
+}
+
 // Analysis record (database shape)
 export interface AnalysisRecord {
   id: string;
@@ -113,6 +124,7 @@ export interface AnalysisRecord {
   master_provider: string;
   model_tier?: ModelTier; // Track which tier was selected
   used_user_api_keys: boolean; // Track if user provided their own keys
+  website_context?: WebsiteContext; // Optional context about target audience and business
   status:
     | "pending"
     | "step1"

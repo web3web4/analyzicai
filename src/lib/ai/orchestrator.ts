@@ -117,6 +117,7 @@ export class AnalysisOrchestrator {
   private async runStep1InitialAnalysis(
     config: AnalysisConfig,
     imagesBase64?: string[],
+    websiteContext?: import("./types").WebsiteContext,
     onProgress?: (step: string, detail: string) => void,
   ): Promise<{
     results: Map<
@@ -139,8 +140,10 @@ export class AnalysisOrchestrator {
     >();
     const errors: ProviderError[] = [];
 
-    // Build prompts with image count injected
-    const systemPrompt = templates.initial.systemPrompt;
+    // Build prompts with image count and context injected
+    const { buildContextPrompt } = await import("./prompts");
+    const contextEnhancement = buildContextPrompt(websiteContext);
+    const systemPrompt = templates.initial.systemPrompt + contextEnhancement;
     const userPrompt = buildPrompt(templates.initial.userPromptTemplate, {
       imageCount,
     });
@@ -304,6 +307,7 @@ export class AnalysisOrchestrator {
   async runPipeline(
     config: AnalysisConfig,
     imagesBase64?: string[],
+    websiteContext?: import("./types").WebsiteContext,
     onProgress?: (step: string, detail: string) => void,
   ): Promise<OrchestratorResult> {
     // Validate providers
@@ -315,6 +319,7 @@ export class AnalysisOrchestrator {
     const step1 = await this.runStep1InitialAnalysis(
       config,
       imagesBase64,
+      websiteContext,
       onProgress,
     );
 

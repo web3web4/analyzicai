@@ -38,6 +38,17 @@ export default function AnalyzePage() {
     anthropic: "",
     gemini: "",
   });
+  const [websiteContext, setWebsiteContext] = useState<
+    Partial<import("@/lib/ai/types").WebsiteContext>
+  >({
+    targetAge: [],
+    targetGender: "any",
+    educationLevel: "any",
+    incomeLevel: "any",
+    techFriendliness: "any",
+    businessSector: [],
+  });
+  const [sectorInput, setSectorInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>("");
   const [error, setError] = useState("");
@@ -251,6 +262,40 @@ export default function AnalyzePage() {
     }
   }
 
+  // Website context helpers
+  const toggleAgeGroup = (
+    age: "kids" | "teenagers" | "middle_age" | "elderly",
+  ) => {
+    const currentAges = websiteContext.targetAge || [];
+    const newAges = currentAges.includes(age)
+      ? currentAges.filter((a) => a !== age)
+      : [...currentAges, age];
+    setWebsiteContext({ ...websiteContext, targetAge: newAges });
+  };
+
+  const handleSectorKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && sectorInput.trim()) {
+      e.preventDefault();
+      const currentSectors = websiteContext.businessSector || [];
+      if (!currentSectors.includes(sectorInput.trim())) {
+        setWebsiteContext({
+          ...websiteContext,
+          businessSector: [...currentSectors, sectorInput.trim()],
+        });
+      }
+      setSectorInput("");
+    }
+  };
+
+  const removeSector = (sector: string) => {
+    setWebsiteContext({
+      ...websiteContext,
+      businessSector: (websiteContext.businessSector || []).filter(
+        (s) => s !== sector,
+      ),
+    });
+  };
+
   async function handleAnalyze() {
     if (images.length === 0) {
       setError("Please upload or capture at least one image");
@@ -305,6 +350,12 @@ export default function AnalyzePage() {
           providers_used: selectedProviders,
           master_provider: masterProvider,
           model_tier: modelTier,
+          website_context:
+            websiteContext.targetAge?.length! > 0 ||
+            websiteContext.businessSector?.length! > 0 ||
+            websiteContext.additionalContext
+              ? websiteContext
+              : null,
           status: "pending",
         })
         .select()
@@ -674,6 +725,116 @@ export default function AnalyzePage() {
                   setUserApiKeys({ ...userApiKeys, gemini: e.target.value })
                 }
                 className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Website Context (Optional but Recommended) */}
+        <div className="glass-card rounded-2xl p-8 mb-8">
+          <h2 className="text-lg font-semibold mb-4">
+            5. Website Context (Optional but Recommended)
+          </h2>
+          <p className="text-muted text-sm mb-6">
+            Help us provide more targeted feedback by describing your website
+            and target audience. This information enhances the AI's
+            understanding of your specific use case.
+          </p>
+
+          <div className="space-y-6">
+            {/* Target Age Groups */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Target Age Groups
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { id: "kids", label: "Kids" },
+                  { id: "teenagers", label: "Teenagers" },
+                  { id: "middle_age", label: "Middle Age" },
+                  { id: "elderly", label: "Elderly" },
+                ].map((age) => (
+                  <button
+                    key={age.id}
+                    type="button"
+                    onClick={() =>
+                      toggleAgeGroup(
+                        age.id as
+                          | "kids"
+                          | "teenagers"
+                          | "middle_age"
+                          | "elderly",
+                      )
+                    }
+                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                      websiteContext.targetAge?.includes(
+                        age.id as
+                          | "kids"
+                          | "teenagers"
+                          | "middle_age"
+                          | "elderly",
+                      )
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    {age.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Business Sector Tags */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Business Sector/Industry
+              </label>
+              <input
+                type="text"
+                value={sectorInput}
+                onChange={(e) => setSectorInput(e.target.value)}
+                onKeyDown={handleSectorKeyDown}
+                placeholder="Type and press Enter to add (e.g., fintech, ecommerce, healthcare)"
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors text-sm"
+              />
+              {websiteContext.businessSector &&
+                websiteContext.businessSector.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {websiteContext.businessSector.map((sector) => (
+                      <span
+                        key={sector}
+                        className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm flex items-center gap-2"
+                      >
+                        {sector}
+                        <button
+                          type="button"
+                          onClick={() => removeSector(sector)}
+                          className="hover:text-error transition-colors"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+            </div>
+
+            {/* Additional Context */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Additional Context
+              </label>
+              <textarea
+                value={websiteContext.additionalContext || ""}
+                onChange={(e) =>
+                  setWebsiteContext({
+                    ...websiteContext,
+                    additionalContext: e.target.value,
+                  })
+                }
+                placeholder="Any other relevant information about your website, target users, or specific concerns..."
+                rows={4}
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors resize-none text-sm"
               />
             </div>
           </div>
