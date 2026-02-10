@@ -26,15 +26,26 @@ ENABLE_API_LOGGING=true
 # - Anthropic pricing: https://anthropic.com/pricing & details at https://platform.claude.com/docs/en/about-claude/pricing
 # - Google pricing: https://ai.google.dev/pricing
 
-# Testing/Development Models (cheapest - as of Jan 2026)
-OPENAI_MODEL_FOR_TESTING=gpt-5-nano
-ANTHROPIC_MODEL_FOR_TESTING=claude-3-haiku-20240307
-GEMINI_MODEL_FOR_TESTING=gemini-2.0-flash-lite
+# Multi-Tier Model Configuration (as of Jan 2026)
+# Users can select from these tiers based on cost/quality trade-offs
+# Tier 1: Cheapest - fastest and most affordable
+# Tier 2: Balanced - best cost-to-quality ratio (default)
+# Tier 3: Premium - highest quality outcomes
 
-# Production Models (higher quality - as of Jan 2026)
-OPENAI_MODEL_FOR_PRODUCTION=gpt-5.2
-ANTHROPIC_MODEL_FOR_PRODUCTION=claude-sonnet-4-5
-GEMINI_MODEL_FOR_PRODUCTION=gemini-pro-latest
+# OpenAI Models
+OPENAI_MODEL_TIER_1=gpt-5-nano          # Cheapest
+OPENAI_MODEL_TIER_2=gpt-4.5             # Moderate cost with fair quality
+OPENAI_MODEL_TIER_3=gpt-5.2             # Best quality outcomes
+
+# Anthropic Models
+ANTHROPIC_MODEL_TIER_1=claude-3-haiku-20240307    # Cheapest
+ANTHROPIC_MODEL_TIER_2=claude-3-5-sonnet          # Moderate cost with fair quality
+ANTHROPIC_MODEL_TIER_3=claude-sonnet-4-5          # Best quality outcomes
+
+# Gemini Models
+GEMINI_MODEL_TIER_1=gemini-2.0-flash-lite   # Cheapest
+GEMINI_MODEL_TIER_2=gemini-2.0-flash        # Moderate cost with fair quality
+GEMINI_MODEL_TIER_3=gemini-pro-latest       # Best quality outcomes
 
 # Default master provider for final synthesis (openai, anthropic, or gemini)
 # This provider will be selected by default in the UI

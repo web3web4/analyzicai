@@ -83,6 +83,9 @@ export type SynthesizedResult = z.infer<typeof synthesizedResultSchema>;
 // Provider types
 export type AIProvider = "openai" | "gemini" | "anthropic";
 
+// Model tier for cost/quality selection
+export type ModelTier = "tier1" | "tier2" | "tier3";
+
 // Analysis step types
 export type AnalysisStep = "v1_initial" | "v2_rethink" | "v3_synthesis";
 
@@ -90,6 +93,7 @@ export type AnalysisStep = "v1_initial" | "v2_rethink" | "v3_synthesis";
 export interface AnalysisConfig {
   providers: AIProvider[];
   masterProvider: AIProvider;
+  modelTier?: ModelTier; // Optional tier selection (defaults to tier2)
 }
 
 // Analysis record (database shape)
@@ -102,7 +106,15 @@ export interface AnalysisRecord {
   image_count: number; // Number of images in this analysis
   providers_used: string[];
   master_provider: string;
-  status: "pending" | "step1" | "step2" | "step3" | "completed" | "failed" | "partial";
+  model_tier?: ModelTier; // Track which tier was selected
+  status:
+    | "pending"
+    | "step1"
+    | "step2"
+    | "step3"
+    | "completed"
+    | "failed"
+    | "partial";
   final_score?: number;
   created_at: string;
   completed_at?: string;

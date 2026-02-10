@@ -21,22 +21,23 @@ export class AnthropicProvider extends BaseAIProvider {
   constructor(config: AIProviderConfig) {
     super("anthropic", config);
 
-    // Determine model from environment-specific variables
-    const isProduction = process.env.NODE_ENV === "production";
-    this.model =
-      config.model ||
-      (isProduction
-        ? process.env.ANTHROPIC_MODEL_FOR_PRODUCTION
-        : process.env.ANTHROPIC_MODEL_FOR_TESTING) ||
-      "";
+    // Determine model from tier selection or explicit model override
+    if (config.model) {
+      this.model = config.model;
+    } else {
+      const tier = config.modelTier || "tier2"; // Default to moderate tier
+      const tierMap = {
+        tier1: process.env.ANTHROPIC_MODEL_TIER_1,
+        tier2: process.env.ANTHROPIC_MODEL_TIER_2,
+        tier3: process.env.ANTHROPIC_MODEL_TIER_3,
+      };
+
+      this.model = tierMap[tier] || "";
+    }
 
     if (!this.model) {
       throw new Error(
-        `Anthropic model not configured. Set ${
-          isProduction
-            ? "ANTHROPIC_MODEL_FOR_PRODUCTION"
-            : "ANTHROPIC_MODEL_FOR_TESTING"
-        } in .env.local`,
+        `Anthropic model not configured. Set ANTHROPIC_MODEL_TIER_1, ANTHROPIC_MODEL_TIER_2, and ANTHROPIC_MODEL_TIER_3 environment variables in your environment configuration (e.g. .env, .env.local, or your deployment settings).`,
       );
     }
 

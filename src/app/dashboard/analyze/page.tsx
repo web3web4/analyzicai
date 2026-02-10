@@ -8,6 +8,7 @@ import { Logo } from "@/components/Logo";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
+type ModelTier = "tier1" | "tier2" | "tier3";
 
 interface ImageItem {
   file: File;
@@ -31,6 +32,7 @@ export default function AnalyzePage() {
   const [masterProvider, setMasterProvider] = useState<AIProvider>(
     (process.env.NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER as AIProvider) || "openai",
   );
+  const [modelTier, setModelTier] = useState<ModelTier>("tier2");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>("");
   const [error, setError] = useState("");
@@ -297,6 +299,7 @@ export default function AnalyzePage() {
           image_count: imagePaths.length,
           providers_used: selectedProviders,
           master_provider: masterProvider,
+          model_tier: modelTier,
           status: "pending",
         })
         .select()
@@ -506,6 +509,57 @@ export default function AnalyzePage() {
                     onChange={() => handleMasterChange(provider.id)}
                     className="w-4 h-4 accent-primary"
                   />
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Model Tier Selection */}
+        <div className="glass-card rounded-2xl p-8 mb-8">
+          <h2 className="text-lg font-semibold mb-4">
+            3. Select Model Quality Tier
+          </h2>
+          <p className="text-muted text-sm mb-6">
+            Choose the quality/cost balance for your analysis.
+          </p>
+
+          <div className="space-y-3">
+            {[
+              {
+                id: "tier1" as ModelTier,
+                name: "Budget (Cheapest)",
+                description: "Fastest and most affordable",
+              },
+              {
+                id: "tier2" as ModelTier,
+                name: "Balanced (Moderate)",
+                description: "Best cost-to-quality ratio",
+              },
+              {
+                id: "tier3" as ModelTier,
+                name: "Premium (Best Quality)",
+                description: "Highest quality outcomes",
+              },
+            ].map((tier) => (
+              <label
+                key={tier.id}
+                className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-colors ${
+                  modelTier === tier.id
+                    ? "border-primary bg-primary/10"
+                    : "border-border hover:border-border"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="modelTier"
+                  checked={modelTier === tier.id}
+                  onChange={() => setModelTier(tier.id)}
+                  className="w-5 h-5 accent-primary"
+                />
+                <div className="flex-1">
+                  <p className="font-medium">{tier.name}</p>
+                  <p className="text-sm text-muted">{tier.description}</p>
                 </div>
               </label>
             ))}

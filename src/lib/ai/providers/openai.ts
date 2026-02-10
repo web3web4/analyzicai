@@ -18,18 +18,23 @@ export class OpenAIProvider extends BaseAIProvider {
   constructor(config: AIProviderConfig) {
     super("openai", config);
 
-    // Determine model from environment-specific variables
-    const isProduction = process.env.NODE_ENV === "production";
-    this.model =
-      config.model ||
-      (isProduction
-        ? process.env.OPENAI_MODEL_FOR_PRODUCTION
-        : process.env.OPENAI_MODEL_FOR_TESTING) ||
-      "";
+    // Determine model from tier selection or explicit model override
+    if (config.model) {
+      this.model = config.model;
+    } else {
+      const tier = config.modelTier || "tier2"; // Default to moderate tier
+      const tierMap = {
+        tier1: process.env.OPENAI_MODEL_TIER_1,
+        tier2: process.env.OPENAI_MODEL_TIER_2,
+        tier3: process.env.OPENAI_MODEL_TIER_3,
+      };
+
+      this.model = tierMap[tier] || "";
+    }
 
     if (!this.model) {
       throw new Error(
-        `OpenAI model not configured. Set the ${isProduction ? "OPENAI_MODEL_FOR_PRODUCTION" : "OPENAI_MODEL_FOR_TESTING"} environment variable in your environment configuration (e.g. .env, .env.local, or your deployment settings).`,
+        `OpenAI model not configured. Set OPENAI_MODEL_TIER_1, OPENAI_MODEL_TIER_2, and OPENAI_MODEL_TIER_3 environment variables in your environment configuration (e.g. .env, .env.local, or your deployment settings).`,
       );
     }
   }
