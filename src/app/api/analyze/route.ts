@@ -6,6 +6,13 @@ import { AIProvider } from "@/lib/ai/types";
 
 const analyzeRequestSchema = z.object({
   analysisId: z.string().uuid(),
+  userApiKeys: z
+    .object({
+      openai: z.string().optional(),
+      anthropic: z.string().optional(),
+      gemini: z.string().optional(),
+    })
+    .optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -34,7 +41,14 @@ export async function POST(request: NextRequest) {
 
     // Parse and validate request
     const body = await request.json();
-    const { analysisId } = analyzeRequestSchema.parse(body);
+    const { analysisId, userApiKeys } = analyzeRequestSchema.parse(body);
+
+    // Check if user provided any API keys
+    const hasUserKeys = !!(
+      userApiKeys?.openai ||
+      userApiKeys?.anthropic ||
+      userApiKeys?.gemini
+    );
 
     // Get analysis record
     const { data: analysis, error: fetchError } = await supabase
@@ -129,20 +143,24 @@ export async function POST(request: NextRequest) {
 
     try {
       // Initialize orchestrator with API keys and model tier
+      // Prioritize user-provided keys, fall back to server keys
       const { AnalysisOrchestrator } = await import("@/lib/ai/orchestrator");
       const orchestrator = new AnalysisOrchestrator({
         apiKeys: {
-          openai: process.env.OPENAI_API_KEY,
-          gemini: process.env.GEMINI_API_KEY,
-          anthropic: process.env.ANTHROPIC_API_KEY,
+          openai: userApiKeys?.openai || process.env.OPENAI_API_KEY,
+          gemini: userApiKeys?.gemini || process.env.GEMINI_API_KEY,
+          anthropic: userApiKeys?.anthropic || process.env.ANTHROPIC_API_KEY,
         },
         modelTier,
       });
 
-      // Update status and run pipeline
+      // Update status and track if using user keys
       await supabase
         .from("analyses")
-        .update({ status: "step1" })
+        .update({
+          status: "step1",
+          used_user_api_keys: hasUserKeys,
+        })
         .eq("id", analysisId);
 
       const results = await orchestrator.runPipeline(

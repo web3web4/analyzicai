@@ -1,6 +1,7 @@
 # ═══════════════════════════════════════════════════════════════════════
 # 🔑 API Keys
 # ═══════════════════════════════════════════════════════════════════════
+# Server-side API keys (used as fallback when users don't provide their own)
 # Get API keys from:
 # - OpenAI: https://platform.openai.com/api-keys
 # - Anthropic: https://console.anthropic.com/account/keys

@@ -33,6 +33,11 @@ export default function AnalyzePage() {
     (process.env.NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER as AIProvider) || "openai",
   );
   const [modelTier, setModelTier] = useState<ModelTier>("tier2");
+  const [userApiKeys, setUserApiKeys] = useState({
+    openai: "",
+    anthropic: "",
+    gemini: "",
+  });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>("");
   const [error, setError] = useState("");
@@ -311,11 +316,27 @@ export default function AnalyzePage() {
 
       setUploadProgress("Starting analysis...");
 
-      // Trigger analysis via API
+      // Trigger analysis via API with optional user keys
+      const hasUserKeys = !!(
+        userApiKeys.openai ||
+        userApiKeys.anthropic ||
+        userApiKeys.gemini
+      );
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ analysisId: analysis.id }),
+        body: JSON.stringify({
+          analysisId: analysis.id,
+          ...(hasUserKeys && {
+            userApiKeys: {
+              ...(userApiKeys.openai && { openai: userApiKeys.openai }),
+              ...(userApiKeys.anthropic && {
+                anthropic: userApiKeys.anthropic,
+              }),
+              ...(userApiKeys.gemini && { gemini: userApiKeys.gemini }),
+            },
+          }),
+        }),
       });
 
       console.log("[Client] API response status:", response.status);
@@ -563,6 +584,98 @@ export default function AnalyzePage() {
                 </div>
               </label>
             ))}
+          </div>
+        </div>
+
+        {/* User API Keys (Optional) */}
+        <div className="glass-card rounded-2xl p-8 mb-8">
+          <h2 className="text-lg font-semibold mb-4">4. API Keys (Optional)</h2>
+          <p className="text-muted text-sm mb-6">
+            Want to use your own API keys? Provide them here. They will be sent
+            directly to the AI providers and not stored.
+          </p>
+
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <svg
+                className="w-5 h-5 text-primary mt-0.5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <div className="text-sm">
+                <p className="font-medium mb-1">Privacy & Security</p>
+                <ul className="text-muted space-y-1">
+                  <li>
+                    • Your keys are sent directly to AI providers (OpenAI,
+                    Anthropic, Google)
+                  </li>
+                  <li>• We do not store or log your API keys</li>
+                  <li>• Keys are only used for this single analysis</li>
+                  <li>• If not provided, we'll use our server keys instead</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {/* OpenAI API Key */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                OpenAI API Key
+                <span className="text-muted font-normal ml-2">(optional)</span>
+              </label>
+              <input
+                type="password"
+                placeholder="sk-..."
+                value={userApiKeys.openai}
+                onChange={(e) =>
+                  setUserApiKeys({ ...userApiKeys, openai: e.target.value })
+                }
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
+              />
+            </div>
+
+            {/* Anthropic API Key */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Anthropic API Key
+                <span className="text-muted font-normal ml-2">(optional)</span>
+              </label>
+              <input
+                type="password"
+                placeholder="sk-ant-..."
+                value={userApiKeys.anthropic}
+                onChange={(e) =>
+                  setUserApiKeys({ ...userApiKeys, anthropic: e.target.value })
+                }
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
+              />
+            </div>
+
+            {/* Gemini API Key */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Google Gemini API Key
+                <span className="text-muted font-normal ml-2">(optional)</span>
+              </label>
+              <input
+                type="password"
+                placeholder="AI..."
+                value={userApiKeys.gemini}
+                onChange={(e) =>
+                  setUserApiKeys({ ...userApiKeys, gemini: e.target.value })
+                }
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
+              />
+            </div>
           </div>
         </div>
 

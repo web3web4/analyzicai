@@ -94,6 +94,11 @@ export interface AnalysisConfig {
   providers: AIProvider[];
   masterProvider: AIProvider;
   modelTier?: ModelTier; // Optional tier selection (defaults to tier2)
+  userApiKeys?: {
+    openai?: string;
+    anthropic?: string;
+    gemini?: string;
+  };
 }
 
 // Analysis record (database shape)
@@ -107,6 +112,7 @@ export interface AnalysisRecord {
   providers_used: string[];
   master_provider: string;
   model_tier?: ModelTier; // Track which tier was selected
+  used_user_api_keys: boolean; // Track if user provided their own keys
   status:
     | "pending"
     | "step1"
