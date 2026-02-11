@@ -10,6 +10,7 @@ import {
   BusinessSectorSelector,
 } from "@web3web4/ui-library";
 import { getProviderTierOptions } from "@web3web4/ai-core/model-tiers";
+import { MODEL_CONFIG } from "@/lib/config/models";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
@@ -32,22 +33,21 @@ export default function AnalyzePage() {
   const [sourceType, setSourceType] = useState<SourceType>("upload");
   const [images, setImages] = useState<ImageItem[]>([]);
   const [selectedProviders, setSelectedProviders] = useState<AIProvider[]>([
-    "openai",
-    "gemini",
-    "anthropic",
+    "anthropic", // Only Anthropic selected by default (user has active subscription)
   ]);
   const [masterProvider, setMasterProvider] = useState<AIProvider>(
-    (process.env.NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER as AIProvider) || "openai",
+    (process.env.NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER as AIProvider) ||
+      "anthropic",
   );
-  const [modelTier, setModelTier] = useState<ModelTier>("tier2");
+  const [modelTier, setModelTier] = useState<ModelTier>("tier1");
 
   // Per-provider model tiers (new)
   const [providerModelTiers, setProviderModelTiers] = useState<
     Record<AIProvider, ModelTier>
   >({
-    openai: "tier2",
-    gemini: "tier2",
-    anthropic: "tier2",
+    openai: "tier1",
+    gemini: "tier1",
+    anthropic: "tier1",
   });
   const [userApiKeys, setUserApiKeys] = useState({
     openai: "",
@@ -55,7 +55,7 @@ export default function AnalyzePage() {
     gemini: "",
   });
   const [websiteContext, setWebsiteContext] = useState<
-    Partial<import("@/lib/ai-domains/ux-analysis/types").WebsiteContext>
+    Partial<import("@web3web4/ai-core").WebsiteContext>
   >({
     targetAge: [],
     targetGender: [],
@@ -785,11 +785,13 @@ export default function AnalyzePage() {
                       }
                       className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
                     >
-                      {getProviderTierOptions(provider.id).map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
+                      {getProviderTierOptions(MODEL_CONFIG, provider.id).map(
+                        (option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ),
+                      )}
                     </select>
                   </div>
                 )}

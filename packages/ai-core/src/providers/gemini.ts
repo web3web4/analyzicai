@@ -15,7 +15,7 @@ export class GeminiProvider<
     if (config.model) {
       this.model = config.model;
     } else {
-      const tier = config.modelTier || "tier2"; // Default to moderate tier
+      const tier = config.modelTier || "tier1"; // Default to cheapest tier
       const tierMap = {
         tier1: process.env.GEMINI_MODEL_TIER_1,
         tier2: process.env.GEMINI_MODEL_TIER_2,

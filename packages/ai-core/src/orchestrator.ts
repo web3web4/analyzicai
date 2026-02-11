@@ -66,14 +66,14 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
         new OpenAIProvider(
           {
             apiKey: options.apiKeys.openai,
-            modelTier: options.providerModelTiers?.openai || "tier2",
+            modelTier: options.providerModelTiers?.openai || "tier1",
           },
           this.schema,
         ),
       );
       console.log(
         "[Orchestrator] OpenAI provider configured with tier:",
-        options.providerModelTiers?.openai || "tier2",
+        options.providerModelTiers?.openai || "tier1",
       );
     }
     if (options.apiKeys.gemini) {
@@ -82,14 +82,14 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
         new GeminiProvider(
           {
             apiKey: options.apiKeys.gemini,
-            modelTier: options.providerModelTiers?.gemini || "tier2",
+            modelTier: options.providerModelTiers?.gemini || "tier1",
           },
           this.schema,
         ),
       );
       console.log(
         "[Orchestrator] Gemini provider configured with tier:",
-        options.providerModelTiers?.gemini || "tier2",
+        options.providerModelTiers?.gemini || "tier1",
       );
     }
     if (options.apiKeys.anthropic) {
@@ -98,14 +98,14 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
         new AnthropicProvider(
           {
             apiKey: options.apiKeys.anthropic,
-            modelTier: options.providerModelTiers?.anthropic || "tier2",
+            modelTier: options.providerModelTiers?.anthropic || "tier1",
           },
           this.schema,
         ),
       );
       console.log(
         "[Orchestrator] Anthropic provider configured with tier:",
-        options.providerModelTiers?.anthropic || "tier2",
+        options.providerModelTiers?.anthropic || "tier1",
       );
     }
   }

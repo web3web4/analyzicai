@@ -34,19 +34,19 @@ ENABLE_API_LOGGING=true
 # Tier 3: Premium - highest quality outcomes
 
 # OpenAI Models
-OPENAI_MODEL_TIER_1=gpt-5-nano          # Cheapest
-OPENAI_MODEL_TIER_2=gpt-4.5             # Moderate cost with fair quality
-OPENAI_MODEL_TIER_3=gpt-5.2             # Best quality outcomes
+OPENAI_MODEL_TIER_1=gpt-5-nano       # Cheapest
+OPENAI_MODEL_TIER_2=gpt-5-mini         # Moderate cost with fair quality
+OPENAI_MODEL_TIER_3=gpt-5.2-pro              # Best quality outcomes
 
 # Anthropic Models
-ANTHROPIC_MODEL_TIER_1=claude-3-haiku-20240307    # Cheapest
-ANTHROPIC_MODEL_TIER_2=claude-3-5-sonnet          # Moderate cost with fair quality
-ANTHROPIC_MODEL_TIER_3=claude-sonnet-4-5          # Best quality outcomes
+ANTHROPIC_MODEL_TIER_1=claude-haiku-4-5-20251001      # Cheapest
+ANTHROPIC_MODEL_TIER_2=claude-sonnet-4-5-20250929   # Moderate cost with fair quality
+ANTHROPIC_MODEL_TIER_3=claude-opus-4-6       # Best quality outcomes
 
 # Gemini Models
-GEMINI_MODEL_TIER_1=gemini-2.0-flash-lite   # Cheapest
-GEMINI_MODEL_TIER_2=gemini-2.0-flash        # Moderate cost with fair quality
-GEMINI_MODEL_TIER_3=gemini-pro-latest       # Best quality outcomes
+GEMINI_MODEL_TIER_1=gemini-1.5-flash-8b     # Cheapest
+GEMINI_MODEL_TIER_2=gemini-2.5-flash       # Moderate cost with fair quality
+GEMINI_MODEL_TIER_3=gemini-3-pro-preview       # Best quality outcomes
 
 # Default master provider for final synthesis (openai, anthropic, or gemini)
 # This provider will be selected by default in the UI

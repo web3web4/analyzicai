@@ -13,6 +13,7 @@ import {
   Shield,
   FileText,
 } from "lucide-react";
+import { Logo } from "@web3web4/ui-library";
 
 export default function AnalyzePage() {
   const [inputType, setInputType] = useState<"code" | "github">("code");
@@ -77,7 +78,7 @@ export default function AnalyzePage() {
             Back to Home
           </Link>
           <div className="flex items-center gap-2">
-            <Logo prefix="Solidic" suffix="AI" size="sm" />
+            <Logo prefix="Solidic" suffix="AI" size="md" />
           </div>
         </div>
       </nav>

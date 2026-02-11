@@ -1,16 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   AnalysisOrchestrator,
-  ContractAnalysisConfig,
-  ContractContext,
   getContractTemplates,
   contractAnalysisResultSchema,
   buildContractContextPrompt,
 } from "@web3web4/ai-core";
 import { fetchGitHubCode } from "@/lib/github-loader";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const {
       code,
       githubUrl,
@@ -18,10 +26,14 @@ export async function POST(req: NextRequest) {
       providers,
       masterProvider,
       modelTiers,
+      userApiKeys, // Destruct user provided keys
+      inputType, // 'code' or 'github'
     } = await req.json();
 
+    console.log("Starting contract analysis request...");
     // Validate input
     if (!code && !githubUrl) {
+      console.error("Missing code or githubUrl");
       return NextResponse.json(
         { error: "Either code or githubUrl is required" },
         { status: 400 },
@@ -34,9 +46,12 @@ export async function POST(req: NextRequest) {
 
     if (githubUrl) {
       try {
+        console.log("Fetching code from GitHub:", githubUrl);
         analysisCode = await fetchGitHubCode(githubUrl);
+        console.log("Fetched code length:", analysisCode.length);
         finalContext.githubRepo = githubUrl;
       } catch (error) {
+        console.error("GitHub fetch error:", error);
         return NextResponse.json(
           { error: `Failed to fetch GitHub code: ${(error as Error).message}` },
           { status: 400 },
@@ -44,13 +59,47 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Create analysis record in DB
+    console.log("Creating analysis record in DB...");
+    const { data: analysis, error: dbError } = await supabase
+      .from("analyses")
+      .insert({
+        user_id: user.id,
+        source_type: inputType || (githubUrl ? "github" : "code"),
+        input_context: analysisCode, // Store the code
+        repo_info: githubUrl ? { url: githubUrl } : null,
+        providers_used: providers || ["openai", "gemini", "anthropic"],
+        master_provider: masterProvider || "openai",
+        status: "pending",
+        // Empty image paths for contract analysis
+        image_paths: [],
+        image_count: 0,
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error("DB Insert Error:", dbError);
+      throw new Error("Failed to create analysis record");
+    }
+    console.log("Analysis record created:", analysis.id);
+
     // Initialize orchestrator with schema
+    console.log("Initializing Orchestrator...");
+    const apiKeys = {
+      openai: userApiKeys?.openai || process.env.OPENAI_API_KEY,
+      gemini: userApiKeys?.gemini || process.env.GEMINI_API_KEY,
+      anthropic: userApiKeys?.anthropic || process.env.ANTHROPIC_API_KEY,
+    };
+
+    console.log("API Keys presence:", {
+      openai: !!apiKeys.openai,
+      gemini: !!apiKeys.gemini,
+      anthropic: !!apiKeys.anthropic,
+    });
+
     const orchestrator = new AnalysisOrchestrator({
-      apiKeys: {
-        openai: process.env.OPENAI_API_KEY,
-        gemini: process.env.GEMINI_API_KEY,
-        anthropic: process.env.ANTHROPIC_API_KEY,
-      },
+      apiKeys,
       providerModelTiers: modelTiers,
       schema: contractAnalysisResultSchema,
     });
@@ -59,26 +108,69 @@ export async function POST(req: NextRequest) {
     const templates = getContractTemplates();
     const systemSuffix = buildContractContextPrompt(finalContext);
 
-    // Run pipeline with generic interface
-    const results = await orchestrator.runPipeline(
-      {
-        providers: providers || ["openai", "gemini", "anthropic"],
-        masterProvider: masterProvider || "openai",
-      },
-      templates,
-      {
-        systemSuffix,
-        userVars: { code: analysisCode },
-      },
-    );
+    try {
+      // Run pipeline with generic interface
+      console.log("Running orchestrator pipeline...");
+      const results = await orchestrator.runPipeline(
+        {
+          providers: providers || ["openai", "gemini", "anthropic"],
+          masterProvider: masterProvider || "openai",
+        },
+        templates,
+        {
+          systemSuffix,
+          userVars: { code: analysisCode },
+        },
+      );
+      console.log("Pipeline complete. Score:", results.finalScore);
 
-    return NextResponse.json({
-      success: true,
-      results: AnalysisOrchestrator.formatForDatabase("temp-id", results),
-      finalScore: results.finalScore,
-    });
+      // Update analysis record with result
+      console.log("Updating analysis record in DB...");
+      await supabase
+        .from("analyses")
+        .update({
+          status: "completed",
+          final_score: results.finalScore,
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", analysis.id);
+
+      // Record the synthesis response (step 3 typically)
+      await supabase.from("analysis_responses").insert({
+        analysis_id: analysis.id,
+        provider: "orchestrator", // or 'synthesis'
+        step: "v3_synthesis",
+        result: results,
+        score: results.finalScore,
+      });
+      console.log("Analysis complete and persisted.");
+
+      return NextResponse.json({
+        success: true,
+        analysisId: analysis.id, // Return ID for redirection
+        results: AnalysisOrchestrator.formatForDatabase(analysis.id, results), // Format if needed, or just return results
+        finalScore: results.finalScore,
+      });
+    } catch (pipelineError) {
+      console.error("Pipeline execution failed:", pipelineError);
+
+      // Update DB to failed state
+      await supabase
+        .from("analyses")
+        .update({
+          status: "failed",
+          // We might want to store the error message somewhere if schema allows,
+          // but for now status failure is enough to stop the UI hanging.
+        })
+        .eq("id", analysis.id);
+
+      throw pipelineError; // Re-throw to be caught by outer catch for generic error response
+    }
   } catch (error) {
     console.error("Contract analysis error:", error);
-    return NextResponse.json({ error: "Analysis failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Analysis failed: " + (error as Error).message },
+      { status: 500 },
+    );
   }
 }

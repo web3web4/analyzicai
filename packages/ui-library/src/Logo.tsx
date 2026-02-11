@@ -11,24 +11,24 @@ export interface LogoProps {
 
 const sizeClasses = {
   sm: {
-    container: "w-8 h-8 rounded-lg",
-    letter: "text-sm",
-    text: "text-base",
+    container: "w-12 h-12 p-0 rounded-xl",
+    prefixSize: "small",
+    suffixSize: "small",
   },
   md: {
-    container: "w-10 h-10 rounded-xl",
-    letter: "text-lg",
-    text: "text-xl",
+    container: "w-16 h-16 p-1 rounded-xl",
+    prefixSize: "large",
+    suffixSize: "large",
   },
   lg: {
-    container: "w-12 h-12 rounded-xl",
-    letter: "text-xl",
-    text: "text-2xl",
+    container: "w-22 h-22 p-2 rounded-xl",
+    prefixSize: "x-large",
+    suffixSize: "x-large",
   },
 };
 
 export function Logo({
-  size = "sm",
+  size = "md",
   className = "",
   prefix = "UXic",
   suffix = "AI",
@@ -38,26 +38,20 @@ export function Logo({
   return (
     <div className={`flex flex-col items-center gap-1 ${className}`}>
       <div
-        className={`rounded-xl bg-surface-light font-extrabold flex items-center justify-center 
+        className={`bg-surface-light font-sans font-black leading-normal flex items-center justify-center 
                 shadow-[0px_0px_5px_rgba(200,220,255,1)]
-                text-shadow-[2px_2px_6px_rgba(0,0,0,1)] ${
-                  size === "lg"
-                    ? "w-16 h-16 p-2"
-                    : size === "md"
-                      ? "w-13 h-13 p-1"
-                      : "w-12 h-12 p-1"
-                }`}
+                text-shadow-[2px_2px_6px_rgba(0,0,0,1)] ${classes.container}`}
       >
-        <div className="flex flex-col items-center leading-none">
+        <div className="flex flex-col items-center">
           <div
-            className="text-primary uppercase tracking-tighter"
-            style={{ fontSize: size === "lg" ? "1.2rem" : "0.9rem" }}
+            className="text-primary font-black"
+            style={{ fontSize: classes.prefixSize }}
           >
             {prefix}
           </div>
           <div
-            className="text-brand-web4-purple uppercase tracking-widest"
-            style={{ fontSize: size === "lg" ? "1rem" : "0.7rem" }}
+            className="text-brand-web4-purple font-black tracking-widest"
+            style={{ fontSize: classes.suffixSize }}
           >
             {suffix}
           </div>

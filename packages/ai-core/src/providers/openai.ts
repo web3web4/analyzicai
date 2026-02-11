@@ -26,7 +26,7 @@ export class OpenAIProvider<
     if (config.model) {
       this.model = config.model;
     } else {
-      const tier = config.modelTier || "tier2"; // Default to moderate tier
+      const tier = config.modelTier || "tier1"; // Default to cheapest tier
       const tierMap = {
         tier1: process.env.OPENAI_MODEL_TIER_1,
         tier2: process.env.OPENAI_MODEL_TIER_2,
@@ -77,7 +77,8 @@ export class OpenAIProvider<
     const requestBody: Record<string, unknown> = {
       model: this.model,
       messages,
-      max_completion_tokens: 8192,
+      // GPT-5 models use max_completion_tokens instead of max_tokens
+      max_completion_tokens: 4096,
     };
 
     // Only add response_format if no images (vision models don't support it)
