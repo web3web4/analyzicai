@@ -24,11 +24,11 @@ export type {
   WebsiteContext,
 } from "./domains/ux-analysis/types";
 export { analysisResultSchema } from "./domains/ux-analysis/types";
+export { buildContextPrompt as buildUXContextPrompt } from "./domains/ux-analysis/prompts";
 export {
-  buildContextPrompt as buildUXContextPrompt,
+  getTemplates as getUXTemplates,
   buildPrompt as buildUXPrompt,
-} from "./domains/ux-analysis/prompts";
-export { getTemplates as getUXTemplates } from "./domains/ux-analysis/prompts/templates";
+} from "./domains/ux-analysis/prompts/templates";
 
 // Re-export contract analysis domain (with Contract prefix where needed)
 export type {
