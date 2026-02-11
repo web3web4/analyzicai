@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/DashboardHeader";
-import { MultiSelectButtonGroup } from "@/components/MultiSelectButtonGroup";
-import { BusinessSectorSelector } from "@/components/BusinessSectorSelector";
+import {
+  MultiSelectButtonGroup,
+  BusinessSectorSelector,
+} from "@web3web4/ui-library";
 import { getProviderTierOptions } from "@web3web4/ai-core/model-tiers";
 
 type SourceType = "upload" | "screen_capture";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@web3web4/ui-library";
 
 export default function Home() {
   return (

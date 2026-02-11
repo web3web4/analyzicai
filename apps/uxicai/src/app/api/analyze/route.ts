@@ -2,7 +2,14 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
-import { AIProvider } from "@web3web4/ai-core";
+import {
+  AIProvider,
+  analysisResultSchema,
+  AnalysisOrchestrator,
+  getUXTemplates,
+  buildUXContextPrompt,
+  buildUXPrompt,
+} from "@web3web4/ai-core";
 
 const analyzeRequestSchema = z.object({
   analysisId: z.string().uuid(),
@@ -154,8 +161,6 @@ export async function POST(request: NextRequest) {
     try {
       // Initialize orchestrator with API keys and per-provider model tiers
       // Prioritize user-provided keys, fall back to server keys
-      const { AnalysisOrchestrator } =
-        await import("@/lib/ai-core/orchestrator");
       const orchestrator = new AnalysisOrchestrator({
         apiKeys: {
           openai: userApiKeys?.openai || process.env.OPENAI_API_KEY,
@@ -163,6 +168,7 @@ export async function POST(request: NextRequest) {
           anthropic: userApiKeys?.anthropic || process.env.ANTHROPIC_API_KEY,
         },
         providerModelTiers,
+        schema: analysisResultSchema,
       });
 
       // Update status and track if using user keys
@@ -174,15 +180,26 @@ export async function POST(request: NextRequest) {
         })
         .eq("id", analysisId);
 
+      // Prepare templates and context
+      // Note: getUXTemplates is now synchronous as per original implementation
+      const imageCount = imagesBase64.length;
+      // Cast to any to bypass strict type checking for now, as the structure is compatible at runtime
+      // The Orchestrator expects { initial: { systemPrompt, userPromptTemplate }, ... }
+      // and getUXTemplates returns Record<string, PromptTemplate> where PromptTemplate has those fields
+      const templates = getUXTemplates(imageCount) as any;
+      const systemSuffix = buildUXContextPrompt(websiteContext);
+
       const results = await orchestrator.runPipeline(
         {
           providers,
           masterProvider,
         },
+        templates,
+        {
+          systemSuffix,
+          userVars: { imageCount },
+        },
         imagesBase64,
-        websiteContext as
-          | import("@/lib/ai-domains/ux-analysis/types").WebsiteContext
-          | undefined,
       );
 
       console.log("[API] Pipeline completed", {

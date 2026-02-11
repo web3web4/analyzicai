@@ -1,3 +1,5 @@
+import { z } from "zod";
+import { BaseAnalysisResult } from "../types";
 import { BaseAIProvider, AIProviderConfig } from "../base-provider";
 
 interface OpenAIVisionMessage {
@@ -11,12 +13,14 @@ interface OpenAIVisionMessage {
       }>;
 }
 
-export class OpenAIProvider extends BaseAIProvider {
+export class OpenAIProvider<
+  TResult extends BaseAnalysisResult,
+> extends BaseAIProvider<TResult> {
   private baseUrl = "https://api.openai.com/v1";
   private model: string;
 
-  constructor(config: AIProviderConfig) {
-    super("openai", config);
+  constructor(config: AIProviderConfig, schema: z.ZodSchema<TResult>) {
+    super("openai", config, schema);
 
     // Determine model from tier selection or explicit model override
     if (config.model) {
@@ -95,9 +99,12 @@ export class OpenAIProvider extends BaseAIProvider {
       throw new Error(`OpenAI API error: ${response.status} - ${error}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+      usage?: { total_tokens?: number };
+    };
     return {
-      content: data.choices[0]?.message?.content || "",
+      content: data.choices?.[0]?.message?.content || "",
       tokensUsed: data.usage?.total_tokens || 0,
     };
   }

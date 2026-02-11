@@ -10,6 +10,9 @@ export { OpenAIProvider } from "./providers/openai";
 export { GeminiProvider } from "./providers/gemini";
 export { AnthropicProvider } from "./providers/anthropic";
 
+// Core types
+export type { AIProvider } from "./types";
+
 // Re-export UX analysis domain (with UX prefix where needed)
 export type {
   AIProvider as UXAIProvider,

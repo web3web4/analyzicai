@@ -1,17 +1,23 @@
-import {
-  AnalysisResult,
-  analysisResultSchema,
-  ModelTier,
-} from "./domains/ux-analysis/types";
+import { z } from "zod";
+import { BaseAnalysisResult } from "./types";
+import { ModelTier } from "./domains/ux-analysis/types"; // Keep ModelTier for now, or move it to generic types
 
 // Conditionally import Node.js modules only in server environments to prevent client-side bundling issues
 let fs: typeof import("fs") | null = null;
 let path: typeof import("path") | null = null;
 
 // Import fs/path dynamically in Node.js environments only
-if (typeof window === "undefined" && typeof process !== "undefined") {
-  fs = require("fs");
-  path = require("path");
+if (
+  typeof process !== "undefined" &&
+  process.versions &&
+  process.versions.node
+) {
+  try {
+    fs = require("fs");
+    path = require("path");
+  } catch (e) {
+    // Ignore errors in non-Node environments
+  }
 }
 
 export interface AIProviderConfig {
@@ -20,14 +26,20 @@ export interface AIProviderConfig {
   modelTier?: ModelTier; // Optional tier selection
 }
 
-export abstract class BaseAIProvider {
+export abstract class BaseAIProvider<TResult extends BaseAnalysisResult> {
   protected name: string;
   protected config: AIProviderConfig;
+  protected schema: z.ZodSchema<TResult>;
   private logDir?: string;
 
-  constructor(name: string, config: AIProviderConfig) {
+  constructor(
+    name: string,
+    config: AIProviderConfig,
+    schema: z.ZodSchema<TResult>,
+  ) {
     this.name = name;
     this.config = config;
+    this.schema = schema;
 
     // Set up logging directory if enabled (ENABLE_API_LOGGING=true)
     if (process.env.ENABLE_API_LOGGING === "true" && fs && path) {
@@ -339,7 +351,7 @@ export abstract class BaseAIProvider {
     userPrompt: string,
     imagesBase64?: string[],
   ): Promise<{
-    result: AnalysisResult;
+    result: TResult;
     tokensUsed: number;
     latencyMs: number;
   }> {
@@ -356,7 +368,7 @@ export abstract class BaseAIProvider {
         string,
         unknown
       >;
-      const result = analysisResultSchema.parse({
+      const result = this.schema.parse({
         ...parsed,
         provider: this.name,
       });
@@ -407,7 +419,7 @@ export abstract class BaseAIProvider {
     userPrompt: string,
     imagesBase64?: string[],
   ): Promise<{
-    result: AnalysisResult;
+    result: TResult;
     tokensUsed: number;
     latencyMs: number;
   }> {
@@ -422,11 +434,11 @@ export abstract class BaseAIProvider {
   async rethink(
     systemPrompt: string,
     userPrompt: string,
-    previousResult: AnalysisResult,
-    otherResults: AnalysisResult[],
+    previousResult: TResult,
+    otherResults: TResult[],
     imagesBase64?: string[],
   ): Promise<{
-    result: AnalysisResult;
+    result: TResult;
     tokensUsed: number;
     latencyMs: number;
   }> {
@@ -453,10 +465,10 @@ Based on these other perspectives, reconsider your analysis. Where do you agree 
   async synthesize(
     systemPrompt: string,
     userPrompt: string,
-    allResults: AnalysisResult[],
+    allResults: TResult[],
     imagesBase64?: string[],
   ): Promise<{
-    result: AnalysisResult;
+    result: TResult;
     tokensUsed: number;
     latencyMs: number;
   }> {

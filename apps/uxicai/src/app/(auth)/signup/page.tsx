@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@web3web4/ui-library";
 
 type SocialProvider =
   | "github"
