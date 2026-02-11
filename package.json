@@ -1,11 +1,12 @@
 {
-  "name": "@web3web4/monorepo",
-  "version": "0.1.0",
+  "name": "uxic-monorepo",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter uxicai dev",
-    "build": "pnpm --filter uxicai build",
-    "lint": "pnpm --filter uxicai lint",
-    "test": "pnpm --filter uxicai test"
+    "dev": "pnpm --parallel --filter uxicai --filter solidic-frontend dev",
+    "dev:uxic": "pnpm --filter uxicai dev",
+    "dev:solidic": "pnpm --filter solidic-frontend dev --port 3001",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck"
   }
 }
