@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
 export default function Home() {
   return (
@@ -15,14 +16,14 @@ export default function Home() {
         </div>
 
         <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-2">
-            <div className="w-22 h-22 rounded-xl bg-surface-light font-extrabold text-3xl flex flex-col items-center justify-center shadow-[0px_0px_9px_rgba(200,220,255,1)]">
-              <div className="text-primary text-shadow-[2px_2px_9px_rgba(0,0,0,1)]">
-                UXic
+          <div className="flex items-center gap-3">
+            <Logo size="md" />
+            <div className="h-8 w-[1px] bg-border mx-1 hidden md:block" />
+            <div className="hidden md:block">
+              <div className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">
+                AnalyzicAI Ecosystem
               </div>
-              <div className="text-brand-web4-purple text-shadow-[2px_2px_9px_rgba(0,0,0,1)]">
-                AI
-              </div>
+              <div className="text-sm font-semibold">UXicAI.com</div>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -195,22 +196,79 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-4 px-4 border-t border-border">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div
-              className="w-13 h-13 rounded-xl bg-surface-light font-extrabold flex flex-col items-center justify-center 
-              shadow-[0px_0px_5px_rgba(200,220,255,1)]
-              text-shadow-[2px_2px_6px_rgba(0,0,0,1)]"
-            >
-              <div className="text-primary">UXic</div>
-              <div className="text-brand-web4-purple">AI</div>
+      <footer className="py-12 px-6 border-t border-border bg-surface">
+        <div className="max-w-7xl mx-auto md:items-start lg:items-start flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
+          <div className="flex flex-col md:flex-row gap-6 max-w-2xl">
+            <Logo size="lg" />
+            <div className="flex flex-col gap-1">
+              <div className="text-sm text-muted">
+                AI-powered UI/UX analysis
+              </div>
+              <div className="text-sm text-muted-foreground">
+                An AnalyzicAI product
+              </div>
             </div>
           </div>
-          <p className="text-sm text-muted">
-            © 2026 UXicAI. All rights reserved.
-          </p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 w-full lg:w-auto">
+            <div className="space-y-4">
+              <h4 className="font-bold text-foreground">Product</h4>
+              <ul className="space-y-2.5 text-sm text-muted">
+                <li>
+                  <Link
+                    href="#features"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/pricing"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Pricing
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <h4 className="font-bold text-foreground">Ecosystem</h4>
+              <ul className="space-y-2.5 text-sm text-muted">
+                <li>
+                  <Link
+                    href="https://analyzicai.com"
+                    target="_blank"
+                    className="hover:text-primary transition-colors"
+                  >
+                    AnalyzicAI.com
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://solidicai.com"
+                    target="_blank"
+                    className="hover:text-primary transition-colors"
+                  >
+                    SolidicAI.com
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="space-y-4 col-span-2 md:col-span-1">
+              <h4 className="font-bold text-foreground">Developed by</h4>
+              <ul className="space-y-2.5 text-sm text-muted">
+                <li>
+                  <Link
+                    href="https://web3web4.com"
+                    target="_blank"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Web3Web4.com
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

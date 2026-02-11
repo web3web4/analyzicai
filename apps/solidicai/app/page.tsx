@@ -2,15 +2,26 @@ export default function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="max-w-4xl mx-auto p-8 text-center">
-        <h1 className="text-6xl font-bold text-white mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
+          <span className="text-xs font-bold text-purple-400 uppercase tracking-widest">
+            AnalyzicAI Ecosystem
+          </span>
+        </div>
+
+        <h1 className="text-6xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
           SolidicAI
         </h1>
+        <div className="text-sm font-bold text-gray-500 uppercase tracking-[0.2em] mb-8">
+          by Web3Web4.com
+        </div>
+
         <p className="text-2xl text-gray-300 mb-8">
           AI-Powered Smart Contract Security & Gas Optimization
         </p>
         <p className="text-lg text-gray-400 mb-12">
-          Analyze your contract for vulnerabilities and gas inefficiencies using
-          multi-provider AI consensus
+          Comprehensive analysis powered by multi-provider AI consensus. Part of
+          the <span className="text-white font-semibold">AnalyzicAI</span>{" "}
+          family.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -56,8 +67,34 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="mt-16 text-sm text-gray-500">
-          <p>Powered by @web3web4/ai-core • Built on Next.js</p>
+        <div className="mt-20 pt-10 border-t border-white/10 w-full text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <span className="text-white font-bold tracking-tight">
+              SolidicAI.com
+            </span>
+            <span>An AnalyzicAI Product by Web3Web4</span>
+          </div>
+          <div className="flex gap-8">
+            <a
+              href="https://analyzicai.com"
+              className="hover:text-white transition-colors"
+            >
+              AnalyzicAI.com
+            </a>
+            <a
+              href="https://uxicai.com"
+              className="hover:text-white transition-colors"
+            >
+              UXicAI.com
+            </a>
+            <a
+              href="https://web3web4.com"
+              className="hover:text-white transition-colors"
+            >
+              Web3Web4.com
+            </a>
+          </div>
+          <p>© 2026 SolidicAI. All rights reserved.</p>
         </div>
       </div>
     </div>

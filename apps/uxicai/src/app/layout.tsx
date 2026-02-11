@@ -13,20 +13,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UXicAI - AI-Powered UI/UX Analysis",
+  title: "UXicAI - AnalyzicAI Ecosystem by Web3Web4",
   description:
-    "Analyze your UI/UX with multiple AI vision models. Get comprehensive design feedback powered by OpenAI, Gemini, and Claude.",
+    "AI-Powered UI/UX Analysis. Part of the AnalyzicAI ecosystem by Web3Web4.com. Get comprehensive design feedback powered by OpenAI, Gemini, and Claude.",
   keywords: [
+    "UXicAI",
+    "AnalyzicAI",
+    "Web3Web4",
     "UI/UX",
     "AI analysis",
     "design feedback",
-    "accessibility",
-    "web design",
   ],
   openGraph: {
     title: "UXicAI - AI-Powered UI/UX Analysis",
     description:
-      "Get comprehensive design feedback powered by multiple AI vision models.",
+      "AnalyzicAI ecosystem product by Web3Web4.com. Get comprehensive design feedback.",
     type: "website",
   },
 };

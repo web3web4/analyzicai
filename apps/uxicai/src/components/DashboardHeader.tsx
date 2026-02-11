@@ -1,19 +1,32 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { MobileNav } from "@/components/MobileNav";
 
 export function DashboardHeader() {
   return (
-    <header className="border-b border-border">
+    <header className="border-b border-border relative">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <Logo />
-
-          <div className="text-white px-4 text-shadow-[2px_2px_9px_rgba(0,0,0,1)]">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2">
+            <Logo size="md" />
+          </Link>
+          <div className="h-8 w-[1px] bg-border hidden md:block" />
+          <Link
+            href="/dashboard"
+            className="hidden md:block hover:text-foreground transition-colors"
+          >
             Dashboard
-          </div>
-        </Link>
+          </Link>
+        </div>
 
-        <nav className="flex items-center gap-6">
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-6">
+          <Link
+            href="/"
+            className="text-muted hover:text-foreground transition-colors"
+          >
+            Home
+          </Link>
           <Link
             href="/dashboard"
             className="text-muted hover:text-foreground transition-colors"
@@ -41,6 +54,9 @@ export function DashboardHeader() {
             </button>
           </form>
         </nav>
+
+        {/* Mobile Navigation */}
+        <MobileNav />
       </div>
     </header>
   );

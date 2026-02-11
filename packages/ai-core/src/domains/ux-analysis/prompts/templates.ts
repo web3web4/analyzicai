@@ -15,7 +15,7 @@ const CATEGORIES_DESCRIPTION = `You evaluate designs across 8 key categories:
 5. Accessibility - WCAG compliance, inclusive design
 6. Visual Hierarchy - Information prioritization, focal points
 7. Whitespace - Breathing room, clutter management
-8. Consistency - Design system adherence, pattern reuse`;
+8. Consistency - Pattern reuse, and design system adherence if provided`;
 
 export const INITIAL_SYSTEM_PROMPT = `You are an expert UI/UX analyst specializing in visual design evaluation. Your task is to analyze screenshots of user interfaces and provide comprehensive but concise, actionable feedback.
 

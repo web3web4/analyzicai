@@ -29,13 +29,18 @@ export function Logo({ size = "sm", className = "" }: LogoProps) {
   const classes = sizeClasses[size];
 
   return (
-    <div
-      className="w-13 h-13 rounded-xl bg-surface-light font-extrabold flex flex-col items-center justify-center 
-              shadow-[0px_0px_5px_rgba(200,220,255,1)]
-              text-shadow-[2px_2px_6px_rgba(0,0,0,1)]"
-    >
-      <div className="text-primary">UXic</div>
-      <div className="text-brand-web4-purple">AI</div>
+    <div className={`flex flex-col items-center gap-1 ${className}`}>
+      <div
+        className="w-13 h-13 rounded-xl bg-surface-light font-extrabold flex flex-col items-center justify-center 
+                shadow-[0px_0px_5px_rgba(200,220,255,1)]
+                text-shadow-[2px_2px_6px_rgba(0,0,0,1)]"
+      >
+        <div className="text-primary">UXic</div>
+        <div className="text-brand-web4-purple">AI</div>
+      </div>
+      <div className="text-[10px] tracking-widest text-muted font-bold">
+        Web3Web4
+      </div>
     </div>
   );
 }

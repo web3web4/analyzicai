@@ -1,11 +1,11 @@
 {
-  "name": "uxic-monorepo",
+  "name": "analyzic-monorepo",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm --parallel --filter uxicai --filter solidic-frontend dev",
+    "dev": "pnpm --parallel --filter uxicai --filter solidicai dev",
     "dev:uxic": "pnpm --filter uxicai dev",
-    "dev:solidic": "pnpm --filter solidic-frontend dev --port 3001",
+    "dev:solidic": "pnpm --filter solidicai dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck"
   }

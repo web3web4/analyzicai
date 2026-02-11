@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm run supabase:ensure && next dev",
+    "dev": "pnpm run supabase:ensure && next dev --port 3000",
     "build": "pnpm run supabase:ensure && next build",
     "start": "pnpm run supabase:ensure && next start",
     "lint": "eslint",
