@@ -2,7 +2,7 @@ import {
   AnalysisResult,
   analysisResultSchema,
   ModelTier,
-} from "../ai-domains/ux-analysis/types";
+} from "./domains/ux-analysis/types";
 
 // Conditionally import Node.js modules only in server environments to prevent client-side bundling issues
 let fs: typeof import("fs") | null = null;

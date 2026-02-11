@@ -17,7 +17,8 @@
   },
   "peerDependencies": {
     "react": "^19",
-    "next": "^16"
+    "next": "^16",
+    "zod": "^4"
   },
   "devDependencies": {
     "@types/node": "^20",

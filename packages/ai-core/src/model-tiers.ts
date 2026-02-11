@@ -4,7 +4,8 @@
  * This avoids env var duplication while showing actual names to users
  */
 
-import { ModelTier } from "../ai-domains/ux-analysis/types";
+// Generic model tier type - consumers provide their own ModelTier type
+export type ModelTier = "tier1" | "tier2" | "tier3";
 
 type AIProvider = "openai" | "gemini" | "anthropic";
 
