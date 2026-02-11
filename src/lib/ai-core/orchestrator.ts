@@ -3,12 +3,15 @@ import {
   AnalysisResult,
   AnalysisConfig,
   SynthesizedResult,
-} from "./types";
+} from "../ai-domains/ux-analysis/types";
 import { BaseAIProvider } from "./base-provider";
 import { OpenAIProvider } from "./providers/openai";
 import { GeminiProvider } from "./providers/gemini";
 import { AnthropicProvider } from "./providers/anthropic";
-import { getTemplates, buildPrompt } from "./prompts/templates";
+import {
+  getTemplates,
+  buildPrompt,
+} from "../ai-domains/ux-analysis/prompts/templates";
 
 interface ProviderError {
   provider: AIProvider;
@@ -40,7 +43,10 @@ export class AnalysisOrchestrator {
 
   constructor(options: {
     apiKeys: { openai?: string; gemini?: string; anthropic?: string };
-    providerModelTiers?: Record<AIProvider, import("./types").ModelTier>;
+    providerModelTiers?: Record<
+      AIProvider,
+      import("../ai-domains/ux-analysis/types").ModelTier
+    >;
   }) {
     this.providers = new Map();
 
@@ -126,7 +132,7 @@ export class AnalysisOrchestrator {
   private async runStep1InitialAnalysis(
     config: AnalysisConfig,
     imagesBase64?: string[],
-    websiteContext?: import("./types").WebsiteContext,
+    websiteContext?: import("../ai-domains/ux-analysis/types").WebsiteContext,
     onProgress?: (step: string, detail: string) => void,
   ): Promise<{
     results: Map<
@@ -150,7 +156,8 @@ export class AnalysisOrchestrator {
     const errors: ProviderError[] = [];
 
     // Build prompts with image count and context injected
-    const { buildContextPrompt } = await import("./prompts");
+    const { buildContextPrompt } =
+      await import("../ai-domains/ux-analysis/prompts");
     const contextEnhancement = buildContextPrompt(websiteContext);
     const systemPrompt = templates.initial.systemPrompt + contextEnhancement;
     const userPrompt = buildPrompt(templates.initial.userPromptTemplate, {
@@ -316,7 +323,7 @@ export class AnalysisOrchestrator {
   async runPipeline(
     config: AnalysisConfig,
     imagesBase64?: string[],
-    websiteContext?: import("./types").WebsiteContext,
+    websiteContext?: import("../ai-domains/ux-analysis/types").WebsiteContext,
     onProgress?: (step: string, detail: string) => void,
   ): Promise<OrchestratorResult> {
     // Validate providers

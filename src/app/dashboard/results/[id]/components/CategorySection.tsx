@@ -1,6 +1,6 @@
 "use client";
 
-import type { CategoryScore } from "@/lib/ai/types";
+import type { CategoryScore } from "@/lib/ai-domains/ux-analysis/types";
 import { CategoryCard } from "./CategoryCard";
 import { CategoryRadarChart } from "./CategoryRadarChart";
 import { ProviderAgreementView } from "./ProviderAgreementView";

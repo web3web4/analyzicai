@@ -8,7 +8,7 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import type { CategoryScore } from "@/lib/ai/types";
+import type { CategoryScore } from "@/lib/ai-domains/ux-analysis/types";
 import { formatCategoryName } from "../lib/utils";
 
 interface CategoryRadarChartProps {

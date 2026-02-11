@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
-import type { SynthesizedResult } from "@/lib/ai/types";
+import type { SynthesizedResult } from "@/lib/ai-domains/ux-analysis/types";
 import { ResultsHeader } from "./components/ResultsHeader";
 import { ScoreOverview } from "./components/ScoreOverview";
 import { ResultsContent } from "./components/ResultsContent";

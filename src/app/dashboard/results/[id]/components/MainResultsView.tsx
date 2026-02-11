@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { SynthesizedResult } from "@/lib/ai/types";
+import type { SynthesizedResult } from "@/lib/ai-domains/ux-analysis/types";
 import { CategorySection } from "./CategorySection";
 import { RecommendationsSection } from "./RecommendationsSection";
 import { sortRecommendationsBySeverity } from "../lib/utils";

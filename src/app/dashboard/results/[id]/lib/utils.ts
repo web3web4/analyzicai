@@ -1,5 +1,5 @@
 import { CATEGORY_LABELS, SEVERITY_STYLES, SCORE_THRESHOLDS } from "./constants";
-import type { Recommendation } from "@/lib/ai/types";
+import type { Recommendation } from "@/lib/ai-domains/ux-analysis/types";
 
 // Round score to integer for display
 // AI providers sometimes return decimal scores (e.g., 86.5)

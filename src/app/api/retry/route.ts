@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { AIProvider } from "@/lib/ai/types";
+import { AIProvider } from "@/lib/ai-domains/ux-analysis/types";
 
 const PROVIDER_INFO: Record<AIProvider, { name: string }> = {
   openai: { name: "OpenAI GPT" },
@@ -13,10 +13,14 @@ const retryRequestSchema = z.object({
   analysisId: z.string().uuid(),
   failedProviders: z.array(z.enum(["openai", "gemini", "anthropic"])),
   retryStep: z.enum(["v1_initial", "v3_synthesis"]),
-  retryProviders: z.array(z.object({
-    originalProvider: z.string(),
-    retryProvider: z.string(),
-  })).optional(),
+  retryProviders: z
+    .array(
+      z.object({
+        originalProvider: z.string(),
+        retryProvider: z.string(),
+      }),
+    )
+    .optional(),
   newMasterProvider: z.enum(["openai", "gemini", "anthropic"]).optional(),
 });
 
@@ -33,7 +37,13 @@ export async function POST(request: NextRequest) {
 
     // Parse and validate request
     const body = await request.json();
-    const { analysisId, failedProviders, retryStep, retryProviders, newMasterProvider } = retryRequestSchema.parse(body);
+    const {
+      analysisId,
+      failedProviders,
+      retryStep,
+      retryProviders,
+      newMasterProvider,
+    } = retryRequestSchema.parse(body);
 
     // Get analysis record
     const { data: analysis, error: fetchError } = await supabase
@@ -56,7 +66,9 @@ export async function POST(request: NextRequest) {
       .select("*")
       .eq("analysis_id", analysisId);
 
-    console.log(`[Retry API] Retrying ${failedProviders.length} providers for analysis ${analysisId}`);
+    console.log(
+      `[Retry API] Retrying ${failedProviders.length} providers for analysis ${analysisId}`,
+    );
 
     // Get all images from storage
     const imagePaths = analysis.image_paths as string[];
@@ -82,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Initialize orchestrator
-    const { AnalysisOrchestrator } = await import("@/lib/ai/orchestrator");
+    const { AnalysisOrchestrator } = await import("@/lib/ai-core/orchestrator");
     const orchestrator = new AnalysisOrchestrator({
       apiKeys: {
         openai: process.env.OPENAI_API_KEY,
@@ -96,30 +108,39 @@ export async function POST(request: NextRequest) {
     try {
       if (retryStep === "v1_initial") {
         // Retry failed initial analyses (with optional provider substitution)
-        const { getTemplates, buildPrompt } = await import("@/lib/ai/prompts/templates");
+        const { getTemplates, buildPrompt } =
+          await import("@/lib/ai-domains/ux-analysis/prompts/templates");
         const imageCount = imagesBase64.length;
         const templates = getTemplates(imageCount);
         const systemPrompt = templates.initial.systemPrompt;
-        const userPrompt = buildPrompt(templates.initial.userPromptTemplate, { imageCount });
+        const userPrompt = buildPrompt(templates.initial.userPromptTemplate, {
+          imageCount,
+        });
 
         const newRecords = [];
-        
+
         // Build retry map: which provider to use for each failed provider
         const retryMap = new Map<string, string>();
         if (retryProviders && retryProviders.length > 0) {
-          retryProviders.forEach(config => {
+          retryProviders.forEach((config) => {
             retryMap.set(config.originalProvider, config.retryProvider);
           });
         } else {
           // Default: retry same providers
-          failedProviders.forEach(p => retryMap.set(p, p));
+          failedProviders.forEach((p) => retryMap.set(p, p));
         }
-        
+
         for (const [originalProvider, selectedProvider] of retryMap.entries()) {
           try {
-            const provider = orchestrator.getProvider(selectedProvider as AIProvider);
-            const result = await provider.analyze(systemPrompt, userPrompt, imagesBase64);
-            
+            const provider = orchestrator.getProvider(
+              selectedProvider as AIProvider,
+            );
+            const result = await provider.analyze(
+              systemPrompt,
+              userPrompt,
+              imagesBase64,
+            );
+
             newRecords.push({
               analysis_id: analysisId,
               provider: selectedProvider, // Store the actual provider used
@@ -129,10 +150,15 @@ export async function POST(request: NextRequest) {
               tokens_used: result.tokensUsed,
               latency_ms: result.latencyMs,
             });
-            
-            console.log(`[Retry API] Successfully retried ${originalProvider} using ${selectedProvider}`);
+
+            console.log(
+              `[Retry API] Successfully retried ${originalProvider} using ${selectedProvider}`,
+            );
           } catch (error) {
-            console.error(`[Retry API] Provider ${selectedProvider} (for ${originalProvider}) failed:`, error);
+            console.error(
+              `[Retry API] Provider ${selectedProvider} (for ${originalProvider}) failed:`,
+              error,
+            );
           }
         }
 
@@ -149,8 +175,10 @@ export async function POST(request: NextRequest) {
 
         for (const [originalProvider, selectedProvider] of retryMap.entries()) {
           // Only update if substitution was made AND the retry succeeded
-          if (originalProvider !== selectedProvider && 
-              newRecords.some(r => r.provider === selectedProvider)) {
+          if (
+            originalProvider !== selectedProvider &&
+            newRecords.some((r) => r.provider === selectedProvider)
+          ) {
             const index = updatedProviders.indexOf(originalProvider);
             if (index !== -1) {
               updatedProviders[index] = selectedProvider;
@@ -164,15 +192,20 @@ export async function POST(request: NextRequest) {
             .from("analyses")
             .update({ providers_used: updatedProviders })
             .eq("id", analysisId);
-          
+
           if (process.env.NODE_ENV !== "production") {
-            console.log(`[Retry API] Updated providers_used from`, originalProviders, "to", updatedProviders);
+            console.log(
+              `[Retry API] Updated providers_used from`,
+              originalProviders,
+              "to",
+              updatedProviders,
+            );
           }
         }
 
         // Now retry synthesis if we have enough providers
         const allV1Responses = [
-          ...(existingResponses?.filter(r => r.step === "v1_initial") || []),
+          ...(existingResponses?.filter((r) => r.step === "v1_initial") || []),
           ...newRecords,
         ];
 
@@ -185,15 +218,24 @@ export async function POST(request: NextRequest) {
             .eq("step", "v3_synthesis");
 
           // Retry synthesis
-          const { getTemplates, buildPrompt } = await import("@/lib/ai/prompts/templates");
+          const { getTemplates, buildPrompt } =
+            await import("@/lib/ai-domains/ux-analysis/prompts/templates");
           const templates = getTemplates(imagesBase64.length);
           const systemPrompt = templates.synthesis.systemPrompt;
-          const userPrompt = buildPrompt(templates.synthesis.userPromptTemplate, { imageCount: imagesBase64.length });
+          const userPrompt = buildPrompt(
+            templates.synthesis.userPromptTemplate,
+            { imageCount: imagesBase64.length },
+          );
 
           try {
             const provider = orchestrator.getProvider(masterProvider);
-            const allResults = allV1Responses.map(r => r.result);
-            const synthesisResult = await provider.synthesize(systemPrompt, userPrompt, allResults, imagesBase64);
+            const allResults = allV1Responses.map((r) => r.result);
+            const synthesisResult = await provider.synthesize(
+              systemPrompt,
+              userPrompt,
+              allResults,
+              imagesBase64,
+            );
 
             await supabase.from("analysis_responses").insert({
               analysis_id: analysisId,
@@ -217,7 +259,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({
               success: true,
               analysisId,
-              retriedProviders: newRecords.map(r => r.provider),
+              retriedProviders: newRecords.map((r) => r.provider),
               synthesisRetried: true,
               message: `Successfully retried with ${newRecords.length} provider(s) and synthesis`,
             });
@@ -229,15 +271,15 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           analysisId,
-          retriedProviders: newRecords.map(r => r.provider),
+          retriedProviders: newRecords.map((r) => r.provider),
           synthesisRetried: false,
           message: `Successfully retried ${newRecords.length} provider(s)`,
         });
-
       } else if (retryStep === "v3_synthesis") {
         // Retry only synthesis (with optional master provider change)
-        const v1Responses = existingResponses?.filter(r => r.step === "v1_initial") || [];
-        
+        const v1Responses =
+          existingResponses?.filter((r) => r.step === "v1_initial") || [];
+
         if (v1Responses.length === 0) {
           return NextResponse.json(
             { error: "No initial responses available for synthesis" },
@@ -247,8 +289,10 @@ export async function POST(request: NextRequest) {
 
         // Use new master provider if specified, otherwise use original
         const synthesisProvider = newMasterProvider || masterProvider;
-        
-        console.log(`[Retry API] Retrying synthesis with ${synthesisProvider} (original: ${masterProvider})`);
+
+        console.log(
+          `[Retry API] Retrying synthesis with ${synthesisProvider} (original: ${masterProvider})`,
+        );
 
         // Delete old synthesis attempt
         await supabase
@@ -257,14 +301,22 @@ export async function POST(request: NextRequest) {
           .eq("analysis_id", analysisId)
           .eq("step", "v3_synthesis");
 
-        const { getTemplates, buildPrompt } = await import("@/lib/ai/prompts/templates");
+        const { getTemplates, buildPrompt } =
+          await import("@/lib/ai-domains/ux-analysis/prompts/templates");
         const templates = getTemplates(imagesBase64.length);
         const systemPrompt = templates.synthesis.systemPrompt;
-        const userPrompt = buildPrompt(templates.synthesis.userPromptTemplate, { imageCount: imagesBase64.length });
+        const userPrompt = buildPrompt(templates.synthesis.userPromptTemplate, {
+          imageCount: imagesBase64.length,
+        });
 
         const provider = orchestrator.getProvider(synthesisProvider);
-        const allResults = v1Responses.map(r => r.result);
-        const synthesisResult = await provider.synthesize(systemPrompt, userPrompt, allResults, imagesBase64);
+        const allResults = v1Responses.map((r) => r.result);
+        const synthesisResult = await provider.synthesize(
+          systemPrompt,
+          userPrompt,
+          allResults,
+          imagesBase64,
+        );
 
         await supabase.from("analysis_responses").insert({
           analysis_id: analysisId,
@@ -281,19 +333,17 @@ export async function POST(request: NextRequest) {
           status: "completed",
           final_score: synthesisResult.result.overallScore,
         };
-        
+
         if (newMasterProvider && newMasterProvider !== masterProvider) {
           updateData.master_provider = newMasterProvider;
         }
 
-        await supabase
-          .from("analyses")
-          .update(updateData)
-          .eq("id", analysisId);
+        await supabase.from("analyses").update(updateData).eq("id", analysisId);
 
-        const message = newMasterProvider && newMasterProvider !== masterProvider
-          ? `Successfully retried synthesis with ${PROVIDER_INFO[newMasterProvider as AIProvider]?.name || newMasterProvider}`
-          : "Successfully retried synthesis";
+        const message =
+          newMasterProvider && newMasterProvider !== masterProvider
+            ? `Successfully retried synthesis with ${PROVIDER_INFO[newMasterProvider as AIProvider]?.name || newMasterProvider}`
+            : "Successfully retried synthesis";
 
         return NextResponse.json({
           success: true,
@@ -308,18 +358,17 @@ export async function POST(request: NextRequest) {
         { error: "Invalid retry step" },
         { status: 400 },
       );
-
     } catch (retryError) {
       console.error("[Retry API] Retry failed:", retryError);
       return NextResponse.json(
         {
           error: "Retry failed",
-          details: retryError instanceof Error ? retryError.message : "Unknown error",
+          details:
+            retryError instanceof Error ? retryError.message : "Unknown error",
         },
         { status: 500 },
       );
     }
-
   } catch (error) {
     console.error("Retry error:", error);
 

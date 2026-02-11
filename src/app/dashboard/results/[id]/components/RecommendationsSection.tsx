@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Recommendation } from "@/lib/ai/types";
+import type { Recommendation } from "@/lib/ai-domains/ux-analysis/types";
 import { RecommendationCard } from "./RecommendationCard";
 import {
   useFilteredRecommendations,

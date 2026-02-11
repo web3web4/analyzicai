@@ -1,4 +1,4 @@
-import type { SynthesizedResult, AnalysisResponseRecord } from "@/lib/ai/types";
+import type { SynthesizedResult, AnalysisResponseRecord } from "@/lib/ai-domains/ux-analysis/types";
 import { ScoreCircle } from "./ScoreCircle";
 import { StatsGrid } from "./StatsGrid";
 

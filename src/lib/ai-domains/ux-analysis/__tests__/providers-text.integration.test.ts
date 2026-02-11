@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
-import { OpenAIProvider } from "../providers/openai";
-import { AnthropicProvider } from "../providers/anthropic";
-import { GeminiProvider } from "../providers/gemini";
+import { OpenAIProvider } from "../../../ai-core/providers/openai";
+import { AnthropicProvider } from "../../../ai-core/providers/anthropic";
+import { GeminiProvider } from "../../../ai-core/providers/gemini";
 
 /**
  * Integration tests for text-only analysis (code review use case)

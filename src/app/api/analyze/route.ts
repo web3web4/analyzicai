@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
-import { AIProvider } from "@/lib/ai/types";
+import { AIProvider } from "@/lib/ai-domains/ux-analysis/types";
 
 const analyzeRequestSchema = z.object({
   analysisId: z.string().uuid(),
@@ -154,7 +154,8 @@ export async function POST(request: NextRequest) {
     try {
       // Initialize orchestrator with API keys and per-provider model tiers
       // Prioritize user-provided keys, fall back to server keys
-      const { AnalysisOrchestrator } = await import("@/lib/ai/orchestrator");
+      const { AnalysisOrchestrator } =
+        await import("@/lib/ai-core/orchestrator");
       const orchestrator = new AnalysisOrchestrator({
         apiKeys: {
           openai: userApiKeys?.openai || process.env.OPENAI_API_KEY,
@@ -179,7 +180,9 @@ export async function POST(request: NextRequest) {
           masterProvider,
         },
         imagesBase64,
-        websiteContext as import("@/lib/ai/types").WebsiteContext | undefined,
+        websiteContext as
+          | import("@/lib/ai-domains/ux-analysis/types").WebsiteContext
+          | undefined,
       );
 
       console.log("[API] Pipeline completed", {

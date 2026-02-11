@@ -1,4 +1,4 @@
-import type { Recommendation } from "@/lib/ai/types";
+import type { Recommendation } from "@/lib/ai-domains/ux-analysis/types";
 import { countBySeverity, calculateConsensusScore, formatDuration } from "../lib/utils";
 
 interface StatsGridProps {

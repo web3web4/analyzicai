@@ -5,7 +5,7 @@ import type {
   AnalysisResponseRecord,
   AnalysisResult,
   PerImageResult,
-} from "@/lib/ai/types";
+} from "@/lib/ai-domains/ux-analysis/types";
 import { CategoryCard } from "./CategoryCard";
 import { RecommendationCard } from "./RecommendationCard";
 import { formatDuration, roundScore } from "../lib/utils";

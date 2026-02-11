@@ -1,7 +1,7 @@
 import type {
   AnalysisResponseRecord,
   AnalysisResult,
-} from "@/lib/ai/types";
+} from "@/lib/ai-domains/ux-analysis/types";
 import { ProviderResponseCard } from "./ProviderResponseCard";
 import { roundScore } from "../lib/utils";
 

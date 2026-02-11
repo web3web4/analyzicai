@@ -1,4 +1,4 @@
-import type { Recommendation } from "@/lib/ai/types";
+import type { Recommendation } from "@/lib/ai-domains/ux-analysis/types";
 import { getSeverityStyles } from "../lib/utils";
 import { Badge } from "./Badge";
 

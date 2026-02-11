@@ -1,4 +1,4 @@
-import type { CategoryScore } from "@/lib/ai/types";
+import type { CategoryScore } from "@/lib/ai-domains/ux-analysis/types";
 import {
   formatCategoryName,
   getScoreColorClass,

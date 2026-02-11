@@ -1,6 +1,6 @@
 "use client";
 
-import type { PerImageResult, CategoryScore } from "@/lib/ai/types";
+import type { PerImageResult, CategoryScore } from "@/lib/ai-domains/ux-analysis/types";
 import { ScoreCircle } from "./ScoreCircle";
 import { CategoryCard } from "./CategoryCard";
 import { RecommendationCard } from "./RecommendationCard";

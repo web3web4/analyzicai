@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { MultiSelectButtonGroup } from "@/components/MultiSelectButtonGroup";
 import { BusinessSectorSelector } from "@/components/BusinessSectorSelector";
-import { getProviderTierOptions } from "@/lib/ai/model-tiers";
+import { getProviderTierOptions } from "@/lib/ai-core/model-tiers";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
@@ -53,7 +53,7 @@ export default function AnalyzePage() {
     gemini: "",
   });
   const [websiteContext, setWebsiteContext] = useState<
-    Partial<import("@/lib/ai/types").WebsiteContext>
+    Partial<import("@/lib/ai-domains/ux-analysis/types").WebsiteContext>
   >({
     targetAge: [],
     targetGender: [],

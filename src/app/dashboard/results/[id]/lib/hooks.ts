@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Recommendation } from "@/lib/ai/types";
+import type { Recommendation } from "@/lib/ai-domains/ux-analysis/types";
 
 export interface RecommendationFilters {
   severities: string[];

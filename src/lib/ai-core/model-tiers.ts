@@ -4,7 +4,7 @@
  * This avoids env var duplication while showing actual names to users
  */
 
-import { ModelTier } from "./types";
+import { ModelTier } from "../ai-domains/ux-analysis/types";
 
 type AIProvider = "openai" | "gemini" | "anthropic";
 

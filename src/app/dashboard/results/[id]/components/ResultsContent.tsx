@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { SynthesizedResult, AnalysisResponseRecord } from "@/lib/ai/types";
+import type { SynthesizedResult, AnalysisResponseRecord } from "@/lib/ai-domains/ux-analysis/types";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./Tabs";
 import { MainResultsView } from "./MainResultsView";
 import { ProviderDetailsView } from "./ProviderDetailsView";
