@@ -9,27 +9,29 @@ export function buildContextPrompt(context?: WebsiteContext): string {
 
   const parts: string[] = [];
 
-  if (context.targetAge.length > 0) {
+  if (context.targetAge && context.targetAge.length > 0) {
     parts.push(`Target audience age groups: ${context.targetAge.join(", ")}`);
   }
 
-  if (context.targetGender && context.targetGender !== "any") {
-    parts.push(`Primary gender audience: ${context.targetGender}`);
+  if (context.targetGender && context.targetGender.length > 0) {
+    parts.push(`Target gender audience: ${context.targetGender.join(", ")}`);
   }
 
-  if (context.educationLevel && context.educationLevel !== "any") {
-    parts.push(`Target education level: ${context.educationLevel}`);
+  if (context.educationLevel && context.educationLevel.length > 0) {
+    parts.push(`Target education level: ${context.educationLevel.join(", ")}`);
   }
 
-  if (context.incomeLevel && context.incomeLevel !== "any") {
-    parts.push(`Target income level: ${context.incomeLevel}`);
+  if (context.incomeLevel && context.incomeLevel.length > 0) {
+    parts.push(`Target income level: ${context.incomeLevel.join(", ")}`);
   }
 
-  if (context.techFriendliness && context.techFriendliness !== "any") {
-    parts.push(`User tech-friendliness: ${context.techFriendliness}`);
+  if (context.techFriendliness && context.techFriendliness.length > 0) {
+    parts.push(
+      `User tech-friendliness: ${context.techFriendliness.join(", ")}`,
+    );
   }
 
-  if (context.businessSector.length > 0) {
+  if (context.businessSector && context.businessSector.length > 0) {
     parts.push(
       `Business sector/industry: ${context.businessSector.join(", ")}`,
     );

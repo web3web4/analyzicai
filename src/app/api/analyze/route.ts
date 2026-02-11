@@ -6,6 +6,10 @@ import { AIProvider } from "@/lib/ai/types";
 
 const analyzeRequestSchema = z.object({
   analysisId: z.string().uuid(),
+  providers: z.array(z.string()),
+  masterProvider: z.string(),
+  providerModelTiers: z.record(z.string(), z.enum(["tier1", "tier2", "tier3"])),
+  websiteContext: z.any().optional(),
   userApiKeys: z
     .object({
       openai: z.string().optional(),
@@ -41,7 +45,14 @@ export async function POST(request: NextRequest) {
 
     // Parse and validate request
     const body = await request.json();
-    const { analysisId, userApiKeys } = analyzeRequestSchema.parse(body);
+    const {
+      analysisId,
+      providers: requestProviders,
+      masterProvider: requestMasterProvider,
+      providerModelTiers,
+      websiteContext,
+      userApiKeys,
+    } = analyzeRequestSchema.parse(body);
 
     // Check if user provided any API keys
     const hasUserKeys = !!(
@@ -120,18 +131,17 @@ export async function POST(request: NextRequest) {
     );
 
     // Run AI analysis pipeline
-    const providers = analysis.providers_used as AIProvider[];
-    const masterProvider = analysis.master_provider as AIProvider;
-    const modelTier = analysis.model_tier as
-      | import("@/lib/ai/types").ModelTier
-      | undefined;
+    // Use providers from request (validated against DB)
+    const providers = requestProviders as AIProvider[];
+    const masterProvider = requestMasterProvider as AIProvider;
 
     console.log("[API] Starting analysis with config:", {
       analysisId,
       providers,
       masterProvider,
-      modelTier: modelTier || "tier2",
+      providerModelTiers,
       imageCount: imagesBase64.length,
+      hasWebsiteContext: !!websiteContext,
     });
 
     // Check API keys availability (without logging the actual keys)
@@ -142,7 +152,7 @@ export async function POST(request: NextRequest) {
     });
 
     try {
-      // Initialize orchestrator with API keys and model tier
+      // Initialize orchestrator with API keys and per-provider model tiers
       // Prioritize user-provided keys, fall back to server keys
       const { AnalysisOrchestrator } = await import("@/lib/ai/orchestrator");
       const orchestrator = new AnalysisOrchestrator({
@@ -151,7 +161,7 @@ export async function POST(request: NextRequest) {
           gemini: userApiKeys?.gemini || process.env.GEMINI_API_KEY,
           anthropic: userApiKeys?.anthropic || process.env.ANTHROPIC_API_KEY,
         },
-        modelTier,
+        providerModelTiers,
       });
 
       // Update status and track if using user keys
@@ -169,9 +179,7 @@ export async function POST(request: NextRequest) {
           masterProvider,
         },
         imagesBase64,
-        analysis.website_context as
-          | import("@/lib/ai/types").WebsiteContext
-          | undefined,
+        websiteContext as import("@/lib/ai/types").WebsiteContext | undefined,
       );
 
       console.log("[API] Pipeline completed", {

@@ -104,10 +104,10 @@ export interface AnalysisConfig {
 // Website context for tailored analysis
 export interface WebsiteContext {
   targetAge: Array<"kids" | "teenagers" | "middle_age" | "elderly">;
-  targetGender: "any" | "male" | "female" | "other";
-  educationLevel: "any" | "basic" | "high_school" | "college" | "advanced";
-  incomeLevel: "any" | "low" | "middle" | "high";
-  techFriendliness: "any" | "beginners" | "average" | "tech_savvy" | "geeks";
+  targetGender: Array<"male" | "female" | "other">; // Changed to array for multi-select
+  educationLevel: Array<"basic" | "high_school" | "college" | "advanced">; // Changed to array
+  incomeLevel: Array<"low" | "middle" | "high">; // Changed to array
+  techFriendliness: Array<"beginners" | "average" | "tech_savvy" | "geeks">; // Changed to array
   businessSector: string[]; // Free-form tags like "fintech", "ecommerce", "ai"
   additionalContext?: string; // Free-text field
 }

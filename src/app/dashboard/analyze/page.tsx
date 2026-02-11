@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import { MultiSelectButtonGroup } from "@/components/MultiSelectButtonGroup";
+import { BusinessSectorSelector } from "@/components/BusinessSectorSelector";
+import { getProviderTierOptions } from "@/lib/ai/model-tiers";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
@@ -28,11 +31,22 @@ export default function AnalyzePage() {
   const [images, setImages] = useState<ImageItem[]>([]);
   const [selectedProviders, setSelectedProviders] = useState<AIProvider[]>([
     "openai",
+    "gemini",
+    "anthropic",
   ]);
   const [masterProvider, setMasterProvider] = useState<AIProvider>(
     (process.env.NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER as AIProvider) || "openai",
   );
   const [modelTier, setModelTier] = useState<ModelTier>("tier2");
+
+  // Per-provider model tiers (new)
+  const [providerModelTiers, setProviderModelTiers] = useState<
+    Record<AIProvider, ModelTier>
+  >({
+    openai: "tier2",
+    gemini: "tier2",
+    anthropic: "tier2",
+  });
   const [userApiKeys, setUserApiKeys] = useState({
     openai: "",
     anthropic: "",
@@ -42,10 +56,10 @@ export default function AnalyzePage() {
     Partial<import("@/lib/ai/types").WebsiteContext>
   >({
     targetAge: [],
-    targetGender: "any",
-    educationLevel: "any",
-    incomeLevel: "any",
-    techFriendliness: "any",
+    targetGender: [],
+    educationLevel: [],
+    incomeLevel: [],
+    techFriendliness: [],
     businessSector: [],
   });
   const [sectorInput, setSectorInput] = useState("");
@@ -243,13 +257,28 @@ export default function AnalyzePage() {
   function toggleProvider(providerId: AIProvider) {
     setSelectedProviders((prev) => {
       if (prev.includes(providerId)) {
-        // Don't allow deselecting the master provider or last provider
-        if (providerId === masterProvider || prev.length === 1) {
+        // Don't allow deselecting the last provider
+        if (prev.length === 1) {
           return prev;
         }
-        return prev.filter((p) => p !== providerId);
+
+        const newProviders = prev.filter((p) => p !== providerId);
+
+        // If removing master, auto-assign to first remaining provider
+        if (providerId === masterProvider && newProviders.length > 0) {
+          setMasterProvider(newProviders[0]);
+        }
+
+        return newProviders;
       } else {
-        return [...prev, providerId];
+        const newProviders = [...prev, providerId];
+
+        // If adding first provider, make it master
+        if (prev.length === 0) {
+          setMasterProvider(providerId);
+        }
+
+        return newProviders;
       }
     });
   }
@@ -271,6 +300,43 @@ export default function AnalyzePage() {
       ? currentAges.filter((a) => a !== age)
       : [...currentAges, age];
     setWebsiteContext({ ...websiteContext, targetAge: newAges });
+  };
+
+  // Website context helpers - Multi-select toggles
+  const toggleGender = (gender: "male" | "female" | "other") => {
+    const current = websiteContext.targetGender || [];
+    const newGenders = current.includes(gender)
+      ? current.filter((g) => g !== gender)
+      : [...current, gender];
+    setWebsiteContext({ ...websiteContext, targetGender: newGenders });
+  };
+
+  const toggleEducation = (
+    edu: "basic" | "high_school" | "college" | "advanced",
+  ) => {
+    const current = websiteContext.educationLevel || [];
+    const newEdu = current.includes(edu)
+      ? current.filter((e) => e !== edu)
+      : [...current, edu];
+    setWebsiteContext({ ...websiteContext, educationLevel: newEdu });
+  };
+
+  const toggleIncome = (income: "low" | "middle" | "high") => {
+    const current = websiteContext.incomeLevel || [];
+    const newIncome = current.includes(income)
+      ? current.filter((i) => i !== income)
+      : [...current, income];
+    setWebsiteContext({ ...websiteContext, incomeLevel: newIncome });
+  };
+
+  const toggleTech = (
+    tech: "beginners" | "average" | "tech_savvy" | "geeks",
+  ) => {
+    const current = websiteContext.techFriendliness || [];
+    const newTech = current.includes(tech)
+      ? current.filter((t) => t !== tech)
+      : [...current, tech];
+    setWebsiteContext({ ...websiteContext, techFriendliness: newTech });
   };
 
   const handleSectorKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -334,6 +400,7 @@ export default function AnalyzePage() {
           );
         }
 
+        // Save the uploaded file path
         imagePaths.push(fileName);
       }
 
@@ -349,13 +416,6 @@ export default function AnalyzePage() {
           image_count: imagePaths.length,
           providers_used: selectedProviders,
           master_provider: masterProvider,
-          model_tier: modelTier,
-          website_context:
-            websiteContext.targetAge?.length! > 0 ||
-            websiteContext.businessSector?.length! > 0 ||
-            websiteContext.additionalContext
-              ? websiteContext
-              : null,
           status: "pending",
         })
         .select()
@@ -367,25 +427,28 @@ export default function AnalyzePage() {
 
       setUploadProgress("Starting analysis...");
 
-      // Trigger analysis via API with optional user keys
-      const hasUserKeys = !!(
-        userApiKeys.openai ||
-        userApiKeys.anthropic ||
-        userApiKeys.gemini
-      );
+      // Trigger analysis via API with per-provider model tiers
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           analysisId: analysis.id,
-          ...(hasUserKeys && {
-            userApiKeys: {
-              ...(userApiKeys.openai && { openai: userApiKeys.openai }),
-              ...(userApiKeys.anthropic && {
-                anthropic: userApiKeys.anthropic,
-              }),
-              ...(userApiKeys.gemini && { gemini: userApiKeys.gemini }),
-            },
+          providers: selectedProviders,
+          masterProvider,
+          providerModelTiers, // Use per-provider tiers
+          ...(userApiKeys.openai || userApiKeys.anthropic || userApiKeys.gemini
+            ? {
+                userApiKeys: {
+                  ...(userApiKeys.openai && { openai: userApiKeys.openai }),
+                  ...(userApiKeys.anthropic && {
+                    anthropic: userApiKeys.anthropic,
+                  }),
+                  ...(userApiKeys.gemini && { gemini: userApiKeys.gemini }),
+                },
+              }
+            : {}),
+          ...(Object.keys(websiteContext).length > 0 && {
+            websiteContext,
           }),
         }),
       });
@@ -531,95 +594,204 @@ export default function AnalyzePage() {
           )}
         </div>
 
+        {/* Website Context (Optional but Recommended) */}
+        <div className="glass-card rounded-2xl p-8 mb-8">
+          <h2 className="text-lg font-semibold mb-4">
+            2. Website Context (Optional but Recommended)
+          </h2>
+          <p className="text-muted text-sm mb-6">
+            Help us provide more targeted feedback by describing your website
+            and target audience. This information enhances the AI's
+            understanding of your specific use case.
+          </p>
+
+          <div className="space-y-6">
+            {/* Target Age Groups */}
+            <MultiSelectButtonGroup
+              label="Target Age Groups"
+              options={[
+                { id: "kids", label: "Kids" },
+                { id: "teenagers", label: "Teenagers" },
+                { id: "middle_age", label: "Middle Age" },
+                { id: "elderly", label: "Elderly" },
+              ]}
+              selectedValues={websiteContext.targetAge || []}
+              onToggle={toggleAgeGroup}
+              onSetAll={(values) =>
+                setWebsiteContext({ ...websiteContext, targetAge: values })
+              }
+            />
+
+            {/* Target Gender */}
+            <MultiSelectButtonGroup
+              label="Target Gender"
+              options={[
+                { id: "male", label: "Male" },
+                { id: "female", label: "Female" },
+                { id: "other", label: "Other" },
+              ]}
+              selectedValues={websiteContext.targetGender || []}
+              onToggle={toggleGender}
+              onSetAll={(values) =>
+                setWebsiteContext({ ...websiteContext, targetGender: values })
+              }
+            />
+
+            {/* Education Level */}
+            <MultiSelectButtonGroup
+              label="Education Level"
+              options={[
+                { id: "basic", label: "Basic" },
+                { id: "high_school", label: "High School" },
+                { id: "college", label: "College" },
+                { id: "advanced", label: "Advanced" },
+              ]}
+              selectedValues={websiteContext.educationLevel || []}
+              onToggle={toggleEducation}
+              onSetAll={(values) =>
+                setWebsiteContext({
+                  ...websiteContext,
+                  educationLevel: values,
+                })
+              }
+            />
+
+            {/* Income Level */}
+            <MultiSelectButtonGroup
+              label="Income Level"
+              options={[
+                { id: "low", label: "Low" },
+                { id: "middle", label: "Middle" },
+                { id: "high", label: "High" },
+              ]}
+              selectedValues={websiteContext.incomeLevel || []}
+              onToggle={toggleIncome}
+              onSetAll={(values) =>
+                setWebsiteContext({ ...websiteContext, incomeLevel: values })
+              }
+            />
+
+            {/* Tech Friendliness */}
+            <MultiSelectButtonGroup
+              label="Tech Friendliness"
+              options={[
+                { id: "beginners", label: "Beginners" },
+                { id: "average", label: "Average" },
+                { id: "tech_savvy", label: "Tech Savvy" },
+                { id: "geeks", label: "Geeks" },
+              ]}
+              selectedValues={websiteContext.techFriendliness || []}
+              onToggle={toggleTech}
+              onSetAll={(values) =>
+                setWebsiteContext({
+                  ...websiteContext,
+                  techFriendliness: values,
+                })
+              }
+            />
+
+            {/* Business Sector */}
+            <BusinessSectorSelector
+              selectedSectors={websiteContext.businessSector || []}
+              onAdd={(sector) =>
+                setWebsiteContext({
+                  ...websiteContext,
+                  businessSector: [
+                    ...(websiteContext.businessSector || []),
+                    sector,
+                  ],
+                })
+              }
+              onRemove={removeSector}
+            />
+
+            {/* Additional Context */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Additional Context
+              </label>
+              <textarea
+                value={websiteContext.additionalContext || ""}
+                onChange={(e) =>
+                  setWebsiteContext({
+                    ...websiteContext,
+                    additionalContext: e.target.value,
+                  })
+                }
+                placeholder="Any other relevant information about your website, target users, or specific concerns..."
+                rows={4}
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors resize-none text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Provider Selection */}
         <div className="glass-card rounded-2xl p-8 mb-8">
-          <h2 className="text-lg font-semibold mb-4">2. Select AI providers</h2>
+          <h2 className="text-lg font-semibold mb-4">3. Select AI providers</h2>
           <p className="text-muted text-sm mb-6">
             Choose which AI models to use. More providers = better analysis.
           </p>
 
           <div className="space-y-3">
             {providers.map((provider) => (
-              <label
+              <div
                 key={provider.id}
-                className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-colors ${
+                className={`p-4 rounded-xl border transition-colors ${
                   selectedProviders.includes(provider.id)
                     ? "border-primary bg-primary/10"
-                    : "border-border hover:border-border"
+                    : "border-border"
                 }`}
               >
-                <input
-                  type="checkbox"
-                  checked={selectedProviders.includes(provider.id)}
-                  onChange={() => toggleProvider(provider.id)}
-                  className="w-5 h-5 rounded accent-primary"
-                />
-                <div className="flex-1">
-                  <p className="font-medium">{provider.name}</p>
-                  <p className="text-sm text-muted">{provider.description}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted">Master:</span>
+                {/* Provider header with checkbox and master radio */}
+                <label className="flex items-center gap-4 cursor-pointer">
                   <input
-                    type="radio"
-                    name="master"
-                    checked={masterProvider === provider.id}
-                    onChange={() => handleMasterChange(provider.id)}
-                    className="w-4 h-4 accent-primary"
+                    type="checkbox"
+                    checked={selectedProviders.includes(provider.id)}
+                    onChange={() => toggleProvider(provider.id)}
+                    className="w-5 h-5 rounded accent-primary"
                   />
-                </div>
-              </label>
-            ))}
-          </div>
-        </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{provider.name}</p>
+                    <p className="text-sm text-muted">{provider.description}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted">Master:</span>
+                    <input
+                      type="radio"
+                      name="master"
+                      checked={masterProvider === provider.id}
+                      onChange={() => handleMasterChange(provider.id)}
+                      className="w-4 h-4 accent-primary"
+                    />
+                  </div>
+                </label>
 
-        {/* Model Tier Selection */}
-        <div className="glass-card rounded-2xl p-8 mb-8">
-          <h2 className="text-lg font-semibold mb-4">
-            3. Select Model Quality Tier
-          </h2>
-          <p className="text-muted text-sm mb-6">
-            Choose the quality/cost balance for your analysis.
-          </p>
-
-          <div className="space-y-3">
-            {[
-              {
-                id: "tier1" as ModelTier,
-                name: "Budget (Cheapest)",
-                description: "Fastest and most affordable",
-              },
-              {
-                id: "tier2" as ModelTier,
-                name: "Balanced (Moderate)",
-                description: "Best cost-to-quality ratio",
-              },
-              {
-                id: "tier3" as ModelTier,
-                name: "Premium (Best Quality)",
-                description: "Highest quality outcomes",
-              },
-            ].map((tier) => (
-              <label
-                key={tier.id}
-                className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-colors ${
-                  modelTier === tier.id
-                    ? "border-primary bg-primary/10"
-                    : "border-border hover:border-border"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="modelTier"
-                  checked={modelTier === tier.id}
-                  onChange={() => setModelTier(tier.id)}
-                  className="w-5 h-5 accent-primary"
-                />
-                <div className="flex-1">
-                  <p className="font-medium">{tier.name}</p>
-                  <p className="text-sm text-muted">{tier.description}</p>
-                </div>
-              </label>
+                {/* Model Tier Dropdown - shown only when provider is selected */}
+                {selectedProviders.includes(provider.id) && (
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <label className="block text-xs text-muted mb-2">
+                      Model Quality Tier
+                    </label>
+                    <select
+                      value={providerModelTiers[provider.id]}
+                      onChange={(e) =>
+                        setProviderModelTiers({
+                          ...providerModelTiers,
+                          [provider.id]: e.target.value as ModelTier,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
+                    >
+                      {getProviderTierOptions(provider.id).map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -711,116 +883,6 @@ export default function AnalyzePage() {
                   setUserApiKeys({ ...userApiKeys, gemini: e.target.value })
                 }
                 className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Website Context (Optional but Recommended) */}
-        <div className="glass-card rounded-2xl p-8 mb-8">
-          <h2 className="text-lg font-semibold mb-4">
-            5. Website Context (Optional but Recommended)
-          </h2>
-          <p className="text-muted text-sm mb-6">
-            Help us provide more targeted feedback by describing your website
-            and target audience. This information enhances the AI's
-            understanding of your specific use case.
-          </p>
-
-          <div className="space-y-6">
-            {/* Target Age Groups */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Target Age Groups
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { id: "kids", label: "Kids" },
-                  { id: "teenagers", label: "Teenagers" },
-                  { id: "middle_age", label: "Middle Age" },
-                  { id: "elderly", label: "Elderly" },
-                ].map((age) => (
-                  <button
-                    key={age.id}
-                    type="button"
-                    onClick={() =>
-                      toggleAgeGroup(
-                        age.id as
-                          | "kids"
-                          | "teenagers"
-                          | "middle_age"
-                          | "elderly",
-                      )
-                    }
-                    className={`px-4 py-2 rounded-lg border transition-colors ${
-                      websiteContext.targetAge?.includes(
-                        age.id as
-                          | "kids"
-                          | "teenagers"
-                          | "middle_age"
-                          | "elderly",
-                      )
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    {age.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Business Sector Tags */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Business Sector/Industry
-              </label>
-              <input
-                type="text"
-                value={sectorInput}
-                onChange={(e) => setSectorInput(e.target.value)}
-                onKeyDown={handleSectorKeyDown}
-                placeholder="Type and press Enter to add (e.g., fintech, ecommerce, healthcare)"
-                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors text-sm"
-              />
-              {websiteContext.businessSector &&
-                websiteContext.businessSector.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {websiteContext.businessSector.map((sector) => (
-                      <span
-                        key={sector}
-                        className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm flex items-center gap-2"
-                      >
-                        {sector}
-                        <button
-                          type="button"
-                          onClick={() => removeSector(sector)}
-                          className="hover:text-error transition-colors"
-                        >
-                          ✕
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-            </div>
-
-            {/* Additional Context */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Additional Context
-              </label>
-              <textarea
-                value={websiteContext.additionalContext || ""}
-                onChange={(e) =>
-                  setWebsiteContext({
-                    ...websiteContext,
-                    additionalContext: e.target.value,
-                  })
-                }
-                placeholder="Any other relevant information about your website, target users, or specific concerns..."
-                rows={4}
-                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors resize-none text-sm"
               />
             </div>
           </div>

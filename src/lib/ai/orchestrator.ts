@@ -40,7 +40,7 @@ export class AnalysisOrchestrator {
 
   constructor(options: {
     apiKeys: { openai?: string; gemini?: string; anthropic?: string };
-    modelTier?: import("./types").ModelTier;
+    providerModelTiers?: Record<AIProvider, import("./types").ModelTier>;
   }) {
     this.providers = new Map();
 
@@ -48,7 +48,7 @@ export class AnalysisOrchestrator {
       hasOpenAI: !!options.apiKeys.openai,
       hasGemini: !!options.apiKeys.gemini,
       hasAnthropic: !!options.apiKeys.anthropic,
-      modelTier: options.modelTier || "tier2",
+      providerModelTiers: options.providerModelTiers,
     });
 
     if (options.apiKeys.openai) {
@@ -56,30 +56,39 @@ export class AnalysisOrchestrator {
         "openai",
         new OpenAIProvider({
           apiKey: options.apiKeys.openai,
-          modelTier: options.modelTier,
+          modelTier: options.providerModelTiers?.openai || "tier2",
         }),
       );
-      console.log("[Orchestrator] OpenAI provider configured");
+      console.log(
+        "[Orchestrator] OpenAI provider configured with tier:",
+        options.providerModelTiers?.openai || "tier2",
+      );
     }
     if (options.apiKeys.gemini) {
       this.providers.set(
         "gemini",
         new GeminiProvider({
           apiKey: options.apiKeys.gemini,
-          modelTier: options.modelTier,
+          modelTier: options.providerModelTiers?.gemini || "tier2",
         }),
       );
-      console.log("[Orchestrator] Gemini provider configured");
+      console.log(
+        "[Orchestrator] Gemini provider configured with tier:",
+        options.providerModelTiers?.gemini || "tier2",
+      );
     }
     if (options.apiKeys.anthropic) {
       this.providers.set(
         "anthropic",
         new AnthropicProvider({
           apiKey: options.apiKeys.anthropic,
-          modelTier: options.modelTier,
+          modelTier: options.providerModelTiers?.anthropic || "tier2",
         }),
       );
-      console.log("[Orchestrator] Anthropic provider configured");
+      console.log(
+        "[Orchestrator] Anthropic provider configured with tier:",
+        options.providerModelTiers?.anthropic || "tier2",
+      );
     }
   }
 
