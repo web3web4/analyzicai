@@ -1,3 +1,5 @@
+import { z } from "zod";
+import { BaseAnalysisResult } from "../types";
 import { BaseAIProvider, AIProviderConfig } from "../base-provider";
 
 interface AnthropicMessage {
@@ -13,19 +15,21 @@ interface AnthropicMessage {
   }>;
 }
 
-export class AnthropicProvider extends BaseAIProvider {
+export class AnthropicProvider<
+  TResult extends BaseAnalysisResult,
+> extends BaseAIProvider<TResult> {
   private baseUrl = "https://api.anthropic.com/v1";
   private model: string;
   private maxTokens: number;
 
-  constructor(config: AIProviderConfig) {
-    super("anthropic", config);
+  constructor(config: AIProviderConfig, schema: z.ZodSchema<TResult>) {
+    super("anthropic", config, schema);
 
     // Determine model from tier selection or explicit model override
     if (config.model) {
       this.model = config.model;
     } else {
-      const tier = config.modelTier || "tier2"; // Default to moderate tier
+      const tier = config.modelTier || "tier1"; // Default to cheapest tier
       const tierMap = {
         tier1: process.env.ANTHROPIC_MODEL_TIER_1,
         tier2: process.env.ANTHROPIC_MODEL_TIER_2,
@@ -108,7 +112,10 @@ export class AnthropicProvider extends BaseAIProvider {
       throw new Error(`Anthropic API error: ${response.status} - ${error}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as {
+      content?: Array<{ text?: string }>;
+      usage?: { input_tokens?: number; output_tokens?: number };
+    };
     const content = data.content?.[0]?.text || "";
     const tokensUsed =
       (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0);

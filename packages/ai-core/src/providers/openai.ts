@@ -1,3 +1,5 @@
+import { z } from "zod";
+import { BaseAnalysisResult } from "../types";
 import { BaseAIProvider, AIProviderConfig } from "../base-provider";
 
 interface OpenAIVisionMessage {
@@ -11,18 +13,20 @@ interface OpenAIVisionMessage {
       }>;
 }
 
-export class OpenAIProvider extends BaseAIProvider {
+export class OpenAIProvider<
+  TResult extends BaseAnalysisResult,
+> extends BaseAIProvider<TResult> {
   private baseUrl = "https://api.openai.com/v1";
   private model: string;
 
-  constructor(config: AIProviderConfig) {
-    super("openai", config);
+  constructor(config: AIProviderConfig, schema: z.ZodSchema<TResult>) {
+    super("openai", config, schema);
 
     // Determine model from tier selection or explicit model override
     if (config.model) {
       this.model = config.model;
     } else {
-      const tier = config.modelTier || "tier2"; // Default to moderate tier
+      const tier = config.modelTier || "tier1"; // Default to cheapest tier
       const tierMap = {
         tier1: process.env.OPENAI_MODEL_TIER_1,
         tier2: process.env.OPENAI_MODEL_TIER_2,
@@ -73,7 +77,8 @@ export class OpenAIProvider extends BaseAIProvider {
     const requestBody: Record<string, unknown> = {
       model: this.model,
       messages,
-      max_completion_tokens: 8192,
+      // GPT-5 models use max_completion_tokens instead of max_tokens
+      max_completion_tokens: 4096,
     };
 
     // Only add response_format if no images (vision models don't support it)
@@ -95,9 +100,12 @@ export class OpenAIProvider extends BaseAIProvider {
       throw new Error(`OpenAI API error: ${response.status} - ${error}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+      usage?: { total_tokens?: number };
+    };
     return {
-      content: data.choices[0]?.message?.content || "",
+      content: data.choices?.[0]?.message?.content || "",
       tokensUsed: data.usage?.total_tokens || 0,
     };
   }

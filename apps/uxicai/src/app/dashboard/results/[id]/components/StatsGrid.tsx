@@ -1,5 +1,9 @@
 import type { Recommendation } from "@web3web4/ai-core";
-import { countBySeverity, calculateConsensusScore, formatDuration } from "../lib/utils";
+import {
+  countBySeverity,
+  calculateConsensusScore,
+  formatDuration,
+} from "../lib/utils";
 
 interface StatsGridProps {
   recommendations: Recommendation[];
@@ -11,7 +15,7 @@ interface StatsGridProps {
 }
 
 export function StatsGrid({
-  recommendations,
+  recommendations = [],
   providerAgreement,
   totalLatency,
 }: StatsGridProps) {
@@ -41,7 +45,9 @@ export function StatsGrid({
       {/* Provider Consensus */}
       {consensusScore !== null && (
         <div className="p-4 rounded-xl bg-surface-light border border-border">
-          <div className="text-2xl font-bold text-success">{consensusScore}%</div>
+          <div className="text-2xl font-bold text-success">
+            {consensusScore}%
+          </div>
           <div className="text-sm text-muted mt-1">Provider Consensus</div>
         </div>
       )}
@@ -49,7 +55,9 @@ export function StatsGrid({
       {/* Analysis Time */}
       {totalLatency && (
         <div className="p-4 rounded-xl bg-surface-light border border-border">
-          <div className="text-2xl font-bold">{formatDuration(totalLatency)}</div>
+          <div className="text-2xl font-bold">
+            {formatDuration(totalLatency)}
+          </div>
           <div className="text-sm text-muted mt-1">Analysis Time</div>
         </div>
       )}

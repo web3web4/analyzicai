@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@web3web4/ui-library";
 import { MobileNav } from "@/components/MobileNav";
 
 export function DashboardHeader() {
@@ -8,7 +8,7 @@ export function DashboardHeader() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
-            <Logo size="md" />
+            <Logo containerSize="md" />
           </Link>
           <div className="h-8 w-[1px] bg-border hidden md:block" />
           <Link

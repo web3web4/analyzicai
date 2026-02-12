@@ -1,17 +1,21 @@
+import { z } from "zod";
+import { BaseAnalysisResult } from "../types";
 import { BaseAIProvider, AIProviderConfig } from "../base-provider";
 
-export class GeminiProvider extends BaseAIProvider {
+export class GeminiProvider<
+  TResult extends BaseAnalysisResult,
+> extends BaseAIProvider<TResult> {
   private baseUrl = "https://generativelanguage.googleapis.com/v1beta";
   private model: string;
 
-  constructor(config: AIProviderConfig) {
-    super("gemini", config);
+  constructor(config: AIProviderConfig, schema: z.ZodSchema<TResult>) {
+    super("gemini", config, schema);
 
     // Determine model from tier selection or explicit model override
     if (config.model) {
       this.model = config.model;
     } else {
-      const tier = config.modelTier || "tier2"; // Default to moderate tier
+      const tier = config.modelTier || "tier1"; // Default to cheapest tier
       const tierMap = {
         tier1: process.env.GEMINI_MODEL_TIER_1,
         tier2: process.env.GEMINI_MODEL_TIER_2,
@@ -84,7 +88,10 @@ export class GeminiProvider extends BaseAIProvider {
       throw new Error(`Gemini API error: ${response.status} - ${error}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+      usageMetadata?: { totalTokenCount?: number };
+    };
     const content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     const tokensUsed = data.usageMetadata?.totalTokenCount || 0;
 

@@ -4,6 +4,7 @@ import type { SynthesizedResult } from "@web3web4/ai-core";
 import { ResultsHeader } from "./components/ResultsHeader";
 import { ScoreOverview } from "./components/ScoreOverview";
 import { ResultsContent } from "./components/ResultsContent";
+import { StatusBanner, LoadingState } from "@web3web4/ui-library";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -44,7 +45,7 @@ export default async function ResultsPage({ params }: PageProps) {
   // Get all image URLs (multi-image support)
   // Support both old (image_path) and new (image_paths) schema
   let imagePaths: string[] = [];
-  
+
   if (analysis.image_paths) {
     imagePaths = analysis.image_paths as string[];
     if (process.env.NODE_ENV !== "production") {
@@ -59,27 +60,32 @@ export default async function ResultsPage({ params }: PageProps) {
   } else {
     console.warn("[Results Page] No image paths found in analysis record!");
   }
-  
+
   const imageCount = analysis.image_count || imagePaths.length || 1;
-  
+
   // Get signed URLs (valid for 1 hour) instead of public URLs
   const imageUrls = await Promise.all(
     imagePaths.map(async (path: string) => {
       const { data, error } = await supabase.storage
         .from("analysis-images")
         .createSignedUrl(path, 3600); // 1 hour expiry
-      
+
       if (error) {
-        console.error(`[Results Page] Failed to get signed URL for ${path}:`, error);
+        console.error(
+          `[Results Page] Failed to get signed URL for ${path}:`,
+          error,
+        );
         return ""; // Return empty string if fetch fails
       }
-      
+
       return data?.signedUrl || "";
-    })
+    }),
   );
-  
+
   if (process.env.NODE_ENV !== "production") {
-    console.log(`[Results Page] Loaded ${imageUrls.filter(url => url).length}/${imagePaths.length} image URLs for analysis ${id}`);
+    console.log(
+      `[Results Page] Loaded ${imageUrls.filter((url) => url).length}/${imagePaths.length} image URLs for analysis ${id}`,
+    );
   }
 
   // Get all responses for this analysis
@@ -97,16 +103,69 @@ export default async function ResultsPage({ params }: PageProps) {
     | SynthesizedResult
     | undefined;
 
+  // Debug logging (development only)
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[Results Page] Data Debug:", {
+      analysisId: id,
+      analysisStatus: analysis.status,
+      finalScore: analysis.final_score,
+      totalResponses: responses?.length,
+      v1ResponsesCount: v1Responses.length,
+      v2ResponsesCount: v2Responses.length,
+      hasSynthesisResponse: !!synthesisResponse,
+      hasFinalResult: !!finalResult,
+    });
+
+    if (synthesisResponse) {
+      console.log("[Results Page] Synthesis Response:", {
+        step: synthesisResponse.step,
+        provider: synthesisResponse.provider,
+        status: synthesisResponse.status,
+        hasResult: !!synthesisResponse.result,
+      });
+    }
+
+    if (finalResult) {
+      console.log("[Results Page] Final Result Structure:", {
+        hasRecommendations: !!finalResult.recommendations,
+        recommendationsCount: finalResult.recommendations?.length,
+        hasCategories: !!finalResult.categories,
+        categoriesKeys: finalResult.categories
+          ? Object.keys(finalResult.categories)
+          : [],
+        hasSummary: !!finalResult.summary,
+        hasProviderAgreement: !!finalResult.providerAgreement,
+      });
+    } else {
+      console.warn("[Results Page] No final result available!");
+      if (v1Responses.length > 0) {
+        console.log(
+          "[Results Page] V1 Responses available:",
+          v1Responses.map((r) => ({
+            provider: r.provider,
+            step: r.step,
+            hasResult: !!r.result,
+          })),
+        );
+      }
+    }
+  }
+
   // Determine which providers failed
   const requestedProviders = (analysis.providers_used as string[]) || [];
-  const successfulV1Providers = v1Responses.map(r => r.provider);
-  const failedProviders = requestedProviders.filter(p => !successfulV1Providers.includes(p));
-  
-  // Check if we have partial results (some providers succeeded)
-  const hasPartialResults = v1Responses.length > 0 && (
-    failedProviders.length > 0 || !synthesisResponse
+  const successfulV1Providers = v1Responses.map((r) => r.provider);
+  const failedProviders = requestedProviders.filter(
+    (p) => !successfulV1Providers.includes(p),
   );
-  
+
+  // All available providers for retry (not just originally requested ones)
+  const allAvailableProviders = ["openai", "gemini", "anthropic"];
+
+  // Check if we have partial results (some providers succeeded)
+  const hasPartialResults =
+    v1Responses.length > 0 &&
+    (failedProviders.length > 0 || !synthesisResponse);
+
   // Check if synthesis failed but we have v1 results
   const synthesisFailed = v1Responses.length > 0 && !synthesisResponse;
 
@@ -118,46 +177,43 @@ export default async function ResultsPage({ params }: PageProps) {
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         {/* Status Banner - Updated to show partial results */}
-        {(analysis.status !== "completed" || isPartial) && (
-          <div
-            className={`mb-8 px-6 py-4 rounded-xl ${
-              analysis.status === "failed" && v1Responses.length === 0
-                ? "bg-error/10 border border-error/20"
-                : isPartial
-                ? "bg-warning/10 border border-warning/20"
-                : "bg-warning/10 border border-warning/20"
-            }`}
-          >
-            {analysis.status === "failed" && v1Responses.length === 0 ? (
-              <p className="text-error">Analysis failed completely. Please try again.</p>
-            ) : isPartial ? (
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">⚠️</span>
-                  <p className="text-warning font-medium">
-                    Partial Results Available
-                  </p>
-                </div>
-                <p className="text-sm text-muted mb-3">
-                  {failedProviders.length > 0 && (
-                    <>Failed providers: {failedProviders.join(", ")}. </>
-                  )}
-                  {synthesisFailed && "Synthesis step failed. "}
-                  Showing results from {v1Responses.length} successful provider(s).
-                </p>
-              </div>
-            ) : analysis.status !== "completed" ? (
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 border-2 border-warning/30 border-t-warning rounded-full animate-spin" />
-                <p className="text-warning">
-                  Analysis in progress:{" "}
-                  {analysis.status.replace("step", "Step ")}
-                  {imageCount > 1 && ` (${imageCount} images)`}
-                </p>
-              </div>
-            ) : null}
-          </div>
+        {analysis.status === "failed" && v1Responses.length === 0 && (
+          <StatusBanner
+            type="error"
+            message="Analysis failed completely. Please try again."
+            variant="uxic"
+            className="mb-8"
+          />
         )}
+        {isPartial && (
+          <StatusBanner
+            type="warning"
+            title="Partial Results Available"
+            icon={<span className="text-2xl">⚠️</span>}
+            message={
+              <>
+                {failedProviders.length > 0 && (
+                  <>Failed providers: {failedProviders.join(", ")}. </>
+                )}
+                {synthesisFailed && "Synthesis step failed. "}
+                Showing results from {v1Responses.length} successful
+                provider(s).
+              </>
+            }
+            variant="uxic"
+            className="mb-8"
+          />
+        )}
+        {analysis.status !== "completed" &&
+          !isPartial &&
+          v1Responses.length === 0 && (
+            <div className="mb-8">
+              <LoadingState
+                message={`Analysis in progress: ${analysis.status.replace("step", "Step ")}${imageCount > 1 ? ` (${imageCount} images)` : ""}`}
+                variant="uxic"
+              />
+            </div>
+          )}
 
         {/* Score Overview */}
         <div className="mb-8">
@@ -183,7 +239,7 @@ export default async function ResultsPage({ params }: PageProps) {
             failedProviders={failedProviders}
             synthesisFailed={synthesisFailed}
             hasPartialResults={isPartial}
-            allProviders={requestedProviders}
+            allProviders={allAvailableProviders}
             masterProvider={analysis.master_provider as string}
           />
         ) : (

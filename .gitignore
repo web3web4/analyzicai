@@ -1,20 +1,24 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
+dist
 /.pnp
 .pnp.*
 
 # testing
-/coverage
-/test-logs*
+coverage
+
+# logs
+test-logs*
+dev-server.log
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build
 
 # misc
 .DS_Store

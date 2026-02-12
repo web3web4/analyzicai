@@ -1,6 +1,8 @@
 import { createServiceClient } from "@/lib/supabase/server";
 
-const DAILY_LIMIT = 10; // analyses per day for free tier
+// TODO: Implement proper subscription tiers with different limits
+// For now, using a high limit for testing/development
+const DAILY_LIMIT = 1000; // analyses per day (temporary high limit for testing)
 
 export interface RateLimitResult {
   allowed: boolean;

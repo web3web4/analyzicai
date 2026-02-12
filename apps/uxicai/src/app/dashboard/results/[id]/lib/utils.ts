@@ -1,4 +1,8 @@
-import { CATEGORY_LABELS, SEVERITY_STYLES, SCORE_THRESHOLDS } from "./constants";
+import {
+  CATEGORY_LABELS,
+  SEVERITY_STYLES,
+  SCORE_THRESHOLDS,
+} from "./constants";
 import type { Recommendation } from "@web3web4/ai-core";
 
 // Round score to integer for display
@@ -12,7 +16,7 @@ export function roundScore(score: number | undefined | null): number {
 // Get score-based color (returns CSS variable or Tailwind class)
 export function getScoreColorClass(
   score: number,
-  type: "text" | "bg" = "text"
+  type: "text" | "bg" = "text",
 ): string {
   const roundedScore = roundScore(score);
   if (type === "text") {
@@ -48,10 +52,10 @@ export function formatCategoryName(key: string): string {
 // Group recommendations by a given field
 export function groupRecommendations(
   recommendations: Recommendation[],
-  by: "category" | "severity"
+  by: "category" | "severity",
 ): Record<string, Recommendation[]> {
   if (!recommendations || recommendations.length === 0) return {};
-  
+
   return recommendations.reduce(
     (acc, rec) => {
       const key = rec[by];
@@ -59,48 +63,49 @@ export function groupRecommendations(
       acc[key].push(rec);
       return acc;
     },
-    {} as Record<string, Recommendation[]>
+    {} as Record<string, Recommendation[]>,
   );
 }
 
 // Sort recommendations by severity
 export function sortRecommendationsBySeverity(
-  recommendations: Recommendation[]
+  recommendations: Recommendation[],
 ): Recommendation[] {
   if (!recommendations || recommendations.length === 0) return [];
-  
+
   const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
   return [...recommendations].sort(
     (a, b) =>
       (severityOrder[a.severity as keyof typeof severityOrder] ?? 999) -
-      (severityOrder[b.severity as keyof typeof severityOrder] ?? 999)
+      (severityOrder[b.severity as keyof typeof severityOrder] ?? 999),
   );
 }
 
 // Calculate consensus score from provider agreement
 export function calculateConsensusScore(
-  agreement: Array<{ category: string; agreement: "high" | "medium" | "low" }>
+  agreement: Array<{ category: string; agreement: "high" | "medium" | "low" }>,
 ): number {
   if (!agreement || agreement.length === 0) return 0;
 
   const scoreMap = { high: 100, medium: 60, low: 30 };
   const total = agreement.reduce(
     (sum, item) => sum + scoreMap[item.agreement],
-    0
+    0,
   );
   return Math.round(total / agreement.length);
 }
 
 // Count recommendations by severity
 export function countBySeverity(
-  recommendations: Recommendation[]
+  recommendations: Recommendation[] | undefined | null,
 ): Record<string, number> {
+  if (!recommendations) return {};
   return recommendations.reduce(
     (acc, rec) => {
       acc[rec.severity] = (acc[rec.severity] || 0) + 1;
       return acc;
     },
-    {} as Record<string, number>
+    {} as Record<string, number>,
   );
 }
 

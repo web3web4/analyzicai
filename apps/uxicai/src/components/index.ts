@@ -1,1 +1,2 @@
-export { Logo } from "./Logo";
+export { DashboardHeader } from "./DashboardHeader";
+export { MobileNav } from "./MobileNav";

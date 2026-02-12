@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { UXIC_SOURCE_TYPES } from "@web3web4/ai-core";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,10 +19,11 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get("offset") || "0");
     const status = searchParams.get("status");
 
-    // Build query
+    // Build query (UI/UX analyses only)
     let query = supabase
       .from("analyses")
       .select("*, analysis_responses(*)")
+      .in("source_type", UXIC_SOURCE_TYPES)
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 

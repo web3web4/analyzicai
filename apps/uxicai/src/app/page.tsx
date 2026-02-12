@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@web3web4/ui-library";
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
 
         <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
-            <Logo size="md" />
+            <Logo containerSize="sm" />
             <div className="h-8 w-[1px] bg-border mx-1 hidden md:block" />
             <div className="hidden md:block">
               <div className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">
@@ -65,7 +65,7 @@ export default function Home() {
               href="/signup"
               className="btn-primary px-8 py-4 rounded-full text-white font-semibold text-lg glow"
             >
-              Start Analyzing Free
+              Start Analyzing
             </Link>
             <Link
               href="#features"
@@ -199,7 +199,7 @@ export default function Home() {
       <footer className="py-12 px-6 border-t border-border bg-surface">
         <div className="max-w-7xl mx-auto md:items-start lg:items-start flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
           <div className="flex flex-col md:flex-row gap-6 max-w-2xl">
-            <Logo size="lg" />
+            <Logo containerSize="md" />
             <div className="flex flex-col gap-1">
               <div className="text-sm text-muted">
                 AI-powered UI/UX analysis

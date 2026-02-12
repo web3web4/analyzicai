@@ -94,13 +94,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Initialize orchestrator
-    const { AnalysisOrchestrator } = await import("@/lib/ai-core/orchestrator");
+    const { AnalysisOrchestrator, analysisResultSchema } =
+      await import("@web3web4/ai-core");
     const orchestrator = new AnalysisOrchestrator({
       apiKeys: {
         openai: process.env.OPENAI_API_KEY,
         gemini: process.env.GEMINI_API_KEY,
         anthropic: process.env.ANTHROPIC_API_KEY,
       },
+      schema: analysisResultSchema,
     });
 
     const masterProvider = analysis.master_provider as AIProvider;
@@ -108,12 +110,12 @@ export async function POST(request: NextRequest) {
     try {
       if (retryStep === "v1_initial") {
         // Retry failed initial analyses (with optional provider substitution)
-        const { getTemplates, buildPrompt } =
-          await import("@/lib/ai-domains/ux-analysis/prompts/templates");
+        const { getUXTemplates, buildUXPrompt } =
+          await import("@web3web4/ai-core");
         const imageCount = imagesBase64.length;
-        const templates = getTemplates(imageCount);
+        const templates = getUXTemplates(imageCount);
         const systemPrompt = templates.initial.systemPrompt;
-        const userPrompt = buildPrompt(templates.initial.userPromptTemplate, {
+        const userPrompt = buildUXPrompt(templates.initial.userPromptTemplate, {
           imageCount,
         });
 
@@ -218,11 +220,11 @@ export async function POST(request: NextRequest) {
             .eq("step", "v3_synthesis");
 
           // Retry synthesis
-          const { getTemplates, buildPrompt } =
-            await import("@/lib/ai-domains/ux-analysis/prompts/templates");
-          const templates = getTemplates(imagesBase64.length);
+          const { getUXTemplates, buildUXPrompt } =
+            await import("@web3web4/ai-core");
+          const templates = getUXTemplates(imagesBase64.length);
           const systemPrompt = templates.synthesis.systemPrompt;
-          const userPrompt = buildPrompt(
+          const userPrompt = buildUXPrompt(
             templates.synthesis.userPromptTemplate,
             { imageCount: imagesBase64.length },
           );
@@ -301,13 +303,16 @@ export async function POST(request: NextRequest) {
           .eq("analysis_id", analysisId)
           .eq("step", "v3_synthesis");
 
-        const { getTemplates, buildPrompt } =
-          await import("@/lib/ai-domains/ux-analysis/prompts/templates");
-        const templates = getTemplates(imagesBase64.length);
+        const { getUXTemplates, buildUXPrompt } =
+          await import("@web3web4/ai-core");
+        const templates = getUXTemplates(imagesBase64.length);
         const systemPrompt = templates.synthesis.systemPrompt;
-        const userPrompt = buildPrompt(templates.synthesis.userPromptTemplate, {
-          imageCount: imagesBase64.length,
-        });
+        const userPrompt = buildUXPrompt(
+          templates.synthesis.userPromptTemplate,
+          {
+            imageCount: imagesBase64.length,
+          },
+        );
 
         const provider = orchestrator.getProvider(synthesisProvider);
         const allResults = v1Responses.map((r) => r.result);

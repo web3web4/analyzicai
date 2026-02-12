@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../../../packages/ui-library/src/**/*.{ts,tsx}";
 
 :root {
   /* Web3Web4 Official Brand Colors */
@@ -44,6 +45,7 @@
   --color-warning: var(--warning);
   --color-error: var(--error);
   --color-brand-web4-purple: var(--brand-web4-purple);
+  --color-brand-web3-cyan: var(--brand-web3-cyan);
   --font-sans: var(--font-geist-sans);
   --font-mono: "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
@@ -51,11 +53,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family:
-    var(--font-mono),
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: var(--font-mono);
 }
 
 /* Gradient text utility */

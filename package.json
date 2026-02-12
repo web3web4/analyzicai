@@ -3,10 +3,26 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm --parallel --filter uxicai --filter solidicai dev",
+    "dev": "pnpm supabase:ensure && pnpm --parallel --filter uxicai --filter solidicai dev",
     "dev:uxic": "pnpm --filter uxicai dev",
     "dev:solidic": "pnpm --filter solidicai dev",
+    "kill-dev": "lsof -ti:3000 | xargs kill -9 2>/dev/null; lsof -ti:3001 | xargs kill -9 2>/dev/null; echo 'Servers stopped'",
     "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "supabase:ensure": "supabase status >/dev/null 2>&1 || pnpm run supabase:init",
+    "supabase:init": "supabase start && supabase db push --local",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:restart": "supabase stop && supabase start",
+    "supabase:push": "supabase db push --local",
+    "supabase:reset": "echo '\\033[0;31m⚠️  WARNING: This will DESTROY ALL DATA!\\033[0m' && read -p 'Type YES to confirm: ' confirm && [ \"$confirm\" = \"YES\" ] && supabase db reset || echo 'Reset cancelled'",
+    "supabase:status": "supabase status",
+    "supabase:studio": "supabase studio",
+    "supabase:watch": "nodemon --watch supabase/migrations --ext sql --exec 'supabase db push --local'"
+  },
+  "devDependencies": {
+    "pg": "^8.18.0",
+    "supabase": "^2.72.8",
+    "nodemon": "^3.0.0"
   }
 }

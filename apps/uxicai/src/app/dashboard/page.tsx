@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import { UXIC_SOURCE_TYPES } from "@web3web4/ai-core";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -13,10 +14,11 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  // Get recent analyses
+  // Get recent analyses (UI/UX only)
   const { data: recentAnalyses } = await supabase
     .from("analyses")
     .select("*")
+    .in("source_type", UXIC_SOURCE_TYPES)
     .order("created_at", { ascending: false })
     .limit(5);
 
@@ -27,6 +29,7 @@ export default async function DashboardPage() {
   const { count: todayCount } = await supabase
     .from("analyses")
     .select("*", { count: "exact", head: true })
+    .in("source_type", UXIC_SOURCE_TYPES)
     .gte("created_at", today.toISOString());
 
   const remaining = Math.max(0, 10 - (todayCount ?? 0));
@@ -40,7 +43,11 @@ export default async function DashboardPage() {
         {/* Welcome Section */}
         <div className="mb-12">
           <h1 className="text-3xl font-bold mb-2">
-            Welcome back, {user.email?.split("@")[0]}
+            Welcome back, 
+            
+            <span className="text-brand-primary">
+              {user.email?.split("@")[0]}
+            </span>
           </h1>
           <p className="text-muted">
             You have {remaining} analyses remaining today.
