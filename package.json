@@ -2,6 +2,7 @@
   "name": "analyzic-monorepo",
   "version": "1.0.0",
   "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "pnpm supabase:ensure && pnpm --parallel --filter uxicai --filter solidicai dev",
     "dev:uxic": "pnpm --filter uxicai dev",

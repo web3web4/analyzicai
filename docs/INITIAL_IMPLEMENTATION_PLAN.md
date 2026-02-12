@@ -1,32 +1,31 @@
 # UXicAI - AI-Powered UI/UX Analysis Platform
 
+> Later refactored to be AnalyzicAI that contains UXicAI and others.
+
 An intelligent utility application that analyzes the UI/UX of applications and websites by processing screenshots or live web pages using multiple AI Vision models.
 
 ## User Review Required
 
-> [!IMPORTANT]
-> **AI Provider API Keys**: You'll need API keys for at least one AI vision provider (OpenAI GPT Thinking/Pro, Google Gemini Pro Vision, or Anthropic Claude Sonnet/Opus). The multi-provider combination feature requires at least two providers.
+> [!IMPORTANT] > **AI Provider API Keys**: You'll need API keys for at least one AI vision provider (OpenAI GPT Thinking/Pro, Google Gemini Pro Vision, or Anthropic Claude Sonnet/Opus). The multi-provider combination feature requires at least two providers.
 
-> [!IMPORTANT]
-> **Supabase Project**: A Supabase project is required. You can use local development via Docker or a cloud project at [supabase.com](https://supabase.com).
+> [!IMPORTANT] > **Supabase Project**: A Supabase project is required. You can use local development via Docker or a cloud project at [supabase.com](https://supabase.com).
 
-> [!NOTE]
-> **WebRTC vs Puppeteer**: This plan uses **client-side WebRTC** for screenshot capture (screen sharing API). This approach is more privacy-friendly and doesn't require server-side browser instances, but requires user permission. For URL-based capture where the user doesn't have the page open, a fallback server-side solution may be needed.
+> [!NOTE] > **WebRTC vs Puppeteer**: This plan uses **client-side WebRTC** for screenshot capture (screen sharing API). This approach is more privacy-friendly and doesn't require server-side browser instances, but requires user permission. For URL-based capture where the user doesn't have the page open, a fallback server-side solution may be needed.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| **Framework** | next.js 16 (App Router) |
-| **Language** | TypeScript |
-| **Styling** | Tailwind CSS |
-| **Auth/Database/Storage** | Supabase |
-| **Social Auth** | GitHub, Figma, Notion, Google, Apple, Azure (Microsoft) |
-| **Screenshot Capture** | WebRTC (MediaDevices.getDisplayMedia) |
-| **AI Vision** | OpenAI GPT, Google Gemini, Anthropic Claude |
-| **Validation** | Zod |
+| Layer                     | Technology                                              |
+| ------------------------- | ------------------------------------------------------- |
+| **Framework**             | next.js 16 (App Router)                                 |
+| **Language**              | TypeScript                                              |
+| **Styling**               | Tailwind CSS                                            |
+| **Auth/Database/Storage** | Supabase                                                |
+| **Social Auth**           | GitHub, Figma, Notion, Google, Apple, Azure (Microsoft) |
+| **Screenshot Capture**    | WebRTC (MediaDevices.getDisplayMedia)                   |
+| **AI Vision**             | OpenAI GPT, Google Gemini, Anthropic Claude             |
+| **Validation**            | Zod                                                     |
 
 ---
 
@@ -34,7 +33,7 @@ An intelligent utility application that analyzes the UI/UX of applications and w
 
 ```mermaid
 flowchart TB
-    subgraph Client ["🖥️ Browser (Next.js)"]
+    subgraph Client ['🖥️ Browser (Next.js)']
         direction TB
         UI[Landing / Dashboard]
         CAPTURE[WebRTC Screen Capture]
@@ -42,26 +41,26 @@ flowchart TB
         RESULTS[Results Display]
     end
 
-    subgraph Supabase ["☁️ Supabase"]
+    subgraph Supabase ['☁️ Supabase']
         AUTH[(Auth)]
         STORAGE[(Storage)]
         DB[(PostgreSQL)]
         PROMPTS[(Prompt Templates)]
     end
 
-    subgraph API ["⚡ API Routes"]
-        UPLOAD_API["/api/upload"]
-        ANALYZE_API["/api/analyze"]
-        HISTORY_API["/api/history"]
+    subgraph API ['⚡ API Routes']
+        UPLOAD_API['/api/upload']
+        ANALYZE_API['/api/analyze']
+        HISTORY_API['/api/history']
     end
 
-    subgraph Pipeline ["🤖 3-Step AI Analysis"]
+    subgraph Pipeline ['🤖 3-Step AI Analysis']
         direction TB
-        S1["Step 1: Initial Analysis"]
-        S2["Step 2: Cross-Provider Rethink"]
-        S3["Step 3: Master Synthesis"]
-        
-        subgraph Providers ["AI Providers"]
+        S1['Step 1: Initial Analysis']
+        S2['Step 2: Cross-Provider Rethink']
+        S3['Step 3: Master Synthesis']
+
+        subgraph Providers ['AI Providers']
             OAI[OpenAI]
             GEM[Gemini]
             CLD[Claude]
@@ -97,18 +96,19 @@ flowchart TB
 
 **Data Flow Summary:**
 
-| Flow | Path |
-|------|------|
-| **Auth** | UI → Supabase Auth (GitHub/Figma/Notion/Google/Apple/Azure) → Session |
-| **Capture** | WebRTC/Upload → `/api/upload` → Supabase Storage |
-| **Analyze** | Image → Step 1 → **DB** → Step 2 → **DB** → Step 3 → **DB** |
-| **History** | Dashboard → `/api/history` → All responses (v1, v2, final) |
+| Flow        | Path                                                                  |
+| ----------- | --------------------------------------------------------------------- |
+| **Auth**    | UI → Supabase Auth (GitHub/Figma/Notion/Google/Apple/Azure) → Session |
+| **Capture** | WebRTC/Upload → `/api/upload` → Supabase Storage                      |
+| **Analyze** | Image → Step 1 → **DB** → Step 2 → **DB** → Step 3 → **DB**           |
+| **History** | Dashboard → `/api/history` → All responses (v1, v2, final)            |
 
 ---
 
 ## Implementation Phases
 
 ### Phase 1: Foundation ✅
+
 **Goal:** Working scaffold with auth
 
 - [x] Initialize Next.js 16 + Tailwind + TypeScript
@@ -122,6 +122,7 @@ flowchart TB
 ---
 
 ### Phase 2: Capture & Upload ✅
+
 **Goal:** Get images into the system
 
 - [x] WebRTC screen capture component
@@ -134,6 +135,7 @@ flowchart TB
 ---
 
 ### Phase 3: Single AI Provider ✅
+
 **Goal:** End-to-end analysis with ONE provider
 
 - [x] AI types & base provider interface
@@ -147,6 +149,7 @@ flowchart TB
 ---
 
 ### Phase 4: Multi-Provider Pipeline ✅
+
 **Goal:** Full multi-step analysis
 
 - [x] Add Gemini and Claude providers
@@ -161,6 +164,7 @@ flowchart TB
 ---
 
 ### Phase 5: History & Polish 🚧
+
 **Goal:** Complete MVP
 
 - [x] `/api/history` route
@@ -174,6 +178,8 @@ flowchart TB
 
 **Deliverable:** Complete, usable MVP
 
+> [!NOTE] > **Next Implemented features** are documented in [FEATURES.md](FEATURES.md)
+
 ---
 
 ## Proposed Changes
@@ -183,6 +189,7 @@ flowchart TB
 #### [NEW] [Project Initialization](file:///./)
 
 Initialize next.js 16 with TypeScript and Tailwind:
+
 ```bash
 npx -y create-next-app@latest ./ --typescript --tailwind --app --src-dir --eslint
 ```
@@ -195,17 +202,17 @@ npx -y create-next-app@latest ./ --typescript --tailwind --app --src-dir --eslin
 
 ```env
 # Supabase
-NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-key
+SUPABASE_SECRET_KEY=your-service-key
 
 # AI Providers
 OPENAI_API_KEY=sk-...
 GEMINI_API_KEY=...
 ANTHROPIC_API_KEY=sk-ant-...
 
-# Provider for synthesis (second-pass combination)
-SYNTHESIS_PROVIDER=openai
+# Default master provider (used in UI when loading analyze page)
+NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER=anthropic
 ```
 
 ---
@@ -262,18 +269,18 @@ CREATE INDEX idx_usage_user_date ON usage_tracking(user_id, created_at);
 
 -- RLS for analyses
 ALTER TABLE analyses ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own analyses" ON analyses FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own analyses" ON analyses FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can delete own analyses" ON analyses FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY 'Users can view own analyses' ON analyses FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY 'Users can insert own analyses' ON analyses FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY 'Users can delete own analyses' ON analyses FOR DELETE USING (auth.uid() = user_id);
 
 -- RLS for analysis_responses (via parent analysis)
 ALTER TABLE analysis_responses ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own responses" ON analysis_responses FOR SELECT 
+CREATE POLICY 'Users can view own responses' ON analysis_responses FOR SELECT
   USING (EXISTS (SELECT 1 FROM analyses WHERE analyses.id = analysis_id AND analyses.user_id = auth.uid()));
 
 -- RLS for usage_tracking
 ALTER TABLE usage_tracking ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own usage" ON usage_tracking FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY 'Users can view own usage' ON usage_tracking FOR SELECT USING (auth.uid() = user_id);
 ```
 
 #### [NEW] [src/lib/supabase/client.ts](file:///.//src/lib/supabase/client.ts)
@@ -287,6 +294,7 @@ Server-side Supabase client with service role.
 #### [NEW] [src/lib/rate-limit.ts](file:///.//src/lib/rate-limit.ts)
 
 Rate limiting utility:
+
 ```typescript
 const DAILY_LIMIT = 10; // analyses per day for free tier
 
@@ -294,7 +302,7 @@ export async function checkRateLimit(userId: string): Promise<{
   allowed: boolean;
   remaining: number;
   resetAt: Date;
-}>
+}>;
 ```
 
 #### [NEW] [src/middleware.ts](file:///.//src/middleware.ts)
@@ -314,7 +322,7 @@ export interface CategoryScore {
 }
 
 export interface Recommendation {
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   category: string;
   title: string;
   description: string;
@@ -339,12 +347,12 @@ export interface AnalysisResult {
 
 export interface SynthesizedResult {
   overallScore: number;
-  categories: AnalysisResult['categories'];
+  categories: AnalysisResult["categories"];
   recommendations: Recommendation[];
   summary: string;
   providerAgreement: {
     category: string;
-    agreement: 'high' | 'medium' | 'low';
+    agreement: "high" | "medium" | "low";
   }[];
 }
 ```
@@ -371,24 +379,24 @@ Anthropic Claude implementation.
 
 ```mermaid
 flowchart LR
-    IMG[Image] --> S1["Step 1: Initial Analysis"]
+    IMG[Image] --> S1['Step 1: Initial Analysis']
     S1 --> P1[Provider A v1]
     S1 --> P2[Provider B v1]
     S1 --> P3[Provider C v1]
-    P1 & P2 & P3 --> AGG1["Aggregate Results"]
-    AGG1 --> S2["Step 2: Cross-Provider Rethink"]
+    P1 & P2 & P3 --> AGG1['Aggregate Results']
+    AGG1 --> S2['Step 2: Cross-Provider Rethink']
     S2 --> P1R[Provider A v2]
     S2 --> P2R[Provider B v2]
     S2 --> P3R[Provider C v2]
-    P1R & P2R & P3R --> S3["Step 3: Master Synthesis"]
+    P1R & P2R & P3R --> S3['Step 3: Master Synthesis']
     S3 --> MASTER[User's Trusted Provider]
     MASTER --> FINAL[Final Result]
 ```
 
 ```typescript
 export interface AnalysisConfig {
-  providers: ('openai' | 'gemini' | 'anthropic')[];
-  masterProvider: 'openai' | 'gemini' | 'anthropic';
+  providers: ("openai" | "gemini" | "anthropic")[];
+  masterProvider: "openai" | "gemini" | "anthropic";
 }
 
 export async function runAnalysisPipeline(
@@ -397,16 +405,16 @@ export async function runAnalysisPipeline(
 ): Promise<FinalAnalysisResult> {
   // Step 1: Initial analysis from each provider
   const v1Results = await Promise.all(
-    config.providers.map(p => analyze(p, imagesBase64, 'initial'))
+    config.providers.map((p) => analyze(p, imagesBase64, "initial")),
   );
-  
+
   // Step 2: Each provider rethinks with others' results
   const v2Results = await Promise.all(
-    config.providers.map(p => 
-      analyze(p, imagesBase64, 'rethink', aggregateOthersResults(p, v1Results))
-    )
+    config.providers.map((p) =>
+      analyze(p, imagesBase64, "rethink", aggregateOthersResults(p, v1Results)),
+    ),
   );
-  
+
   // Step 3: Master provider synthesizes final result
   return synthesize(config.masterProvider, imagesBase64, v2Results);
 }
@@ -416,35 +424,35 @@ export async function runAnalysisPipeline(
 
 ### Prompt Engineering Architecture
 
-> [!IMPORTANT]
-> **Design Decision**: Prompts are stored as versioned templates in the database or file system, not hardcoded. This enables A/B testing, iteration, and user customization without code deployment.
+> [!IMPORTANT] > **Design Decision**: Prompts are stored as versioned templates in the database or file system, not hardcoded. This enables A/B testing, iteration, and user customization without code deployment.
 
 #### [NEW] [src/lib/ai/prompts/](file:///.//src/lib/ai/prompts/)
 
 **Prompt Template Structure:**
+
 ```typescript
 // src/lib/ai/prompts/types.ts
 export interface PromptTemplate {
   id: string;
   version: string;
-  systemPrompt: string;       // Role & constraints
+  systemPrompt: string; // Role & constraints
   userPromptTemplate: string; // With {{variables}}
-  outputSchema: ZodSchema;    // Expected JSON structure
+  outputSchema: ZodSchema; // Expected JSON structure
 }
 
 // Template variable injection
 export function buildPrompt(
   template: PromptTemplate,
-  context: Record<string, unknown>
+  context: Record<string, unknown>,
 ): string;
 ```
 
 **Step-Specific Prompts:**
 
-| Step | Prompt Focus |
-|------|-------------|
-| **Initial** | Image-only analysis with UX heuristics checklist |
-| **Rethink** | Image + other providers' scores/observations to reconsider |
+| Step          | Prompt Focus                                                  |
+| ------------- | ------------------------------------------------------------- |
+| **Initial**   | Image-only analysis with UX heuristics checklist              |
+| **Rethink**   | Image + other providers' scores/observations to reconsider    |
 | **Synthesis** | All v2 results → resolve disagreements, weighted final scores |
 
 **RAG-Style Context Injection Patterns:**
@@ -460,7 +468,7 @@ const rethinkPrompt = `
 ${JSON.stringify(myV1Result)}
 
 ## Other AI Perspectives
-${otherResults.map(r => `### ${r.provider}\n${JSON.stringify(r)}`).join('\n')}
+${otherResults.map((r) => `### ${r.provider}\n${JSON.stringify(r)}`).join("\n")}
 
 ## Your Task
 Reconsider your analysis. Where do you agree/disagree with others? 
@@ -494,25 +502,25 @@ CREATE TABLE prompt_templates (
 ```typescript
 export async function captureScreen(): Promise<Blob> {
   const stream = await navigator.mediaDevices.getDisplayMedia({
-    video: { displaySurface: 'browser' },
-    preferCurrentTab: true
+    video: { displaySurface: "browser" },
+    preferCurrentTab: true,
   });
-  
-  const video = document.createElement('video');
+
+  const video = document.createElement("video");
   video.srcObject = stream;
   await video.play();
-  
-  const canvas = document.createElement('canvas');
+
+  const canvas = document.createElement("canvas");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext("2d")!;
   ctx.drawImage(video, 0, 0);
-  
+
   // Stop all tracks
-  stream.getTracks().forEach(track => track.stop());
-  
+  stream.getTracks().forEach((track) => track.stop());
+
   return new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob!), 'image/png');
+    canvas.toBlob((blob) => resolve(blob!), "image/png");
   });
 }
 ```
@@ -528,6 +536,7 @@ Handles image upload to Supabase Storage.
 #### [NEW] [src/app/api/analyze/route.ts](file:///.//src/app/api/analyze/route.ts)
 
 Orchestrates 3-step multi-provider analysis:
+
 1. **Step 1**: Call each selected provider for initial analysis (parallel)
 2. **Step 2**: Send aggregated results back to each provider for rethink (parallel)
 3. **Step 3**: Send all v2 results to user's master provider for final synthesis
@@ -544,25 +553,27 @@ Retrieves user's analysis history.
 #### [NEW] [src/app/page.tsx](file:///.//src/app/page.tsx)
 
 Landing page with premium design featuring:
+
 - Hero section with value proposition
 - Feature highlights
 - CTA to get started
 
-#### [NEW] [src/app/(auth)/login/page.tsx](file:///.//src/app/(auth)/login/page.tsx)
+#### [NEW] [src/app/(auth)/login/page.tsx](<file:///.//src/app/(auth)/login/page.tsx>)
 
 Login page with email and social auth (GitHub, Figma, Notion, Google, Apple, Azure).
 
-#### [NEW] [src/app/(auth)/signup/page.tsx](file:///.//src/app/(auth)/signup/page.tsx)
+#### [NEW] [src/app/(auth)/signup/page.tsx](<file:///.//src/app/(auth)/signup/page.tsx>)
 
 Signup page.
 
-#### [NEW] [src/app/(auth)/callback/route.ts](file:///.//src/app/(auth)/callback/route.ts)
+#### [NEW] [src/app/(auth)/callback/route.ts](<file:///.//src/app/(auth)/callback/route.ts>)
 
 OAuth callback handler.
 
 #### [NEW] [src/app/dashboard/page.tsx](file:///.//src/app/dashboard/page.tsx)
 
 Main dashboard with:
+
 - New analysis CTA
 - Recent analyses
 - Quick actions
@@ -570,6 +581,7 @@ Main dashboard with:
 #### [NEW] [src/app/dashboard/analyze/page.tsx](file:///.//src/app/dashboard/analyze/page.tsx)
 
 Analysis interface with:
+
 - Image upload zone
 - Screen capture button (WebRTC)
 - Provider selection
@@ -578,6 +590,7 @@ Analysis interface with:
 #### [NEW] [src/app/dashboard/results/[id]/page.tsx](file:///.//src/app/dashboard/results/[id]/page.tsx)
 
 Results display with:
+
 - Overall score visualization
 - Category breakdowns
 - Provider comparison (if multiple)
@@ -594,6 +607,7 @@ Analysis history with filtering and search.
 #### [NEW] [src/components/ui/](file:///.//src/components/ui/)
 
 Core UI components:
+
 - `Button`, `Card`, `Input`, `Select`
 - `ScoreGauge` - Circular score visualization
 - `CategoryBar` - Horizontal category score bar
@@ -617,40 +631,47 @@ Drag-and-drop image upload with preview.
 Since this is a new project, we'll set up the testing infrastructure during implementation.
 
 **Unit Tests** (Vitest):
+
 ```bash
 pnpm run test
 ```
+
 - AI provider response parsing
 - Synthesizer logic
 - Zod schema validation
 
 **Integration Tests**:
+
 - Supabase RLS policy verification
 - API route authentication checks
 
 ### Manual Verification
 
 1. **Auth Flow**:
+
    - Open `http://localhost:3000`
-   - Click "Get Started" → redirects to login
+   - Click 'Get Started' → redirects to login
    - Sign up with email → verify email confirmation
    - Login → redirects to dashboard
 
 2. **Screen Capture**:
+
    - Navigate to `/dashboard/analyze`
-   - Click "Capture Screen"
+   - Click 'Capture Screen'
    - Grant permission in browser dialog
    - Verify screenshot appears in preview
 
 3. **Image Upload**:
+
    - Drag and drop an image onto upload zone
    - Verify preview appears
    - Verify file size/type validation
 
 4. **Analysis Flow**:
+
    - Upload or capture a screenshot
    - Select AI providers (OpenAI + Gemini)
-   - Click "Analyze"
+   - Click 'Analyze'
    - Verify loading state
    - Verify results display with scores and recommendations
 
