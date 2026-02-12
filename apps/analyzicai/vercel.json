@@ -1,0 +1,15 @@
+{
+  "buildCommand": "cd ../.. && pnpm install && pnpm run build:analyzic",
+  "outputDirectory": ".next",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "staging": true
+    }
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
