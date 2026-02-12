@@ -2,11 +2,13 @@
   "name": "analyzic-monorepo",
   "version": "1.0.0",
   "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "pnpm supabase:ensure && pnpm --parallel --filter uxicai --filter solidicai dev",
     "dev:uxic": "pnpm --filter uxicai dev",
     "dev:solidic": "pnpm --filter solidicai dev",
-    "kill-dev": "lsof -ti:3000 | xargs kill -9 2>/dev/null; lsof -ti:3001 | xargs kill -9 2>/dev/null; echo 'Servers stopped'",
+    "dev:analyzic": "pnpm --filter analyzicai dev",
+    "kill-dev": "lsof -ti:3000 | xargs kill -9 2>/dev/null; lsof -ti:3001 | xargs kill -9 2>/dev/null; lsof -ti:3002 | xargs kill -9 2>/dev/null; echo 'Servers stopped'",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "supabase:ensure": "supabase status >/dev/null 2>&1 || pnpm run supabase:init",
@@ -21,8 +23,8 @@
     "supabase:watch": "nodemon --watch supabase/migrations --ext sql --exec 'supabase db push --local'"
   },
   "devDependencies": {
+    "nodemon": "^3.0.0",
     "pg": "^8.18.0",
-    "supabase": "^2.72.8",
-    "nodemon": "^3.0.0"
+    "supabase": "^2.76.8"
   }
 }
