@@ -30,11 +30,11 @@ export function CategoryRadarChart({ categories }: CategoryRadarChartProps) {
             dataKey="category"
             tick={{ fill: "var(--muted)", fontSize: 12 }}
           />
-          <PolarRadiusAxis
+          {/* <PolarRadiusAxis
             angle={90}
             domain={[0, 100]}
             tick={{ fill: "var(--muted)" }}
-          />
+          /> */}
           <Radar
             name="Score"
             dataKey="score"

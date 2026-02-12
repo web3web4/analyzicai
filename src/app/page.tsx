@@ -16,15 +16,14 @@ export default function Home() {
 
         <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-surface-light flex flex-col items-center justify-center">
-              <div className="text-primary-light leading-4 font-bold text-sm">
+            <div className="w-22 h-22 rounded-xl bg-surface-light font-extrabold text-3xl flex flex-col items-center justify-center shadow-[0px_0px_9px_rgba(200,220,255,1)]">
+              <div className="text-primary text-shadow-[2px_2px_9px_rgba(0,0,0,1)]">
                 UXic
               </div>
-              <div className="text-brand-web4-purple leading-4 font-bold text-sm">
+              <div className="text-brand-web4-purple text-shadow-[2px_2px_9px_rgba(0,0,0,1)]">
                 AI
               </div>
             </div>
-            <span className="text-xl font-semibold">UXicAI</span>
           </div>
           <div className="flex items-center gap-4">
             <Link
@@ -197,13 +196,17 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-6 border-t border-border">
+      <footer className="py-4 px-4 border-t border-border">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">U</span>
+            <div
+              className="w-13 h-13 rounded-xl bg-surface-light font-extrabold flex flex-col items-center justify-center 
+              shadow-[0px_0px_5px_rgba(200,220,255,1)]
+              text-shadow-[2px_2px_6px_rgba(0,0,0,1)]"
+            >
+              <div className="text-primary">UXic</div>
+              <div className="text-brand-web4-purple">AI</div>
             </div>
-            <span className="font-medium">UXicAI</span>
           </div>
           <p className="text-sm text-muted">
             © 2026 UXicAI. All rights reserved.

@@ -6,6 +6,17 @@ import { AIProvider } from "@/lib/ai/types";
 
 const analyzeRequestSchema = z.object({
   analysisId: z.string().uuid(),
+  providers: z.array(z.string()),
+  masterProvider: z.string(),
+  providerModelTiers: z.record(z.string(), z.enum(["tier1", "tier2", "tier3"])),
+  websiteContext: z.any().optional(),
+  userApiKeys: z
+    .object({
+      openai: z.string().optional(),
+      anthropic: z.string().optional(),
+      gemini: z.string().optional(),
+    })
+    .optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -34,7 +45,21 @@ export async function POST(request: NextRequest) {
 
     // Parse and validate request
     const body = await request.json();
-    const { analysisId } = analyzeRequestSchema.parse(body);
+    const {
+      analysisId,
+      providers: requestProviders,
+      masterProvider: requestMasterProvider,
+      providerModelTiers,
+      websiteContext,
+      userApiKeys,
+    } = analyzeRequestSchema.parse(body);
+
+    // Check if user provided any API keys
+    const hasUserKeys = !!(
+      userApiKeys?.openai ||
+      userApiKeys?.anthropic ||
+      userApiKeys?.gemini
+    );
 
     // Get analysis record
     const { data: analysis, error: fetchError } = await supabase
@@ -68,7 +93,9 @@ export async function POST(request: NextRequest) {
     const imagePaths = analysis.image_paths as string[];
     const imagesBase64: string[] = [];
 
-    console.log(`[API] Downloading ${imagePaths.length} image(s) for analysis ${analysisId}`);
+    console.log(
+      `[API] Downloading ${imagePaths.length} image(s) for analysis ${analysisId}`,
+    );
 
     for (let i = 0; i < imagePaths.length; i++) {
       const imagePath = imagePaths[i];
@@ -77,7 +104,10 @@ export async function POST(request: NextRequest) {
         .download(imagePath);
 
       if (downloadError || !imageData) {
-        console.error(`[API] Failed to download image ${i + 1}:`, downloadError);
+        console.error(
+          `[API] Failed to download image ${i + 1}:`,
+          downloadError,
+        );
         await supabase
           .from("analyses")
           .update({ status: "failed" })
@@ -96,17 +126,22 @@ export async function POST(request: NextRequest) {
       imagesBase64.push(`data:${mimeType};base64,${base64}`);
     }
 
-    console.log(`[API] Successfully downloaded ${imagesBase64.length} image(s)`);
+    console.log(
+      `[API] Successfully downloaded ${imagesBase64.length} image(s)`,
+    );
 
     // Run AI analysis pipeline
-    const providers = analysis.providers_used as AIProvider[];
-    const masterProvider = analysis.master_provider as AIProvider;
+    // Use providers from request (validated against DB)
+    const providers = requestProviders as AIProvider[];
+    const masterProvider = requestMasterProvider as AIProvider;
 
     console.log("[API] Starting analysis with config:", {
       analysisId,
       providers,
       masterProvider,
+      providerModelTiers,
       imageCount: imagesBase64.length,
+      hasWebsiteContext: !!websiteContext,
     });
 
     // Check API keys availability (without logging the actual keys)
@@ -117,20 +152,25 @@ export async function POST(request: NextRequest) {
     });
 
     try {
-      // Initialize orchestrator with API keys
+      // Initialize orchestrator with API keys and per-provider model tiers
+      // Prioritize user-provided keys, fall back to server keys
       const { AnalysisOrchestrator } = await import("@/lib/ai/orchestrator");
       const orchestrator = new AnalysisOrchestrator({
         apiKeys: {
-          openai: process.env.OPENAI_API_KEY,
-          gemini: process.env.GEMINI_API_KEY,
-          anthropic: process.env.ANTHROPIC_API_KEY,
+          openai: userApiKeys?.openai || process.env.OPENAI_API_KEY,
+          gemini: userApiKeys?.gemini || process.env.GEMINI_API_KEY,
+          anthropic: userApiKeys?.anthropic || process.env.ANTHROPIC_API_KEY,
         },
+        providerModelTiers,
       });
 
-      // Update status and run pipeline
+      // Update status and track if using user keys
       await supabase
         .from("analyses")
-        .update({ status: "step1" })
+        .update({
+          status: "step1",
+          used_user_api_keys: hasUserKeys,
+        })
         .eq("id", analysisId);
 
       const results = await orchestrator.runPipeline(
@@ -139,6 +179,7 @@ export async function POST(request: NextRequest) {
           masterProvider,
         },
         imagesBase64,
+        websiteContext as import("@/lib/ai/types").WebsiteContext | undefined,
       );
 
       console.log("[API] Pipeline completed", {
@@ -154,7 +195,11 @@ export async function POST(request: NextRequest) {
         results,
       );
 
-      console.log("[API] Formatted", responseRecords.length, "records for database");
+      console.log(
+        "[API] Formatted",
+        responseRecords.length,
+        "records for database",
+      );
 
       if (responseRecords.length > 0) {
         const { error: insertError } = await supabase
@@ -162,31 +207,41 @@ export async function POST(request: NextRequest) {
           .insert(responseRecords);
 
         if (insertError) {
-          console.error("[API] Failed to store analysis responses:", insertError);
+          console.error(
+            "[API] Failed to store analysis responses:",
+            insertError,
+          );
           // Continue anyway - we have partial results in memory
         } else {
-          console.log("[API] Successfully stored", responseRecords.length, "responses");
+          console.log(
+            "[API] Successfully stored",
+            responseRecords.length,
+            "responses",
+          );
         }
       }
 
       // Determine final status based on errors
-      const finalStatus = results.hasPartialResults 
-        ? (results.synthesisResult ? "completed" : "partial")
+      const finalStatus = results.hasPartialResults
+        ? results.synthesisResult
+          ? "completed"
+          : "partial"
         : "completed";
 
       console.log("[API] Determined final status:", finalStatus);
 
       // Store error information if there were failures
-      const errorDetails = results.errors.length > 0 
-        ? {
-            failed_providers: results.errors.map(e => e.provider),
-            error_details: results.errors.map(e => ({
-              provider: e.provider,
-              step: e.step,
-              message: e.error.message,
-            })),
-          }
-        : null;
+      const errorDetails =
+        results.errors.length > 0
+          ? {
+              failed_providers: results.errors.map((e) => e.provider),
+              error_details: results.errors.map((e) => ({
+                provider: e.provider,
+                step: e.step,
+                message: e.error.message,
+              })),
+            }
+          : null;
 
       // Update analysis with final status and score
       // Wrap in try-catch to not lose partial results if update fails
@@ -210,7 +265,10 @@ export async function POST(request: NextRequest) {
       }
 
       // Track usage for successful providers
-      const totalTokens = responseRecords.reduce((sum, r) => sum + r.tokens_used, 0);
+      const totalTokens = responseRecords.reduce(
+        (sum, r) => sum + r.tokens_used,
+        0,
+      );
       if (totalTokens > 0) {
         await supabase.from("usage_tracking").insert({
           user_id: user.id,
@@ -249,13 +307,19 @@ export async function POST(request: NextRequest) {
 
       const hasAnyResults = existingResponses && existingResponses.length > 0;
 
-      console.log("[API] Error occurred but found", existingResponses?.length || 0, "existing responses");
+      console.log(
+        "[API] Error occurred but found",
+        existingResponses?.length || 0,
+        "existing responses",
+      );
 
       if (hasAnyResults) {
         // We have partial results - don't mark as completely failed
-        const hasSynthesis = existingResponses.some(r => r.step === "v3_synthesis");
+        const hasSynthesis = existingResponses.some(
+          (r) => r.step === "v3_synthesis",
+        );
         const finalStatus = hasSynthesis ? "completed" : "partial";
-        
+
         await supabase
           .from("analyses")
           .update({ status: finalStatus })
@@ -270,7 +334,8 @@ export async function POST(request: NextRequest) {
             status: finalStatus,
             hasPartialResults: true,
             warning: "Analysis completed with errors",
-            details: aiError instanceof Error ? aiError.message : "Unknown error",
+            details:
+              aiError instanceof Error ? aiError.message : "Unknown error",
           },
           { status: 200 }, // Return 200 since we have results
         );
@@ -286,7 +351,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: "AI analysis failed completely",
-            details: aiError instanceof Error ? aiError.message : "Unknown error",
+            details:
+              aiError instanceof Error ? aiError.message : "Unknown error",
           },
           { status: 500 },
         );

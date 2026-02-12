@@ -4,9 +4,14 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { DashboardHeader } from "@/components/DashboardHeader";
+import { MultiSelectButtonGroup } from "@/components/MultiSelectButtonGroup";
+import { BusinessSectorSelector } from "@/components/BusinessSectorSelector";
+import { getProviderTierOptions } from "@/lib/ai/model-tiers";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
+type ModelTier = "tier1" | "tier2" | "tier3";
 
 interface ImageItem {
   file: File;
@@ -16,18 +21,48 @@ interface ImageItem {
 
 // Get upload limits from environment variables with sensible defaults
 const MAX_IMAGES = parseInt(process.env.NEXT_PUBLIC_MAX_IMAGES || "10", 10);
-const MAX_FILE_SIZE = parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE_MB || "10", 10) * 1024 * 1024;
-const MAX_TOTAL_SIZE = parseInt(process.env.NEXT_PUBLIC_MAX_TOTAL_SIZE_MB || "50", 10) * 1024 * 1024;
+const MAX_FILE_SIZE =
+  parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE_MB || "10", 10) * 1024 * 1024;
+const MAX_TOTAL_SIZE =
+  parseInt(process.env.NEXT_PUBLIC_MAX_TOTAL_SIZE_MB || "50", 10) * 1024 * 1024;
 
 export default function AnalyzePage() {
   const [sourceType, setSourceType] = useState<SourceType>("upload");
   const [images, setImages] = useState<ImageItem[]>([]);
   const [selectedProviders, setSelectedProviders] = useState<AIProvider[]>([
     "openai",
+    "gemini",
+    "anthropic",
   ]);
   const [masterProvider, setMasterProvider] = useState<AIProvider>(
     (process.env.NEXT_PUBLIC_DEFAULT_MASTER_PROVIDER as AIProvider) || "openai",
   );
+  const [modelTier, setModelTier] = useState<ModelTier>("tier2");
+
+  // Per-provider model tiers (new)
+  const [providerModelTiers, setProviderModelTiers] = useState<
+    Record<AIProvider, ModelTier>
+  >({
+    openai: "tier2",
+    gemini: "tier2",
+    anthropic: "tier2",
+  });
+  const [userApiKeys, setUserApiKeys] = useState({
+    openai: "",
+    anthropic: "",
+    gemini: "",
+  });
+  const [websiteContext, setWebsiteContext] = useState<
+    Partial<import("@/lib/ai/types").WebsiteContext>
+  >({
+    targetAge: [],
+    targetGender: [],
+    educationLevel: [],
+    incomeLevel: [],
+    techFriendliness: [],
+    businessSector: [],
+  });
+  const [sectorInput, setSectorInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>("");
   const [error, setError] = useState("");
@@ -61,7 +96,7 @@ export default function AnalyzePage() {
 
       const currentCount = images.length;
       const currentSize = images.reduce((sum, img) => sum + img.file.size, 0);
-      
+
       const maxFileSizeMB = Math.round(MAX_FILE_SIZE / (1024 * 1024));
       const maxTotalSizeMB = Math.round(MAX_TOTAL_SIZE / (1024 * 1024));
 
@@ -86,9 +121,7 @@ export default function AnalyzePage() {
 
         // Check total size
         const newTotalSize =
-          currentSize +
-          valid.reduce((sum, f) => sum + f.size, 0) +
-          file.size;
+          currentSize + valid.reduce((sum, f) => sum + f.size, 0) + file.size;
         if (newTotalSize > MAX_TOTAL_SIZE) {
           errors.push(`Total size exceeds ${maxTotalSizeMB}MB`);
           break;
@@ -195,11 +228,9 @@ export default function AnalyzePage() {
         canvas.toBlob((blob) => resolve(blob!), "image/png");
       });
 
-      const file = new File(
-        [blob],
-        `screenshot-${Date.now()}.png`,
-        { type: "image/png" },
-      );
+      const file = new File([blob], `screenshot-${Date.now()}.png`, {
+        type: "image/png",
+      });
 
       // Validate the captured image
       const { valid, errors } = validateFiles([file]);
@@ -226,13 +257,28 @@ export default function AnalyzePage() {
   function toggleProvider(providerId: AIProvider) {
     setSelectedProviders((prev) => {
       if (prev.includes(providerId)) {
-        // Don't allow deselecting the master provider or last provider
-        if (providerId === masterProvider || prev.length === 1) {
+        // Don't allow deselecting the last provider
+        if (prev.length === 1) {
           return prev;
         }
-        return prev.filter((p) => p !== providerId);
+
+        const newProviders = prev.filter((p) => p !== providerId);
+
+        // If removing master, auto-assign to first remaining provider
+        if (providerId === masterProvider && newProviders.length > 0) {
+          setMasterProvider(newProviders[0]);
+        }
+
+        return newProviders;
       } else {
-        return [...prev, providerId];
+        const newProviders = [...prev, providerId];
+
+        // If adding first provider, make it master
+        if (prev.length === 0) {
+          setMasterProvider(providerId);
+        }
+
+        return newProviders;
       }
     });
   }
@@ -244,6 +290,77 @@ export default function AnalyzePage() {
       setSelectedProviders((prev) => [...prev, providerId]);
     }
   }
+
+  // Website context helpers
+  const toggleAgeGroup = (
+    age: "kids" | "teenagers" | "middle_age" | "elderly",
+  ) => {
+    const currentAges = websiteContext.targetAge || [];
+    const newAges = currentAges.includes(age)
+      ? currentAges.filter((a) => a !== age)
+      : [...currentAges, age];
+    setWebsiteContext({ ...websiteContext, targetAge: newAges });
+  };
+
+  // Website context helpers - Multi-select toggles
+  const toggleGender = (gender: "male" | "female" | "other") => {
+    const current = websiteContext.targetGender || [];
+    const newGenders = current.includes(gender)
+      ? current.filter((g) => g !== gender)
+      : [...current, gender];
+    setWebsiteContext({ ...websiteContext, targetGender: newGenders });
+  };
+
+  const toggleEducation = (
+    edu: "basic" | "high_school" | "college" | "advanced",
+  ) => {
+    const current = websiteContext.educationLevel || [];
+    const newEdu = current.includes(edu)
+      ? current.filter((e) => e !== edu)
+      : [...current, edu];
+    setWebsiteContext({ ...websiteContext, educationLevel: newEdu });
+  };
+
+  const toggleIncome = (income: "low" | "middle" | "high") => {
+    const current = websiteContext.incomeLevel || [];
+    const newIncome = current.includes(income)
+      ? current.filter((i) => i !== income)
+      : [...current, income];
+    setWebsiteContext({ ...websiteContext, incomeLevel: newIncome });
+  };
+
+  const toggleTech = (
+    tech: "beginners" | "average" | "tech_savvy" | "geeks",
+  ) => {
+    const current = websiteContext.techFriendliness || [];
+    const newTech = current.includes(tech)
+      ? current.filter((t) => t !== tech)
+      : [...current, tech];
+    setWebsiteContext({ ...websiteContext, techFriendliness: newTech });
+  };
+
+  const handleSectorKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && sectorInput.trim()) {
+      e.preventDefault();
+      const currentSectors = websiteContext.businessSector || [];
+      if (!currentSectors.includes(sectorInput.trim())) {
+        setWebsiteContext({
+          ...websiteContext,
+          businessSector: [...currentSectors, sectorInput.trim()],
+        });
+      }
+      setSectorInput("");
+    }
+  };
+
+  const removeSector = (sector: string) => {
+    setWebsiteContext({
+      ...websiteContext,
+      businessSector: (websiteContext.businessSector || []).filter(
+        (s) => s !== sector,
+      ),
+    });
+  };
 
   async function handleAnalyze() {
     if (images.length === 0) {
@@ -270,7 +387,7 @@ export default function AnalyzePage() {
       const imagePaths: string[] = [];
       for (let i = 0; i < images.length; i++) {
         setUploadProgress(`Uploading image ${i + 1} of ${images.length}...`);
-        
+
         const image = images[i];
         const fileName = `${user.id}/${Date.now()}-${i}-${image.file.name}`;
         const { error: uploadError } = await supabase.storage
@@ -278,9 +395,12 @@ export default function AnalyzePage() {
           .upload(fileName, image.file);
 
         if (uploadError) {
-          throw new Error(`Failed to upload image ${i + 1}: ${uploadError.message}`);
+          throw new Error(
+            `Failed to upload image ${i + 1}: ${uploadError.message}`,
+          );
         }
 
+        // Save the uploaded file path
         imagePaths.push(fileName);
       }
 
@@ -307,11 +427,30 @@ export default function AnalyzePage() {
 
       setUploadProgress("Starting analysis...");
 
-      // Trigger analysis via API
+      // Trigger analysis via API with per-provider model tiers
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ analysisId: analysis.id }),
+        body: JSON.stringify({
+          analysisId: analysis.id,
+          providers: selectedProviders,
+          masterProvider,
+          providerModelTiers, // Use per-provider tiers
+          ...(userApiKeys.openai || userApiKeys.anthropic || userApiKeys.gemini
+            ? {
+                userApiKeys: {
+                  ...(userApiKeys.openai && { openai: userApiKeys.openai }),
+                  ...(userApiKeys.anthropic && {
+                    anthropic: userApiKeys.anthropic,
+                  }),
+                  ...(userApiKeys.gemini && { gemini: userApiKeys.gemini }),
+                },
+              }
+            : {}),
+          ...(Object.keys(websiteContext).length > 0 && {
+            websiteContext,
+          }),
+        }),
       });
 
       console.log("[Client] API response status:", response.status);
@@ -341,24 +480,7 @@ export default function AnalyzePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">U</span>
-            </div>
-            <span className="font-semibold">UXicAI</span>
-          </Link>
-
-          <Link
-            href="/dashboard"
-            className="text-muted hover:text-foreground transition-colors"
-          >
-            ← Back to Dashboard
-          </Link>
-        </div>
-      </header>
+      <DashboardHeader />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-12">
@@ -472,45 +594,297 @@ export default function AnalyzePage() {
           )}
         </div>
 
+        {/* Website Context (Optional but Recommended) */}
+        <div className="glass-card rounded-2xl p-8 mb-8">
+          <h2 className="text-lg font-semibold mb-4">
+            2. Website Context (Optional but Recommended)
+          </h2>
+          <p className="text-muted text-sm mb-6">
+            Help us provide more targeted feedback by describing your website
+            and target audience. This information enhances the AI's
+            understanding of your specific use case.
+          </p>
+
+          <div className="space-y-6">
+            {/* Target Age Groups */}
+            <MultiSelectButtonGroup
+              label="Target Age Groups"
+              options={[
+                { id: "kids", label: "Kids" },
+                { id: "teenagers", label: "Teenagers" },
+                { id: "middle_age", label: "Middle Age" },
+                { id: "elderly", label: "Elderly" },
+              ]}
+              selectedValues={websiteContext.targetAge || []}
+              onToggle={toggleAgeGroup}
+              onSetAll={(values) =>
+                setWebsiteContext({ ...websiteContext, targetAge: values })
+              }
+            />
+
+            {/* Target Gender */}
+            <MultiSelectButtonGroup
+              label="Target Gender"
+              options={[
+                { id: "male", label: "Male" },
+                { id: "female", label: "Female" },
+                { id: "other", label: "Other" },
+              ]}
+              selectedValues={websiteContext.targetGender || []}
+              onToggle={toggleGender}
+              onSetAll={(values) =>
+                setWebsiteContext({ ...websiteContext, targetGender: values })
+              }
+            />
+
+            {/* Education Level */}
+            <MultiSelectButtonGroup
+              label="Education Level"
+              options={[
+                { id: "basic", label: "Basic" },
+                { id: "high_school", label: "High School" },
+                { id: "college", label: "College" },
+                { id: "advanced", label: "Advanced" },
+              ]}
+              selectedValues={websiteContext.educationLevel || []}
+              onToggle={toggleEducation}
+              onSetAll={(values) =>
+                setWebsiteContext({
+                  ...websiteContext,
+                  educationLevel: values,
+                })
+              }
+            />
+
+            {/* Income Level */}
+            <MultiSelectButtonGroup
+              label="Income Level"
+              options={[
+                { id: "low", label: "Low" },
+                { id: "middle", label: "Middle" },
+                { id: "high", label: "High" },
+              ]}
+              selectedValues={websiteContext.incomeLevel || []}
+              onToggle={toggleIncome}
+              onSetAll={(values) =>
+                setWebsiteContext({ ...websiteContext, incomeLevel: values })
+              }
+            />
+
+            {/* Tech Friendliness */}
+            <MultiSelectButtonGroup
+              label="Tech Friendliness"
+              options={[
+                { id: "beginners", label: "Beginners" },
+                { id: "average", label: "Average" },
+                { id: "tech_savvy", label: "Tech Savvy" },
+                { id: "geeks", label: "Geeks" },
+              ]}
+              selectedValues={websiteContext.techFriendliness || []}
+              onToggle={toggleTech}
+              onSetAll={(values) =>
+                setWebsiteContext({
+                  ...websiteContext,
+                  techFriendliness: values,
+                })
+              }
+            />
+
+            {/* Business Sector */}
+            <BusinessSectorSelector
+              selectedSectors={websiteContext.businessSector || []}
+              onAdd={(sector) =>
+                setWebsiteContext({
+                  ...websiteContext,
+                  businessSector: [
+                    ...(websiteContext.businessSector || []),
+                    sector,
+                  ],
+                })
+              }
+              onRemove={removeSector}
+            />
+
+            {/* Additional Context */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Additional Context
+              </label>
+              <textarea
+                value={websiteContext.additionalContext || ""}
+                onChange={(e) =>
+                  setWebsiteContext({
+                    ...websiteContext,
+                    additionalContext: e.target.value,
+                  })
+                }
+                placeholder="Any other relevant information about your website, target users, or specific concerns..."
+                rows={4}
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors resize-none text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Provider Selection */}
         <div className="glass-card rounded-2xl p-8 mb-8">
-          <h2 className="text-lg font-semibold mb-4">2. Select AI providers</h2>
+          <h2 className="text-lg font-semibold mb-4">3. Select AI providers</h2>
           <p className="text-muted text-sm mb-6">
             Choose which AI models to use. More providers = better analysis.
           </p>
 
           <div className="space-y-3">
             {providers.map((provider) => (
-              <label
+              <div
                 key={provider.id}
-                className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-colors ${
+                className={`p-4 rounded-xl border transition-colors ${
                   selectedProviders.includes(provider.id)
                     ? "border-primary bg-primary/10"
-                    : "border-border hover:border-border"
+                    : "border-border"
                 }`}
               >
-                <input
-                  type="checkbox"
-                  checked={selectedProviders.includes(provider.id)}
-                  onChange={() => toggleProvider(provider.id)}
-                  className="w-5 h-5 rounded accent-primary"
-                />
-                <div className="flex-1">
-                  <p className="font-medium">{provider.name}</p>
-                  <p className="text-sm text-muted">{provider.description}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted">Master:</span>
+                {/* Provider header with checkbox and master radio */}
+                <label className="flex items-center gap-4 cursor-pointer">
                   <input
-                    type="radio"
-                    name="master"
-                    checked={masterProvider === provider.id}
-                    onChange={() => handleMasterChange(provider.id)}
-                    className="w-4 h-4 accent-primary"
+                    type="checkbox"
+                    checked={selectedProviders.includes(provider.id)}
+                    onChange={() => toggleProvider(provider.id)}
+                    className="w-5 h-5 rounded accent-primary"
                   />
-                </div>
-              </label>
+                  <div className="flex-1">
+                    <p className="font-medium">{provider.name}</p>
+                    <p className="text-sm text-muted">{provider.description}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted">Master:</span>
+                    <input
+                      type="radio"
+                      name="master"
+                      checked={masterProvider === provider.id}
+                      onChange={() => handleMasterChange(provider.id)}
+                      className="w-4 h-4 accent-primary"
+                    />
+                  </div>
+                </label>
+
+                {/* Model Tier Dropdown - shown only when provider is selected */}
+                {selectedProviders.includes(provider.id) && (
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <label className="block text-xs text-muted mb-2">
+                      Model Quality Tier
+                    </label>
+                    <select
+                      value={providerModelTiers[provider.id]}
+                      onChange={(e) =>
+                        setProviderModelTiers({
+                          ...providerModelTiers,
+                          [provider.id]: e.target.value as ModelTier,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
+                    >
+                      {getProviderTierOptions(provider.id).map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
             ))}
+          </div>
+        </div>
+
+        {/* User API Keys (Optional) */}
+        <div className="glass-card rounded-2xl p-8 mb-8">
+          <h2 className="text-lg font-semibold mb-4">4. API Keys (Optional)</h2>
+          <p className="text-muted text-sm mb-6">
+            Want to use your own API keys? Provide them here. They will be sent
+            directly to the AI providers and not stored.
+          </p>
+
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <svg
+                className="w-5 h-5 text-primary mt-0.5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <div className="text-sm">
+                <p className="font-medium mb-1">Privacy & Security</p>
+                <ul className="text-muted space-y-1">
+                  <li>
+                    • Your keys are sent directly to AI providers (OpenAI,
+                    Anthropic, Google)
+                  </li>
+                  <li>• We do not store or log your API keys</li>
+                  <li>• Keys are only used for this single analysis</li>
+                  <li>• If not provided, we'll use our server keys instead</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {/* OpenAI API Key */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                OpenAI API Key
+                <span className="text-muted font-normal ml-2">(optional)</span>
+              </label>
+              <input
+                type="password"
+                placeholder="sk-..."
+                value={userApiKeys.openai}
+                onChange={(e) =>
+                  setUserApiKeys({ ...userApiKeys, openai: e.target.value })
+                }
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
+              />
+            </div>
+
+            {/* Anthropic API Key */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Anthropic API Key
+                <span className="text-muted font-normal ml-2">(optional)</span>
+              </label>
+              <input
+                type="password"
+                placeholder="sk-ant-..."
+                value={userApiKeys.anthropic}
+                onChange={(e) =>
+                  setUserApiKeys({ ...userApiKeys, anthropic: e.target.value })
+                }
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
+              />
+            </div>
+
+            {/* Gemini API Key */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Google Gemini API Key
+                <span className="text-muted font-normal ml-2">(optional)</span>
+              </label>
+              <input
+                type="password"
+                placeholder="AI..."
+                value={userApiKeys.gemini}
+                onChange={(e) =>
+                  setUserApiKeys({ ...userApiKeys, gemini: e.target.value })
+                }
+                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
+              />
+            </div>
           </div>
         </div>
 
@@ -518,9 +892,10 @@ export default function AnalyzePage() {
         {images.length > 1 && (
           <div className="bg-primary/10 border border-primary/20 px-4 py-3 rounded-lg mb-6">
             <p className="text-sm">
-              <strong>Multi-image analysis:</strong> All {images.length} images will be
-              analyzed together. You&apos;ll receive both individual feedback for each
-              image and an overall analysis of common patterns.
+              <strong>Multi-image analysis:</strong> All {images.length} images
+              will be analyzed together. You&apos;ll receive both individual
+              feedback for each image and an overall analysis of common
+              patterns.
             </p>
           </div>
         )}

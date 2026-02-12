@@ -1,4 +1,4 @@
-import { AnalysisResult, analysisResultSchema } from "./types";
+import { AnalysisResult, analysisResultSchema, ModelTier } from "./types";
 
 // Conditionally import Node.js modules only in server environments to prevent client-side bundling issues
 let fs: typeof import("fs") | null = null;
@@ -13,6 +13,7 @@ if (typeof window === "undefined" && typeof process !== "undefined") {
 export interface AIProviderConfig {
   apiKey: string;
   model?: string;
+  modelTier?: ModelTier; // Optional tier selection
 }
 
 export abstract class BaseAIProvider {

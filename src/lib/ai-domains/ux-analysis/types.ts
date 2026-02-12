@@ -83,6 +83,9 @@ export type SynthesizedResult = z.infer<typeof synthesizedResultSchema>;
 // Provider types
 export type AIProvider = "openai" | "gemini" | "anthropic";
 
+// Model tier for cost/quality selection
+export type ModelTier = "tier1" | "tier2" | "tier3";
+
 // Analysis step types
 export type AnalysisStep = "v1_initial" | "v2_rethink" | "v3_synthesis";
 
@@ -90,6 +93,23 @@ export type AnalysisStep = "v1_initial" | "v2_rethink" | "v3_synthesis";
 export interface AnalysisConfig {
   providers: AIProvider[];
   masterProvider: AIProvider;
+  modelTier?: ModelTier; // Optional tier selection (defaults to tier2)
+  userApiKeys?: {
+    openai?: string;
+    anthropic?: string;
+    gemini?: string;
+  };
+}
+
+// Website context for tailored analysis
+export interface WebsiteContext {
+  targetAge: Array<"kids" | "teenagers" | "middle_age" | "elderly">;
+  targetGender: Array<"male" | "female" | "other">; // Changed to array for multi-select
+  educationLevel: Array<"basic" | "high_school" | "college" | "advanced">; // Changed to array
+  incomeLevel: Array<"low" | "middle" | "high">; // Changed to array
+  techFriendliness: Array<"beginners" | "average" | "tech_savvy" | "geeks">; // Changed to array
+  businessSector: string[]; // Free-form tags like "fintech", "ecommerce", "ai"
+  additionalContext?: string; // Free-text field
 }
 
 // Analysis record (database shape)
@@ -102,7 +122,17 @@ export interface AnalysisRecord {
   image_count: number; // Number of images in this analysis
   providers_used: string[];
   master_provider: string;
-  status: "pending" | "step1" | "step2" | "step3" | "completed" | "failed" | "partial";
+  model_tier?: ModelTier; // Track which tier was selected
+  used_user_api_keys: boolean; // Track if user provided their own keys
+  website_context?: WebsiteContext; // Optional context about target audience and business
+  status:
+    | "pending"
+    | "step1"
+    | "step2"
+    | "step3"
+    | "completed"
+    | "failed"
+    | "partial";
   final_score?: number;
   created_at: string;
   completed_at?: string;

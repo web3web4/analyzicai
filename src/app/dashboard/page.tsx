@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -32,34 +33,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">U</span>
-            </div>
-            <span className="font-semibold">UXicAI</span>
-          </Link>
-
-          <nav className="flex items-center gap-6">
-            <Link
-              href="/dashboard/history"
-              className="text-muted hover:text-foreground transition-colors"
-            >
-              History
-            </Link>
-            <form action="/api/auth/signout" method="post">
-              <button
-                type="submit"
-                className="text-muted hover:text-foreground transition-colors"
-              >
-                Sign out
-              </button>
-            </form>
-          </nav>
-        </div>
-      </header>
+      <DashboardHeader />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
