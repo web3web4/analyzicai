@@ -2,15 +2,15 @@
 
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import {
   MultiSelectButtonGroup,
   BusinessSectorSelector,
 } from "@web3web4/ui-library";
-import { getProviderTierOptions } from "@web3web4/ai-core/model-tiers";
-import { MODEL_CONFIG } from "@/lib/config/models";
+import { getProviderTierOptions, ModelTierConfig } from "@web3web4/ai-core/model-tiers";
+import { getModelConfig } from "@/lib/config/models";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
@@ -40,6 +40,7 @@ export default function AnalyzePage() {
       "anthropic",
   );
   const [modelTier, setModelTier] = useState<ModelTier>("tier1");
+  const [modelConfig, setModelConfig] = useState<ModelTierConfig | null>(null);
 
   // Per-provider model tiers (new)
   const [providerModelTiers, setProviderModelTiers] = useState<
@@ -71,26 +72,20 @@ export default function AnalyzePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const providers: { id: AIProvider; name: string; description: string }[] = [
-    {
-      id: "openai",
-      name: "OpenAI GPT",
-      description: "Best for detailed observations",
-    },
-    {
-      id: "gemini",
-      name: "Gemini Pro Vision",
-      description: "Great for visual patterns",
-    },
-    {
-      id: "anthropic",
-      name: "Claude 3 Sonnet",
-      description: "Excellent for accessibility",
-    },
-  ];
+  // Load model configuration from database on mount
+  useEffect(() => {
+    getModelConfig()
+      .then(setModelConfig)
+      .catch((err) => {
+        console.error("Failed to load model config:", err);
+        setError("Failed to load model configuration. Please refresh the page.");
+      });
+  }, []);
 
+  // Helper function (not a hook, can be anywhere)
   const generateId = () => Math.random().toString(36).substring(2, 9);
 
+  // All hooks must be called before any conditional returns
   const validateFiles = useCallback(
     (files: File[]): { valid: File[]; errors: string[] } => {
       const errors: string[] = [];
@@ -172,6 +167,37 @@ export default function AnalyzePage() {
     },
     [validateFiles],
   );
+
+  // Don't render provider tier dropdowns until config is loaded
+  if (!modelConfig && !error) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <DashboardHeader />
+        <div className="max-w-4xl mx-auto mt-12 text-center">
+          <div className="w-12 h-12 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted">Loading configuration...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const providers: { id: AIProvider; name: string; description: string }[] = [
+    {
+      id: "openai",
+      name: "OpenAI GPT",
+      description: "Best for detailed observations",
+    },
+    {
+      id: "gemini",
+      name: "Gemini Pro Vision",
+      description: "Great for visual patterns",
+    },
+    {
+      id: "anthropic",
+      name: "Claude 3 Sonnet",
+      description: "Excellent for accessibility",
+    },
+  ];
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
@@ -785,7 +811,7 @@ export default function AnalyzePage() {
                       }
                       className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
                     >
-                      {getProviderTierOptions(MODEL_CONFIG, provider.id).map(
+                      {modelConfig && getProviderTierOptions(modelConfig, provider.id).map(
                         (option) => (
                           <option key={option.value} value={option.value}>
                             {option.label}

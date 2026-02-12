@@ -22,6 +22,20 @@ export function ProviderResponseCard({ response }: ProviderResponseCardProps) {
     hasPerImageResults ? "per-image" : "overall"
   );
 
+  // Debug logging
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[ProviderResponseCard] ${response.provider} rendering:`, {
+      viewMode,
+      hasResult: !!result,
+      hasSummary: !!result.summary,
+      hasCategories: !!result.categories,
+      categoriesKeys: result.categories ? Object.keys(result.categories) : [],
+      hasRecommendations: !!result.recommendations,
+      recommendationsLength: result.recommendations?.length,
+      hasPerImageResults,
+    });
+  }
+
   return (
     <div className="p-6 rounded-xl bg-surface-light border border-border">
       {/* Provider Header */}

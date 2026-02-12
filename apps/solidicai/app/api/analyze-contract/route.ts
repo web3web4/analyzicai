@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
       modelTiers,
       userApiKeys, // Destruct user provided keys
       inputType, // 'code' or 'github'
+      truncateCodeForSynthesis, // Optional: truncate large code in synthesis
     } = await req.json();
 
     console.log("Starting contract analysis request...");
@@ -115,6 +116,7 @@ export async function POST(req: NextRequest) {
         {
           providers: providers || ["openai", "gemini", "anthropic"],
           masterProvider: masterProvider || "openai",
+          truncateCodeForSynthesis: truncateCodeForSynthesis, // Pass user preference
         },
         templates,
         {
@@ -124,32 +126,72 @@ export async function POST(req: NextRequest) {
       );
       console.log("Pipeline complete. Score:", results.finalScore);
 
+      // Determine final status based on results
+      const finalStatus = results.hasPartialResults
+        ? results.synthesisResult
+          ? "completed"
+          : "partial"
+        : "completed";
+
+      console.log("[API] Pipeline completed", {
+        v1Count: results.v1Results?.size || 0,
+        hasSynthesis: !!results.synthesisResult,
+        errorCount: results.errors?.length || 0,
+        hasPartialResults: results.hasPartialResults,
+        finalStatus,
+      });
+
+      // Store all AI responses in database using formatForDatabase
+      const responseRecords = AnalysisOrchestrator.formatForDatabase(
+        analysis.id,
+        results,
+      );
+
+      console.log(
+        "[API] Formatted",
+        responseRecords.length,
+        "records for database",
+      );
+
+      if (responseRecords.length > 0) {
+        const { error: insertError } = await supabase
+          .from("analysis_responses")
+          .insert(responseRecords);
+
+        if (insertError) {
+          console.error(
+            "[API] Failed to store analysis responses:",
+            insertError,
+          );
+          // Continue anyway - analysis completed
+        } else {
+          console.log(
+            "[API] Successfully stored",
+            responseRecords.length,
+            "responses",
+          );
+        }
+      }
+
       // Update analysis record with result
       console.log("Updating analysis record in DB...");
       await supabase
         .from("analyses")
         .update({
-          status: "completed",
+          status: finalStatus,
           final_score: results.finalScore,
           completed_at: new Date().toISOString(),
         })
         .eq("id", analysis.id);
 
-      // Record the synthesis response (step 3 typically)
-      await supabase.from("analysis_responses").insert({
-        analysis_id: analysis.id,
-        provider: "orchestrator", // or 'synthesis'
-        step: "v3_synthesis",
-        result: results,
-        score: results.finalScore,
-      });
       console.log("Analysis complete and persisted.");
 
       return NextResponse.json({
         success: true,
-        analysisId: analysis.id, // Return ID for redirection
-        results: AnalysisOrchestrator.formatForDatabase(analysis.id, results), // Format if needed, or just return results
+        analysisId: analysis.id,
+        status: finalStatus,
         finalScore: results.finalScore,
+        hasPartialResults: results.hasPartialResults,
       });
     } catch (pipelineError) {
       console.error("Pipeline execution failed:", pipelineError);
@@ -159,8 +201,6 @@ export async function POST(req: NextRequest) {
         .from("analyses")
         .update({
           status: "failed",
-          // We might want to store the error message somewhere if schema allows,
-          // but for now status failure is enough to stop the UI hanging.
         })
         .eq("id", analysis.id);
 

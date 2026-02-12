@@ -9,7 +9,7 @@ export default function PricingPage() {
 
       <div className="relative z-10 max-w-2xl w-full">
         <div className="mb-12 flex justify-center">
-          <Logo size="lg" />
+          <Logo containerSize="lg" />
         </div>
 
         <div className="glass-card rounded-3xl p-12 border border-border/50 backdrop-blur-xl">

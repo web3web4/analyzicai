@@ -23,6 +23,7 @@ export type {
 export interface AnalysisConfig {
   providers: AIProvider[];
   masterProvider: AIProvider;
+  truncateCodeForSynthesis?: boolean; // Optional: truncate code in synthesis to save tokens
 }
 
 // Interface for prompt templates structure required by orchestrator
@@ -255,9 +256,30 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
       );
 
       const systemPrompt = templates.synthesis.systemPrompt;
+
+      // For synthesis, include user vars (e.g., contract code)
+      // Optionally truncate if requested to avoid token overflow
+      let synthesisUserVars = { ...promptContext.userVars };
+      if (
+        config.truncateCodeForSynthesis &&
+        synthesisUserVars.code &&
+        typeof synthesisUserVars.code === "string"
+      ) {
+        const { MAX_CODE_LENGTH_FOR_SYNTHESIS } = await import("./constants");
+        const maxCodeLength = MAX_CODE_LENGTH_FOR_SYNTHESIS;
+        if (synthesisUserVars.code.length > maxCodeLength) {
+          console.log(
+            `[Orchestrator] Truncating code for synthesis: ${synthesisUserVars.code.length} -> ${maxCodeLength} chars`,
+          );
+          synthesisUserVars.code =
+            synthesisUserVars.code.substring(0, maxCodeLength) +
+            "\n\n// ... (code truncated for synthesis to prevent token overflow)";
+        }
+      }
+
       const userPrompt = buildPrompt(
         templates.synthesis.userPromptTemplate,
-        promptContext.userVars,
+        synthesisUserVars,
       );
 
       return await masterProvider.synthesize(
@@ -305,7 +327,9 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
 
     if (v1Results.size === 0) {
       throw new Error(
-        `All providers failed in initial analysis. Errors: ${step1.errors.map((e) => `${e.provider}: ${e.error.message}`).join("; ")}`,
+        `All providers failed in initial analysis. Errors: ${step1.errors
+          .map((e) => `${e.provider}: ${e.error.message}`)
+          .join("; ")}`,
       );
     }
 

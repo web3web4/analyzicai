@@ -54,6 +54,40 @@ async function checkAnalysis(analysisId: string) {
       const result = r.result as any;
       console.log("    Result Keys:", Object.keys(result));
 
+      // Detailed debugging for v1 responses
+      if (r.step === "v1_initial") {
+        console.log("\n    📝 DETAILED V1 DATA:");
+        console.log("      - overallScore:", result.overallScore);
+        console.log("      - Has summary:", !!result.summary);
+        console.log("      - Summary length:", result.summary?.length || 0);
+        console.log("      - Has categories:", !!result.categories);
+        console.log("      - Has recommendations:", !!result.recommendations);
+        console.log(
+          "      - Recommendations type:",
+          typeof result.recommendations,
+        );
+        console.log(
+          "      - Recommendations is array:",
+          Array.isArray(result.recommendations),
+        );
+        if (result.recommendations) {
+          console.log(
+            "      - Recommendations length:",
+            result.recommendations.length,
+          );
+          if (result.recommendations.length > 0) {
+            console.log("      - First few:");
+            result.recommendations
+              .slice(0, 3)
+              .forEach((rec: any, idx: number) => {
+                console.log(
+                  `          ${idx + 1}. [${rec.severity}] ${rec.title}`,
+                );
+              });
+          }
+        }
+      }
+
       if (result.recommendations) {
         console.log("    Recommendations:", result.recommendations?.length);
       }

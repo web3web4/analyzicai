@@ -126,7 +126,7 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-          <Logo prefix="Solidic" suffix="AI" size="md" />
+          <Logo prefix="Solidic" suffix="AI" containerSize="md" prefixSize="medium" />
         </Link>
 
         <div className="glass-card rounded-2xl p-8 border border-white/10 bg-white/5 backdrop-blur-xl">

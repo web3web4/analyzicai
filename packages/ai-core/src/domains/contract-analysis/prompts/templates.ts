@@ -60,13 +60,28 @@ Review your previous analysis and the perspectives from other auditors. Adjust y
 - They provided better gas optimization suggestions
 - They have different severity assessments for findings
 
-Respond with ONLY a JSON object using the same schema as before.`,
+CRITICAL: Respond with ONLY a JSON object using the same schema as before:
+
+{
+  "provider": "your-provider-name",
+  "overallScore": 0-100,
+  "securityScore": 0-100,
+  "gasEfficiencyScore": 0-100,
+  "codeQualityScore": 0-100,
+  "securityFindings": [...],
+  "gasOptimizations": [...],
+  "summary": "Overall assessment summary",
+  "strengths": ["..."],
+  "weaknesses": ["..."]
+}
+
+Do NOT include markdown formatting or code blocks.`,
 
       userPromptTemplate: `Reconsider your analysis for this smart contract:
 
 {{code}}
 
-Provide your revised assessment as a JSON object.`,
+Provide your revised assessment as a JSON object matching the schema above.`,
     },
 
     synthesis: {
@@ -80,13 +95,50 @@ Your task is to:
 
 Prioritize findings where multiple auditors agree, and highlight areas of disagreement.
 
-Respond with ONLY a JSON object using the same schema.`,
+CRITICAL: You MUST respond with ONLY a valid JSON object matching this exact schema:
+
+{
+  "provider": "your-provider-name",
+  "overallScore": 0-100,
+  "securityScore": 0-100,
+  "gasEfficiencyScore": 0-100,
+  "codeQualityScore": 0-100,
+  "securityFindings": [
+    {
+      "title": "Finding Title",
+      "severity": "critical|high|medium|low|informational",
+      "description": "Detailed description",
+      "location": "Line 42, function transfer()",
+      "recommendation": "How to fix it"
+    }
+  ],
+  "gasOptimizations": [
+    {
+      "title": "Optimization Title",
+      "potentialSavings": "~2000 gas per call",
+      "description": "Detailed description",
+      "location": "Line 15, uint256 variable",
+      "recommendation": "Use uint128 or pack variables"
+    }
+  ],
+  "summary": "Overall assessment summary",
+  "strengths": ["Notable strength 1", "Notable strength 2"],
+  "weaknesses": ["Notable weakness 1", "Notable weakness 2"]
+}
+
+Do NOT include markdown formatting, code blocks, or any text outside the JSON object.`,
 
       userPromptTemplate: `Synthesize the following audits into a final assessment for this contract:
 
 {{code}}
 
-Provide the final consolidated analysis as a JSON object.`,
+The providers have already analyzed the contract. Your task is to:
+1. Consolidate all security findings from different auditors
+2. Resolve disagreements by selecting the most accurate severity based on the code context
+3. Combine gas optimization suggestions
+4. Provide final consensus scores
+
+Provide the final consolidated analysis as a JSON object matching the schema above.`,
     },
   };
 }

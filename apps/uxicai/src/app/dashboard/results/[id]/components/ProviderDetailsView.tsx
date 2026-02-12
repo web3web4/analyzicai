@@ -17,10 +17,25 @@ export function ProviderDetailsView({
   // Provider comparison data
   const comparisonData = v1Responses.map((response) => {
     const result = response.result as AnalysisResult;
+    
+    // Debug logging
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[ProviderDetailsView] ${response.provider} data:`, {
+        hasResult: !!result,
+        resultKeys: result ? Object.keys(result) : [],
+        hasRecommendations: !!result.recommendations,
+        recommendationsType: typeof result.recommendations,
+        recommendationsIsArray: Array.isArray(result.recommendations),
+        recommendationsLength: result.recommendations?.length,
+        hasCategories: !!result.categories,
+        hasSummary: !!result.summary,
+      });
+    }
+    
     return {
       provider: response.provider,
       score: result.overallScore,
-      recommendations: result.recommendations.length,
+      recommendations: result.recommendations?.length || 0,
       tokens: response.tokens_used,
       latency: response.latency_ms,
       hasPerImageResults: result.perImageResults && result.perImageResults.length > 0,

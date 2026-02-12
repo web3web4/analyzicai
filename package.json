@@ -6,6 +6,7 @@
     "dev": "pnpm supabase:ensure && pnpm --parallel --filter uxicai --filter solidicai dev",
     "dev:uxic": "pnpm --filter uxicai dev",
     "dev:solidic": "pnpm --filter solidicai dev",
+    "kill-dev": "lsof -ti:3000 | xargs kill -9 2>/dev/null; lsof -ti:3001 | xargs kill -9 2>/dev/null; echo 'Servers stopped'",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "supabase:ensure": "supabase status >/dev/null 2>&1 || pnpm run supabase:init",

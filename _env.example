@@ -44,7 +44,7 @@ ANTHROPIC_MODEL_TIER_2=claude-sonnet-4-5-20250929   # Moderate cost with fair qu
 ANTHROPIC_MODEL_TIER_3=claude-opus-4-6       # Best quality outcomes
 
 # Gemini Models
-GEMINI_MODEL_TIER_1=gemini-1.5-flash-8b     # Cheapest
+GEMINI_MODEL_TIER_1=gemini-2.0-flash-lite     # Cheapest
 GEMINI_MODEL_TIER_2=gemini-2.5-flash       # Moderate cost with fair quality
 GEMINI_MODEL_TIER_3=gemini-3-pro-preview       # Best quality outcomes
 

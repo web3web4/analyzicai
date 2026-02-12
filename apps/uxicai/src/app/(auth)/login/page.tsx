@@ -88,7 +88,7 @@ function LoginForm() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-          <Logo size="md" />
+          <Logo containerSize="md" />
         </Link>
 
         <div className="glass-card rounded-2xl p-8">

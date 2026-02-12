@@ -4,6 +4,7 @@ import type { SynthesizedResult } from "@web3web4/ai-core";
 import { ResultsHeader } from "./components/ResultsHeader";
 import { ScoreOverview } from "./components/ScoreOverview";
 import { ResultsContent } from "./components/ResultsContent";
+import { StatusBanner, LoadingState } from "@web3web4/ui-library";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -157,6 +158,9 @@ export default async function ResultsPage({ params }: PageProps) {
     (p) => !successfulV1Providers.includes(p),
   );
 
+  // All available providers for retry (not just originally requested ones)
+  const allAvailableProviders = ["openai", "gemini", "anthropic"];
+
   // Check if we have partial results (some providers succeeded)
   const hasPartialResults =
     v1Responses.length > 0 &&
@@ -173,49 +177,43 @@ export default async function ResultsPage({ params }: PageProps) {
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         {/* Status Banner - Updated to show partial results */}
-        {(analysis.status !== "completed" || isPartial) && (
-          <div
-            className={`mb-8 px-6 py-4 rounded-xl ${
-              analysis.status === "failed" && v1Responses.length === 0
-                ? "bg-error/10 border border-error/20"
-                : isPartial
-                  ? "bg-warning/10 border border-warning/20"
-                  : "bg-warning/10 border border-warning/20"
-            }`}
-          >
-            {analysis.status === "failed" && v1Responses.length === 0 ? (
-              <p className="text-error">
-                Analysis failed completely. Please try again.
-              </p>
-            ) : isPartial ? (
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">⚠️</span>
-                  <p className="text-warning font-medium">
-                    Partial Results Available
-                  </p>
-                </div>
-                <p className="text-sm text-muted mb-3">
-                  {failedProviders.length > 0 && (
-                    <>Failed providers: {failedProviders.join(", ")}. </>
-                  )}
-                  {synthesisFailed && "Synthesis step failed. "}
-                  Showing results from {v1Responses.length} successful
-                  provider(s).
-                </p>
-              </div>
-            ) : analysis.status !== "completed" ? (
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 border-2 border-warning/30 border-t-warning rounded-full animate-spin" />
-                <p className="text-warning">
-                  Analysis in progress:{" "}
-                  {analysis.status.replace("step", "Step ")}
-                  {imageCount > 1 && ` (${imageCount} images)`}
-                </p>
-              </div>
-            ) : null}
-          </div>
+        {analysis.status === "failed" && v1Responses.length === 0 && (
+          <StatusBanner
+            type="error"
+            message="Analysis failed completely. Please try again."
+            variant="uxic"
+            className="mb-8"
+          />
         )}
+        {isPartial && (
+          <StatusBanner
+            type="warning"
+            title="Partial Results Available"
+            icon={<span className="text-2xl">⚠️</span>}
+            message={
+              <>
+                {failedProviders.length > 0 && (
+                  <>Failed providers: {failedProviders.join(", ")}. </>
+                )}
+                {synthesisFailed && "Synthesis step failed. "}
+                Showing results from {v1Responses.length} successful
+                provider(s).
+              </>
+            }
+            variant="uxic"
+            className="mb-8"
+          />
+        )}
+        {analysis.status !== "completed" &&
+          !isPartial &&
+          v1Responses.length === 0 && (
+            <div className="mb-8">
+              <LoadingState
+                message={`Analysis in progress: ${analysis.status.replace("step", "Step ")}${imageCount > 1 ? ` (${imageCount} images)` : ""}`}
+                variant="uxic"
+              />
+            </div>
+          )}
 
         {/* Score Overview */}
         <div className="mb-8">
@@ -241,7 +239,7 @@ export default async function ResultsPage({ params }: PageProps) {
             failedProviders={failedProviders}
             synthesisFailed={synthesisFailed}
             hasPartialResults={isPartial}
-            allProviders={requestedProviders}
+            allProviders={allAvailableProviders}
             masterProvider={analysis.master_provider as string}
           />
         ) : (

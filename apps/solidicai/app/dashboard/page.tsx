@@ -31,6 +31,7 @@ export default async function DashboardPage() {
   const { count: todayCount } = await supabase
     .from("analyses")
     .select("*", { count: "exact", head: true })
+    .in("source_type", ["code", "github"])
     .gte("created_at", today.toISOString())
     .eq("user_id", user.id);
 

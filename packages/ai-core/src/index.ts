@@ -5,6 +5,19 @@ export type { OrchestratorResult, ProviderError } from "./orchestrator";
 export { getModelTierName, getProviderTierOptions } from "./model-tiers";
 export type { ModelTier } from "./model-tiers";
 
+// Constants
+export {
+  UXIC_SOURCE_TYPES,
+  SOLIDIC_SOURCE_TYPES,
+  ALL_SOURCE_TYPES,
+  MAX_CODE_LENGTH_FOR_SYNTHESIS,
+} from "./constants";
+export type {
+  UxicSourceType,
+  SolidicSourceType,
+  SourceType,
+} from "./constants";
+
 // Re-export providers
 export { OpenAIProvider } from "./providers/openai";
 export { GeminiProvider } from "./providers/gemini";

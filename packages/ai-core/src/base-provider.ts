@@ -356,25 +356,21 @@ export abstract class BaseAIProvider<TResult extends BaseAnalysisResult> {
     latencyMs: number;
   }> {
     const startTime = Date.now();
+    let content = "";
+    let tokensUsed = 0;
 
     try {
-      const { content, tokensUsed } = await this.callAPI(
+      const apiResponse = await this.callAPI(
         systemPrompt,
         userPrompt,
         imagesBase64,
       );
-
-      const parsed = this.parseResponseContent(content) as Record<
-        string,
-        unknown
-      >;
-      const result = this.schema.parse({
-        ...parsed,
-        provider: this.name,
-      });
+      content = apiResponse.content;
+      tokensUsed = apiResponse.tokensUsed;
 
       const latencyMs = Date.now() - startTime;
 
+      // Log BEFORE parsing - this ensures we capture the raw response even if parsing fails
       try {
         await this.logAPICall(
           methodName,
@@ -388,17 +384,39 @@ export abstract class BaseAIProvider<TResult extends BaseAnalysisResult> {
         );
       }
 
+      // Now parse and validate
+      const parsed = this.parseResponseContent(content) as Record<
+        string,
+        unknown
+      >;
+
+      // Debug logging for synthesis issues
+      if (methodName === "synthesize") {
+        console.log(`[${this.name}] Synthesis parsed response:`, {
+          hasContent: !!content,
+          contentLength: content?.length,
+          parsedKeys: Object.keys(parsed),
+          parsedSample: JSON.stringify(parsed).substring(0, 500),
+        });
+      }
+
+      const result = this.schema.parse({
+        ...parsed,
+        provider: this.name,
+      });
+
       return { result, tokensUsed, latencyMs };
     } catch (error) {
       const latencyMs = Date.now() - startTime;
 
+      // Log the error (this will update the existing log or create a new one if logging failed earlier)
       try {
         await this.logAPICall(
           methodName,
           { systemPrompt, userPrompt, imagesBase64 },
           {
-            content: "",
-            tokensUsed: 0,
+            content: content || "",
+            tokensUsed,
             latencyMs,
             error: error instanceof Error ? error.message : String(error),
           },

@@ -53,11 +53,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family:
-    var(--font-mono),
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: var(--font-mono);
 }
 
 /* Gradient text utility */

@@ -7,7 +7,7 @@ import { MainResultsView } from "./MainResultsView";
 import { ProviderDetailsView } from "./ProviderDetailsView";
 import { ImageGalleryViewer } from "./ImageGalleryViewer";
 import { PerImageResultsView } from "./PerImageResultsView";
-import { RetryPanel } from "./RetryPanel";
+import { RetryPanel } from "@web3web4/ui-library";
 
 interface ResultsContentProps {
   finalResult: SynthesizedResult | undefined;
@@ -62,14 +62,15 @@ export function ResultsContent({
         </div>
       )}
       
-      {/* Retry Panel - Show if there are failures */}
-      {hasPartialResults && (
+      {/* Retry Panel - Show only if there are actual failures to retry */}
+      {(failedProviders.length > 0 || synthesisFailed) && (
         <RetryPanel
           analysisId={analysisId}
           failedProviders={failedProviders}
           synthesisFailed={synthesisFailed}
           allProviders={allProviders}
           masterProvider={masterProvider}
+          variant="uxic"
         />
       )}
 

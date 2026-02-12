@@ -1,6 +1,10 @@
 export interface LogoProps {
   /** Size variant - affects both icon and text size */
-  size?: "sm" | "md" | "lg";
+  containerSize?: "sm" | "md" | "lg";
+  /** Size of the prefix text (e.g. "UXic") */
+  prefixSize?: "small" | "medium" | "large" | "x-large"| "2x-large";
+  /** Size of the suffix text (e.g. "AI") */
+  suffixSize?: "small" | "medium" | "large" | "x-large"| "2x-large";
   /** Optional className for custom styling */
   className?: string;
   /** The prefix text (e.g. "UXic" or "Solidic"). Default: "UXic" */
@@ -28,12 +32,16 @@ const sizeClasses = {
 };
 
 export function Logo({
-  size = "md",
+  containerSize = "md",
+  prefixSize = undefined,
+  suffixSize = undefined,
   className = "",
   prefix = "UXic",
   suffix = "AI",
 }: LogoProps) {
-  const classes = sizeClasses[size];
+  const classes = sizeClasses[containerSize];
+  classes.prefixSize = prefixSize ?? classes.prefixSize;
+  classes.suffixSize = suffixSize ?? classes.suffixSize;
 
   return (
     <div className={`flex flex-col items-center gap-1 ${className}`}>
@@ -43,12 +51,14 @@ export function Logo({
                 text-shadow-[2px_2px_6px_rgba(0,0,0,1)] ${classes.container}`}
       >
         <div className="flex flex-col items-center">
-          <div
-            className="text-primary font-black"
+            <div
+            className={`text-black font-black ${
+              prefix === "Solidic" ? "text-brand-web3-cyan" : "text-primary"
+            }`}
             style={{ fontSize: classes.prefixSize }}
-          >
+            >
             {prefix}
-          </div>
+            </div>
           <div
             className="text-brand-web4-purple font-black tracking-widest"
             style={{ fontSize: classes.suffixSize }}

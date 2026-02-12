@@ -8,7 +8,10 @@ dist
 
 # testing
 coverage
+
+# logs
 test-logs*
+dev-server.log
 
 # next.js
 .next/
