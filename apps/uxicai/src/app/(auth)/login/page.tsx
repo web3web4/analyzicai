@@ -1,6 +1,6 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@web3web4/shared-platform";
 import {
   AUTH_NETWORK_ERROR_MESSAGE,
   isNetworkError,
@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
-import { Logo } from "@web3web4/ui-library";
+import { Logo } from "@web3web4/shared-platform";
 
 type SocialProvider =
   | "github"
@@ -36,7 +36,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/dashboard";
 
-  const supabase = createClient();
+  const supabase = createBrowserClient();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

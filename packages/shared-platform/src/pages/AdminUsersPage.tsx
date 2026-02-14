@@ -190,7 +190,6 @@ export default function AdminUsersPage() {
             className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
             <option value="all">All Status</option>
-            <option value="pending">Pending</option>
             <option value="approved">Approved</option>
             <option value="suspended">Suspended</option>
           </select>
@@ -269,7 +268,6 @@ export default function AdminUsersPage() {
                         onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
                         className="rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                       >
-                        <option value="pending">Pending</option>
                         <option value="approved">Approved</option>
                         <option value="suspended">Suspended</option>
                       </select>
@@ -278,8 +276,6 @@ export default function AdminUsersPage() {
                         className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                           user.status === "approved"
                             ? "bg-green-100 text-green-800"
-                            : user.status === "pending"
-                            ? "bg-yellow-100 text-yellow-800"
                             : "bg-red-100 text-red-800"
                         }`}
                       >
@@ -357,7 +353,7 @@ export default function AdminUsersPage() {
                         >
                           Edit
                         </button>
-                        {user.status === "pending" && (
+                        {user.status === "suspended" && (
                           <button
                             onClick={() => handleQuickAction(user.userId, "approve")}
                             className="text-sm font-medium text-green-600 hover:text-green-900"

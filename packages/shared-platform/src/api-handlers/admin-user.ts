@@ -11,7 +11,7 @@ import {
 import { z } from "zod";
 
 const updateSchema = z.object({
-  status: z.enum(["pending", "approved", "suspended"]).optional(),
+  status: z.enum(["approved", "suspended"]).optional(),
   subscriptionTier: z.enum(["free", "pro", "enterprise"]).optional(),
   dailyTokenLimit: z.number().int().min(0).nullable().optional(),
   isAdmin: z.boolean().optional(),

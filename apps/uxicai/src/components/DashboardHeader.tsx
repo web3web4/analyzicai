@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@web3web4/ui-library";
+import { Logo } from "@web3web4/shared-platform";
 import { MobileNav } from "@/components/MobileNav";
 
 export function DashboardHeader() {
@@ -44,6 +44,12 @@ export function DashboardHeader() {
             className="text-muted hover:text-foreground transition-colors"
           >
             History
+          </Link>
+          <Link
+            href="/dashboard/settings"
+            className="text-muted hover:text-foreground transition-colors"
+          >
+            Settings
           </Link>
           <form action="/api/auth/signout" method="post">
             <button

@@ -19,7 +19,6 @@ export * from "./hooks/index";
 // Pages
 export { default as AdminUsersPage } from "./pages/AdminUsersPage";
 export { default as SettingsPage } from "./pages/SettingsPage";
-export { default as PendingApprovalPage } from "./pages/PendingApprovalPage";
 export { default as SuspendedPage } from "./pages/SuspendedPage";
 
 // Config

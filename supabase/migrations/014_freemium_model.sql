@@ -1,16 +1,7 @@
 -- Migration: Switch to freemium model
 -- New users are auto-approved, blocked only if they don't have API keys
 
--- 1. Change default status from 'pending' to 'approved'
-ALTER TABLE user_profiles 
-  ALTER COLUMN status SET DEFAULT 'approved';
-
--- 2. Update existing 'pending' users to 'approved'
-UPDATE user_profiles 
-SET status = 'approved' 
-WHERE status = 'pending';
-
--- 3. Create subscription waitlist table
+-- Create subscription waitlist table
 CREATE TABLE subscription_waitlist (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,

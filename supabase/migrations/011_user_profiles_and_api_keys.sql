@@ -2,13 +2,13 @@
 -- This table stores user-specific settings, rate limits, and encrypted API keys
 
 -- Create ENUM types
-CREATE TYPE user_status AS ENUM ('pending', 'approved', 'suspended');
+CREATE TYPE user_status AS ENUM ('approved', 'suspended');
 CREATE TYPE subscription_tier AS ENUM ('free', 'pro', 'enterprise');
 
 -- Create user_profiles table
 CREATE TABLE user_profiles (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  status user_status NOT NULL DEFAULT 'pending',
+  status user_status NOT NULL DEFAULT 'approved',
   subscription_tier subscription_tier NOT NULL DEFAULT 'free',
   daily_rate_limit INTEGER, -- NULL means use tier default
   is_admin BOOLEAN NOT NULL DEFAULT false,
@@ -93,21 +93,9 @@ CREATE TRIGGER on_user_profile_updated
   FOR EACH ROW
   EXECUTE FUNCTION update_user_profile_updated_at();
 
--- Backfill existing users with 'approved' status (grandfather them in)
-INSERT INTO user_profiles (user_id, status, subscription_tier, is_admin)
-SELECT 
-  id as user_id,
-  'approved' as status,
-  'free' as subscription_tier,
-  false as is_admin
-FROM auth.users
-ON CONFLICT (user_id) DO UPDATE
-SET status = 'approved'
-WHERE user_profiles.status = 'pending';
-
 -- Comment describing the table
 COMMENT ON TABLE user_profiles IS 'User profiles with subscription tiers, rate limits, admin status, and encrypted API keys';
-COMMENT ON COLUMN user_profiles.status IS 'Account status: pending (awaiting approval), approved, or suspended';
+COMMENT ON COLUMN user_profiles.status IS 'Account status: approved, or suspended';
 COMMENT ON COLUMN user_profiles.subscription_tier IS 'Subscription tier determining rate limits and features';
 COMMENT ON COLUMN user_profiles.daily_rate_limit IS 'Custom rate limit override (NULL = use tier default)';
 COMMENT ON COLUMN user_profiles.is_admin IS 'Whether user has admin privileges';

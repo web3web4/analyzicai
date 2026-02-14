@@ -77,7 +77,8 @@ export class GeminiProvider<
           generationConfig: {
             responseMimeType: "application/json",
             temperature: 0.7,
-            maxOutputTokens: 8192,
+            // Increased to 16384 to support large synthesis responses with multiple images
+            maxOutputTokens: 16384,
           },
         }),
       },

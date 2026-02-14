@@ -1,16 +1,14 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
-import Link from "next/link";
+import { createBrowserClient, useApiKeyAccess } from "@web3web4/shared-platform";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/DashboardHeader";
-import {
-  MultiSelectButtonGroup,
-  BusinessSectorSelector,
-} from "@web3web4/ui-library";
+import { MultiSelectButtonGroup, ApiKeysPromptCard } from "@web3web4/shared-platform";
+import { BusinessSectorSelector } from "@web3web4/ai-ui-library";
 import { getProviderTierOptions, ModelTierConfig } from "@web3web4/ai-core/model-tiers";
 import { getModelConfig } from "@/lib/config/models";
+import { NoApiKeysPrompt } from "@web3web4/shared-platform/components";
 
 type SourceType = "upload" | "screen_capture";
 type AIProvider = "openai" | "gemini" | "anthropic";
@@ -50,11 +48,6 @@ export default function AnalyzePage() {
     gemini: "tier1",
     anthropic: "tier1",
   });
-  const [userApiKeys, setUserApiKeys] = useState({
-    openai: "",
-    anthropic: "",
-    gemini: "",
-  });
   const [websiteContext, setWebsiteContext] = useState<
     Partial<import("@web3web4/ai-core").WebsiteContext>
   >({
@@ -71,6 +64,7 @@ export default function AnalyzePage() {
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const { hasAccess, isLoading: checkingAccess } = useApiKeyAccess();
 
   // Load model configuration from database on mount
   useEffect(() => {
@@ -401,7 +395,7 @@ export default function AnalyzePage() {
     setUploadProgress("Preparing...");
 
     try {
-      const supabase = createClient();
+      const supabase = createBrowserClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -464,17 +458,6 @@ export default function AnalyzePage() {
           providers: selectedProviders,
           masterProvider,
           providerModelTiers, // Use per-provider tiers
-          ...(userApiKeys.openai || userApiKeys.anthropic || userApiKeys.gemini
-            ? {
-                userApiKeys: {
-                  ...(userApiKeys.openai && { openai: userApiKeys.openai }),
-                  ...(userApiKeys.anthropic && {
-                    anthropic: userApiKeys.anthropic,
-                  }),
-                  ...(userApiKeys.gemini && { gemini: userApiKeys.gemini }),
-                },
-              }
-            : {}),
           ...(Object.keys(websiteContext).length > 0 && {
             websiteContext,
           }),
@@ -505,6 +488,23 @@ export default function AnalyzePage() {
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
+
+  // Show loading while checking access
+  if (checkingAccess) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-muted">Checking account...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show prompt if no access (no API keys, not admin, no subscription)
+  if (!hasAccess) {
+    return <NoApiKeysPrompt />;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -826,97 +826,8 @@ export default function AnalyzePage() {
           </div>
         </div>
 
-        {/* User API Keys (Optional) */}
-        <div className="glass-card rounded-2xl p-8 mb-8">
-          <h2 className="text-lg font-semibold mb-4">4. API Keys (Optional)</h2>
-          <p className="text-muted text-sm mb-6">
-            Want to use your own API keys? Provide them here. They will be sent
-            directly to the AI providers and not stored.
-          </p>
-
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <svg
-                className="w-5 h-5 text-primary mt-0.5 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div className="text-sm">
-                <p className="font-medium mb-1">Privacy & Security</p>
-                <ul className="text-muted space-y-1">
-                  <li>
-                    • Your keys are sent directly to AI providers (OpenAI,
-                    Anthropic, Google)
-                  </li>
-                  <li>• We do not store or log your API keys</li>
-                  <li>• Keys are only used for this single analysis</li>
-                  <li>• If not provided, we'll use our server keys instead</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {/* OpenAI API Key */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                OpenAI API Key
-                <span className="text-muted font-normal ml-2">(optional)</span>
-              </label>
-              <input
-                type="password"
-                placeholder="sk-..."
-                value={userApiKeys.openai}
-                onChange={(e) =>
-                  setUserApiKeys({ ...userApiKeys, openai: e.target.value })
-                }
-                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
-              />
-            </div>
-
-            {/* Anthropic API Key */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Anthropic API Key
-                <span className="text-muted font-normal ml-2">(optional)</span>
-              </label>
-              <input
-                type="password"
-                placeholder="sk-ant-..."
-                value={userApiKeys.anthropic}
-                onChange={(e) =>
-                  setUserApiKeys({ ...userApiKeys, anthropic: e.target.value })
-                }
-                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
-              />
-            </div>
-
-            {/* Gemini API Key */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Google Gemini API Key
-                <span className="text-muted font-normal ml-2">(optional)</span>
-              </label>
-              <input
-                type="password"
-                placeholder="AI..."
-                value={userApiKeys.gemini}
-                onChange={(e) =>
-                  setUserApiKeys({ ...userApiKeys, gemini: e.target.value })
-                }
-                className="w-full px-4 py-3 bg-surface border border-border rounded-xl focus:outline-none focus:border-primary transition-colors font-mono text-sm"
-              />
-            </div>
-          </div>
-        </div>
+        {/* User API Keys - Inline Modal */}
+        <ApiKeysPromptCard accentColor="primary" className="mb-8" />
 
         {/* Multi-image info */}
         {images.length > 1 && (

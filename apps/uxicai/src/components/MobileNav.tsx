@@ -78,6 +78,13 @@ export function MobileNav() {
             >
               History
             </Link>
+            <Link
+              href="/dashboard/settings"
+              className="px-4 py-2 text-muted hover:text-foreground hover:bg-surface rounded-lg transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              Settings
+            </Link>
             <form action="/api/auth/signout" method="post" className="w-full">
               <button
                 type="submit"

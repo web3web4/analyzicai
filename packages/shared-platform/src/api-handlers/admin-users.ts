@@ -14,7 +14,7 @@ const querySchema = z.object({
     .string()
     .optional()
     .transform((v) => (v ? parseInt(v, 10) : 20)),
-  status: z.enum(["pending", "approved", "suspended"]).optional(),
+  status: z.enum(["approved", "suspended"]).optional(),
   search: z.string().optional(),
 });
 

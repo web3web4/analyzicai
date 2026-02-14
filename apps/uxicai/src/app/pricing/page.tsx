@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@web3web4/ui-library";
+import { Logo } from "@web3web4/shared-platform";
 
 export default function PricingPage() {
   return (

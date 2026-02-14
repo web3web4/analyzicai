@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@web3web4/shared-platform/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/DashboardHeader";
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {recentAnalyses.map((analysis) => (
+              {recentAnalyses.map((analysis: any) => (
                 <Link
                   key={analysis.id}
                   href={`/dashboard/results/${analysis.id}`}

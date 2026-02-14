@@ -6,6 +6,7 @@ import { CategorySection } from "./CategorySection";
 import { RecommendationsSection } from "./RecommendationsSection";
 import { sortRecommendationsBySeverity } from "../lib/utils";
 import { Badge } from "./Badge";
+import { ImageGalleryViewer } from "./ImageGalleryViewer";
 
 interface MainResultsViewProps {
   finalResult: SynthesizedResult;
@@ -18,7 +19,8 @@ export function MainResultsView({
   imageUrls = [], 
   imageCount = 1 
 }: MainResultsViewProps) {
-  const [showImage, setShowImage] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showImage, setShowImage] = useState(true);
   
   // Get top 5 recommendations by severity
   const topRecommendations = sortRecommendationsBySeverity(
@@ -29,44 +31,54 @@ export function MainResultsView({
 
   return (
     <div className="space-y-8">
-      {/* Multi-image info banner */}
-      {hasMultipleImages && (
-        <div className="bg-primary/10 border border-primary/20 px-6 py-4 rounded-xl">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🖼️</span>
-            <div>
-              <p className="font-medium">
-                Combined Analysis of {imageCount} Images
-              </p>
-              <p className="text-sm text-muted">
-                This is the overall analysis across all images. Switch to the &quot;Per Image&quot; tab to see individual results.
-              </p>
+      {/* Uploaded Images Section */}
+      {imageUrls.length > 0 && (
+        <div className="glass-card rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 bg-primary/5 border-b border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🖼️</span>
+                <div>
+                  <h3 className="font-semibold">
+                    {hasMultipleImages 
+                      ? `Analyzed Images (${imageCount})` 
+                      : "Analyzed Screenshot"}
+                  </h3>
+                  {hasMultipleImages && (
+                    <p className="text-sm text-muted">
+                      Combined analysis across all images. See &quot;Per Image&quot; tab for individual results.
+                    </p>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setShowImage(!showImage)}
+                className="px-3 py-1.5 text-sm rounded-lg hover:bg-surface-light transition-colors"
+              >
+                {showImage ? "Hide" : "Show"}
+              </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Single image preview (collapsible) */}
-      {!hasMultipleImages && imageUrls.length > 0 && imageUrls[0] && (
-        <div className="glass-card rounded-2xl overflow-hidden">
-          <button
-            onClick={() => setShowImage(!showImage)}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-surface-light/50 transition-colors"
-          >
-            <span className="font-medium">Analyzed Screenshot</span>
-            <span className="text-muted">{showImage ? "Hide" : "Show"}</span>
-          </button>
+          
           {showImage && (
-            <div className="px-6 pb-6">
-              <img
-                src={imageUrls[0]}
-                alt="Analyzed screenshot"
-                className="w-full max-h-96 object-contain rounded-lg bg-surface-light"
-                onError={(e) => {
-                  console.error("[MainResultsView] Failed to load image:", imageUrls[0]);
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
+            <div className="p-6">
+              {hasMultipleImages ? (
+                <ImageGalleryViewer
+                  imageUrls={imageUrls}
+                  selectedIndex={selectedImageIndex}
+                  onSelectIndex={setSelectedImageIndex}
+                />
+              ) : (
+                <img
+                  src={imageUrls[0]}
+                  alt="Analyzed screenshot"
+                  className="w-full max-h-96 object-contain rounded-lg bg-surface-light"
+                  onError={(e) => {
+                    console.error("[MainResultsView] Failed to load image:", imageUrls[0]);
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              )}
             </div>
           )}
         </div>

@@ -1,20 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
+import { handleAuthCallback } from "@web3web4/shared-platform/api-handlers";
 
-export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code");
-  const redirect = searchParams.get("redirect") || "/dashboard";
-
-  if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error) {
-      return NextResponse.redirect(`${origin}${redirect}`);
-    }
-  }
-
-  // Something went wrong, redirect to login with error
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
-}
+export const GET = handleAuthCallback;

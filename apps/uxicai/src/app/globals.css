@@ -1,5 +1,6 @@
 @import "tailwindcss";
-@source "../../../../packages/ui-library/src/**/*.{ts,tsx}";
+@source "../../../../packages/ai-ui-library/src/**/*.{ts,tsx}";
+@source "../../../../packages/shared-platform/src/**/*.{ts,tsx}";
 
 :root {
   /* Web3Web4 Official Brand Colors */

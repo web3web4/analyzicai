@@ -74,6 +74,18 @@ type LoadRootEnvOptions = {
 };
 
 /**
+ * Detect if we're in a platform environment that injects env vars
+ */
+function isPlatformEnvironment(): boolean {
+  return !!(
+    process.env.VERCEL ||
+    process.env.NETLIFY ||
+    process.env.RAILWAY_ENVIRONMENT ||
+    process.env.CI
+  );
+}
+
+/**
  * Load repo-root env files in a consistent order.
  * Falls back to current working directory if root load fails.
  * Returns true if at least one file was loaded.
@@ -82,7 +94,7 @@ export function loadRootEnv(options: LoadRootEnvOptions = {}): boolean {
   const {
     rootDir = process.cwd(),
     envFiles = defaultEnvFiles,
-    throwIfMissing = true,
+    throwIfMissing = !isPlatformEnvironment(), // Don't throw on Vercel/production platforms
     logger = console.info,
   } = options;
 
