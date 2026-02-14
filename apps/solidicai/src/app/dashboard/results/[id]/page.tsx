@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { LoadingState, StatusBanner } from "@web3web4/shared-platform";
 import { RetryPanel } from "@web3web4/ai-ui-library";
+import { ResultsPageClient } from "./components/ResultsPageClient";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -112,47 +113,30 @@ export default async function ResultPage({ params }: PageProps) {
     isPartial,
   });
 
-  // Fallback if still pending
-  if (!resultData && analysis.status === "pending") {
-    return (
-      <div className="min-h-screen bg-black text-white p-6">
-        <DashboardHeader />
-        <div className="max-w-4xl mx-auto mt-12 text-center">
-          <div className="mb-4">
-            <LoadingState message="Analysis in progress..." variant="solidic" />
-          </div>
-          <p className="text-gray-400 mt-2">Please wait or check back later.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If completely failed
-  if (analysis.status === "failed" && v1Responses.length === 0) {
-    return (
-      <div className="min-h-screen bg-black text-white p-6">
-        <DashboardHeader />
-        <div className="max-w-4xl mx-auto mt-12 text-center">
-          <div className="h-16 w-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Shield className="h-8 w-8 text-red-500" />
-          </div>
-          <h2 className="text-xl font-bold text-red-500">Analysis Failed</h2>
-          <p className="text-gray-400 mt-2">
-            Something went wrong during the analysis.
-          </p>
-          <Link
-            href="/dashboard/analyze"
-            className="mt-6 inline-block px-6 py-2 bg-white/10 rounded-lg hover:bg-white/20"
-          >
-            Try Again
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30">
+    <ResultsPageClient analysisId={id} initialStatus={analysis.status}>
+      {/* If completely failed */}
+      {analysis.status === "failed" && v1Responses.length === 0 ? (
+        <div className="min-h-screen bg-black text-white p-6">
+          <DashboardHeader />
+          <div className="max-w-4xl mx-auto mt-12 text-center">
+            <div className="h-16 w-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Shield className="h-8 w-8 text-red-500" />
+            </div>
+            <h2 className="text-xl font-bold text-red-500">Analysis Failed</h2>
+            <p className="text-gray-400 mt-2">
+              Something went wrong during the analysis.
+            </p>
+            <Link
+              href="/dashboard/analyze"
+              className="mt-6 inline-block px-6 py-2 bg-white/10 rounded-lg hover:bg-white/20"
+            >
+              Try Again
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30">
       <DashboardHeader />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
@@ -616,5 +600,7 @@ export default async function ResultPage({ params }: PageProps) {
         </div>
       </main>
     </div>
+      )}
+    </ResultsPageClient>
   );
 }

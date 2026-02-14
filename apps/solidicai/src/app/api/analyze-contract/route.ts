@@ -12,6 +12,128 @@ import {
 } from "@web3web4/shared-platform/supabase/server";
 import { decryptApiKey } from "@web3web4/shared-platform/auth/crypto";
 
+/**
+ * Runs the analysis pipeline in the background and updates the database incrementally
+ */
+async function runPipelineInBackground(
+  orchestrator: AnalysisOrchestrator<any>,
+  pipelineOptions: {
+    providers: any[];
+    masterProvider: any;
+    truncateCodeForSynthesis?: boolean;
+  },
+  templates: any,
+  context: {
+    systemSuffix: string;
+    userVars: { code: string };
+  },
+  analysisId: string,
+) {
+  const supabase = await createServiceClient();
+
+  try {
+    console.log("[Background Pipeline] Starting pipeline for:", analysisId);
+
+    // Update status to processing
+    await supabase
+      .from("analyses")
+      .update({ status: "processing" })
+      .eq("id", analysisId);
+
+    // Run pipeline with callback to write to DB after each step
+    const results = await orchestrator.runPipeline(
+      pipelineOptions,
+      templates,
+      context,
+      undefined, // no images for contract analysis
+      undefined, // onProgress callback
+      async (step, stepResults) => {
+        // This callback is called after each step completes
+        console.log(
+          `[Background Pipeline] Step ${step} completed with ${stepResults.size} results`,
+        );
+
+        const stepName =
+          step === "v1"
+            ? "v1_initial"
+            : step === "v2"
+            ? "v2_rethink"
+            : "v3_synthesis";
+
+        // Convert Map to array of records
+        const records = Array.from(stepResults.entries()).map(
+          ([provider, data]) => ({
+            analysis_id: analysisId,
+            provider,
+            step: stepName,
+            result: data.result,
+            tokens_used: data.tokensUsed,
+            latency_ms: data.latencyMs,
+          }),
+        );
+
+        if (records.length > 0) {
+          const { error } = await supabase
+            .from("analysis_responses")
+            .insert(records);
+
+          if (error) {
+            console.error(
+              `[Background Pipeline] Failed to store ${stepName} responses:`,
+              error,
+            );
+          } else {
+            console.log(
+              `[Background Pipeline] Stored ${records.length} ${stepName} response(s)`,
+            );
+          }
+        }
+      },
+    );
+
+    console.log("[Background Pipeline] Complete. Score:", results.finalScore);
+
+    // Determine final status based on results
+    const finalStatus = results.hasPartialResults
+      ? results.synthesisResult
+        ? "completed"
+        : "partial"
+      : "completed";
+
+    console.log("[Background Pipeline] Pipeline completed", {
+      analysisId,
+      v1Count: results.v1Results?.size || 0,
+      hasSynthesis: !!results.synthesisResult,
+      errorCount: results.errors?.length || 0,
+      hasPartialResults: results.hasPartialResults,
+      finalStatus,
+    });
+
+    // Update analysis record with final result
+    console.log("[Background Pipeline] Updating analysis record...");
+    await supabase
+      .from("analyses")
+      .update({
+        status: finalStatus,
+        final_score: results.finalScore,
+        completed_at: new Date().toISOString(),
+      })
+      .eq("id", analysisId);
+
+    console.log("[Background Pipeline] Analysis complete and persisted.");
+  } catch (pipelineError) {
+    console.error("[Background Pipeline] Execution failed:", pipelineError);
+
+    // Update DB to failed state
+    await supabase
+      .from("analyses")
+      .update({
+        status: "failed",
+      })
+      .eq("id", analysisId);
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -152,103 +274,35 @@ export async function POST(req: NextRequest) {
     const templates = getContractTemplates();
     const systemSuffix = buildContractContextPrompt(finalContext);
 
-    try {
-      // Run pipeline with generic interface
-      console.log("Running orchestrator pipeline...");
-      const results = await orchestrator.runPipeline(
-        {
-          providers: providers || ["openai", "gemini", "anthropic"],
-          masterProvider: masterProvider || "openai",
-          truncateCodeForSynthesis: truncateCodeForSynthesis, // Pass user preference
-        },
-        templates,
-        {
-          systemSuffix,
-          userVars: { code: analysisCode },
-        },
-      );
-      console.log("Pipeline complete. Score:", results.finalScore);
+    // Return immediately with the analysis ID so user can be redirected
+    // Run the pipeline asynchronously in the background
+    const analysisId = analysis.id;
 
-      // Determine final status based on results
-      const finalStatus = results.hasPartialResults
-        ? results.synthesisResult
-          ? "completed"
-          : "partial"
-        : "completed";
+    // Run pipeline in background (don't await)
+    runPipelineInBackground(
+      orchestrator,
+      {
+        providers: providers || ["openai", "gemini", "anthropic"],
+        masterProvider: masterProvider || "openai",
+        truncateCodeForSynthesis: truncateCodeForSynthesis,
+      },
+      templates,
+      {
+        systemSuffix,
+        userVars: { code: analysisCode },
+      },
+      analysisId,
+    ).catch((error) => {
+      console.error("[Background Pipeline] Fatal error:", error);
+    });
 
-      console.log("[API] Pipeline completed", {
-        v1Count: results.v1Results?.size || 0,
-        hasSynthesis: !!results.synthesisResult,
-        errorCount: results.errors?.length || 0,
-        hasPartialResults: results.hasPartialResults,
-        finalStatus,
-      });
+    console.log("Analysis started in background. Returning to user...");
 
-      // Store all AI responses in database using formatForDatabase
-      const responseRecords = AnalysisOrchestrator.formatForDatabase(
-        analysis.id,
-        results,
-      );
-
-      console.log(
-        "[API] Formatted",
-        responseRecords.length,
-        "records for database",
-      );
-
-      if (responseRecords.length > 0) {
-        const { error: insertError } = await supabase
-          .from("analysis_responses")
-          .insert(responseRecords);
-
-        if (insertError) {
-          console.error(
-            "[API] Failed to store analysis responses:",
-            insertError,
-          );
-          // Continue anyway - analysis completed
-        } else {
-          console.log(
-            "[API] Successfully stored",
-            responseRecords.length,
-            "responses",
-          );
-        }
-      }
-
-      // Update analysis record with result
-      console.log("Updating analysis record in DB...");
-      await supabase
-        .from("analyses")
-        .update({
-          status: finalStatus,
-          final_score: results.finalScore,
-          completed_at: new Date().toISOString(),
-        })
-        .eq("id", analysis.id);
-
-      console.log("Analysis complete and persisted.");
-
-      return NextResponse.json({
-        success: true,
-        analysisId: analysis.id,
-        status: finalStatus,
-        finalScore: results.finalScore,
-        hasPartialResults: results.hasPartialResults,
-      });
-    } catch (pipelineError) {
-      console.error("Pipeline execution failed:", pipelineError);
-
-      // Update DB to failed state
-      await supabase
-        .from("analyses")
-        .update({
-          status: "failed",
-        })
-        .eq("id", analysis.id);
-
-      throw pipelineError; // Re-throw to be caught by outer catch for generic error response
-    }
+    return NextResponse.json({
+      success: true,
+      analysisId: analysisId,
+      status: "pending",
+    });
   } catch (error) {
     console.error("Contract analysis error:", error);
     return NextResponse.json(

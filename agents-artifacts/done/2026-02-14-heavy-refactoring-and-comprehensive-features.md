@@ -26,7 +26,9 @@ apps/
 
 **AI Domain** (`@web3web4/ai-core` + `@web3web4/ai-ui-library`):
 - Multi-provider AI orchestration (OpenAI, Gemini, Claude, Anthropic)
-- Multi-step analysis pipeline
+- Multi-step analysis pipeline (v1 → v2 → v3)
+- **Step completion callbacks** - Incremental progress tracking via `onStepComplete`
+- Background pipeline execution support
 - AI-specific UI components
 - Provider selection and configuration
 
@@ -184,6 +186,20 @@ apps/
 - Gas optimization suggestions
 - Best practices recommendations
 - Multi-provider consensus
+- **Async analysis with immediate redirect** - Users redirected instantly, analysis runs in background
+- **Real-time incremental progress** - Step-by-step updates as pipeline completes
+- **Accurate progress tracking** - Based on actual completed steps, not time estimates
+- **Live status polling** - 2-second polling with provider completion counts
+- **Interactive progress UI** - Circular SVG progress ring, rotating indicators, shimmer animations
+
+**Async Analysis Features** (SolidicAI):
+- Immediate redirect (<500ms) after submission
+- Background pipeline execution with incremental DB writes
+- Step completion callbacks (Step 1 → Step 3)
+- Real-time progress display (Step 1/3, Step 3/3)
+- Provider completion tracking (e.g., "3 providers completed")
+- Auto-refresh when analysis completes
+- Smooth animations and visual feedback
 
 **Common Features**:
 - Business sector context
@@ -285,8 +301,17 @@ apps/
 
 **Analysis Endpoints** (App-Specific):
 - `POST /api/analyze` - Submit UI/UX analysis
-- `POST /api/analyze-contract` - Submit contract analysis
+- `POST /api/analyze-contract` - Submit contract analysis (async with immediate redirect)
+- `GET /api/analysis-status/[id]` - Poll analysis progress and status
 - `POST /api/retry` - Retry failed analysis
+
+**Async Analysis Infrastructure**:
+- Background pipeline execution
+- Incremental database writes via orchestrator callbacks
+- Real-time status polling API
+- Step completion tracking (v1 → v3)
+- Provider completion counts
+- Auto-refresh on completion
 
 **Features**:
 - Request validation with Zod
@@ -294,6 +319,7 @@ apps/
 - Type-safe responses
 - Rate limiting integration
 - Admin authorization checks
+- Background task management
 
 ---
 
