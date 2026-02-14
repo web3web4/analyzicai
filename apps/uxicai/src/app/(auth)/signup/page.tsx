@@ -1,6 +1,6 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@web3web4/shared-platform";
 import {
   AUTH_NETWORK_ERROR_MESSAGE,
   isNetworkError,
@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Logo } from "@web3web4/ui-library";
+import { Logo } from "@web3web4/shared-platform";
 
 type SocialProvider =
   | "github"
@@ -36,7 +36,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const supabase = createClient();
+  const supabase = createBrowserClient();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -134,7 +134,7 @@ export default function SignupPage() {
             Create your account
           </h1>
           <p className="text-muted text-center mb-6">
-            Start with 10 free analyses per day
+            Free to start • Use your own API keys or join waitlist
           </p>
 
           {error && (

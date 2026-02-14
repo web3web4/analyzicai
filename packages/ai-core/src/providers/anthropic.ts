@@ -46,13 +46,14 @@ export class AnthropicProvider<
     }
 
     // Set max tokens based on model capabilities
-    // Haiku: 4096, Sonnet: 8192, Opus: 4096
+    // Increased limits to support large synthesis responses with multiple images
+    // All models now support up to 16384 tokens output
     if (this.model.includes("haiku")) {
-      this.maxTokens = 4096;
+      this.maxTokens = 16384;
     } else if (this.model.includes("sonnet")) {
-      this.maxTokens = 8192;
+      this.maxTokens = 16384;
     } else {
-      this.maxTokens = 4096; // Default safe value
+      this.maxTokens = 16384; // Default safe value
     }
   }
 

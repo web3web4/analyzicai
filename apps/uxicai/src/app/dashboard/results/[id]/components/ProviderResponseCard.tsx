@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type {
   AnalysisResponseRecord,
   AnalysisResult,
@@ -8,19 +8,35 @@ import type {
 } from "@web3web4/ai-core";
 import { CategoryCard } from "./CategoryCard";
 import { RecommendationCard } from "./RecommendationCard";
+import { ImageThumbnailGrid } from "./ImageThumbnailGrid";
+import { StickyImageViewer } from "./StickyImageViewer";
+import { FullscreenImageModal } from "./FullscreenImageModal";
+import { useImageNavigation } from "../hooks/useImageNavigation";
 import { formatDuration, roundScore } from "../lib/utils";
 
 interface ProviderResponseCardProps {
   response: AnalysisResponseRecord;
+  imageUrls?: string[];
 }
 
-export function ProviderResponseCard({ response }: ProviderResponseCardProps) {
+export function ProviderResponseCard({ response, imageUrls = [] }: ProviderResponseCardProps) {
   const result = response.result as AnalysisResult;
   const hasPerImageResults = result.perImageResults && result.perImageResults.length > 0;
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [viewMode, setViewMode] = useState<"overall" | "per-image">(
     hasPerImageResults ? "per-image" : "overall"
   );
+
+  const navigation = useImageNavigation({
+    imageCount: imageUrls.length,
+    initialIndex: 0,
+  });
+
+  // Reset selection when switching view modes
+  useEffect(() => {
+    if (viewMode === "per-image") {
+      navigation.selectIndex(0);
+    }
+  }, [viewMode]);
 
   // Debug logging
   if (process.env.NODE_ENV !== "production") {
@@ -37,7 +53,11 @@ export function ProviderResponseCard({ response }: ProviderResponseCardProps) {
   }
 
   return (
-    <div className="p-6 rounded-xl bg-surface-light border border-border">
+    <div 
+      className="p-6 rounded-xl bg-surface-light border border-border"
+      onKeyDown={navigation.handleKeyDown}
+      tabIndex={0}
+    >
       {/* Provider Header */}
       <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
         <div>
@@ -88,70 +108,96 @@ export function ProviderResponseCard({ response }: ProviderResponseCardProps) {
       {/* Content based on view mode */}
       {viewMode === "per-image" && hasPerImageResults ? (
         <div>
-          {/* Image selector */}
-          <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-2">
-            {result.perImageResults!.map((imgResult: PerImageResult) => (
-              <button
-                key={imgResult.imageIndex}
-                onClick={() => setSelectedImageIndex(imgResult.imageIndex)}
-                className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedImageIndex === imgResult.imageIndex
-                    ? "bg-primary text-white"
-                    : "bg-surface text-muted hover:bg-surface-light"
-                }`}
-              >
-                Image {imgResult.imageIndex + 1}
-                <span className="ml-2 text-xs opacity-75">
-                  {roundScore(imgResult.overallScore)}
-                </span>
-              </button>
-            ))}
-          </div>
+          {/* Thumbnail strip for image selection */}
+          {imageUrls.length > 0 && (
+            <div className="mb-4">
+              <ImageThumbnailGrid
+                imageUrls={imageUrls}
+                selectedIndex={navigation.selectedIndex}
+                onSelectIndex={navigation.selectIndex}
+                imageLoadErrors={navigation.imageLoadErrors}
+                onImageError={navigation.handleImageError}
+                scores={result.perImageResults!.map((r: PerImageResult) => r.overallScore)}
+                showScores={true}
+              />
+            </div>
+          )}
+
+          {/* Image selector buttons (fallback if no images) */}
+          {imageUrls.length === 0 && (
+            <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-2">
+              {result.perImageResults!.map((imgResult: PerImageResult) => (
+                <button
+                  key={imgResult.imageIndex}
+                  onClick={() => navigation.selectIndex(imgResult.imageIndex)}
+                  className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    navigation.selectedIndex === imgResult.imageIndex
+                      ? "bg-primary text-white"
+                      : "bg-surface text-muted hover:bg-surface-light"
+                  }`}
+                >
+                  Image {imgResult.imageIndex + 1}
+                  <span className="ml-2 text-xs opacity-75">
+                    {roundScore(imgResult.overallScore)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Per-image content */}
           {result.perImageResults!.map((imgResult: PerImageResult) => {
-            if (imgResult.imageIndex !== selectedImageIndex) return null;
+            if (imgResult.imageIndex !== navigation.selectedIndex) return null;
+            
+            const imageUrl = imageUrls[imgResult.imageIndex];
             
             return (
-              <div key={imgResult.imageIndex}>
-                {/* Image summary */}
-                <div className="mb-6">
-                  <h5 className="font-medium mb-2">
-                    Image {imgResult.imageIndex + 1} Summary
-                  </h5>
-                  {imgResult.summary ? (
-                    <p className="text-muted">{imgResult.summary}</p>
-                  ) : (
-                    <p className="text-muted italic">No summary provided for this image</p>
-                  )}
-                </div>
-
-                {/* Image categories */}
-                {imgResult.categories && (
-                  <div className="mb-6">
-                    <h5 className="font-medium mb-3">Category Scores</h5>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {Object.entries(imgResult.categories).map(([key, category]) => (
-                        <CategoryCard key={key} categoryKey={key} category={category} />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Image recommendations */}
-                {imgResult.recommendations && imgResult.recommendations.length > 0 && (
+              <StickyImageViewer
+                key={imgResult.imageIndex}
+                imageUrl={imageUrl}
+                imageAlt={`Screenshot ${imgResult.imageIndex + 1}`}
+                onImageClick={() => navigation.setIsFullscreen(true)}
+                onImageError={() => navigation.handleImageError(imgResult.imageIndex)}
+                imageLoadError={navigation.imageLoadErrors.has(imgResult.imageIndex)}
+              >
+                  {/* Image summary */}
                   <div>
-                    <h5 className="font-medium mb-3">
-                      Recommendations ({imgResult.recommendations.length})
+                    <h5 className="font-medium mb-2">
+                      Image {imgResult.imageIndex + 1} Summary
                     </h5>
-                    <div className="space-y-4">
-                      {imgResult.recommendations.map((rec, i) => (
-                        <RecommendationCard key={i} recommendation={rec} />
-                      ))}
-                    </div>
+                    {imgResult.summary ? (
+                      <p className="text-muted">{imgResult.summary}</p>
+                    ) : (
+                      <p className="text-muted italic">No summary provided for this image</p>
+                    )}
                   </div>
-                )}
-              </div>
+
+                  {/* Image categories */}
+                  {imgResult.categories && (
+                    <div>
+                      <h5 className="font-medium mb-3">Category Scores</h5>
+                      <div className="grid gap-4">
+                        {Object.entries(imgResult.categories).map(([key, category]) => (
+                          <CategoryCard key={key} categoryKey={key} category={category} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Image recommendations */}
+                  {imgResult.recommendations && imgResult.recommendations.length > 0 && (
+                    <div>
+                      <h5 className="font-medium mb-3">
+                        Recommendations ({imgResult.recommendations.length})
+                      </h5>
+                      <div className="space-y-4">
+                        {imgResult.recommendations.map((rec, i) => (
+                          <RecommendationCard key={i} recommendation={rec} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </StickyImageViewer>
             );
           })}
         </div>
@@ -203,6 +249,22 @@ export function ProviderResponseCard({ response }: ProviderResponseCardProps) {
           <span>Latency: {formatDuration(response.latency_ms)}</span>
         )}
       </div>
+
+      {/* Fullscreen modal */}
+      <FullscreenImageModal
+        isOpen={!!(navigation.isFullscreen && hasPerImageResults && imageUrls.length > 0)}
+        onClose={() => navigation.setIsFullscreen(false)}
+        imageUrl={imageUrls[navigation.selectedIndex] || ""}
+        imageIndex={navigation.selectedIndex}
+        totalImages={imageUrls.length}
+        imageUrls={imageUrls}
+        onPrevious={navigation.handlePrevious}
+        onNext={navigation.handleNext}
+        onSelectIndex={navigation.selectIndex}
+        imageLoadErrors={navigation.imageLoadErrors}
+        onImageError={navigation.handleImageError}
+        label={response.provider}
+      />
     </div>
   );
 }

@@ -8,11 +8,13 @@ import { roundScore } from "../lib/utils";
 interface ProviderDetailsViewProps {
   v1Responses: AnalysisResponseRecord[];
   v2Responses: AnalysisResponseRecord[];
+  imageUrls?: string[];
 }
 
 export function ProviderDetailsView({
   v1Responses,
   v2Responses,
+  imageUrls = [],
 }: ProviderDetailsViewProps) {
   // Provider comparison data
   const comparisonData = v1Responses.map((response) => {
@@ -125,7 +127,7 @@ export function ProviderDetailsView({
           </h3>
           <div className="space-y-6">
             {v1Responses.map((response) => (
-              <ProviderResponseCard key={response.id} response={response} />
+              <ProviderResponseCard key={response.id} response={response} imageUrls={imageUrls} />
             ))}
           </div>
         </div>
@@ -139,7 +141,7 @@ export function ProviderDetailsView({
           </h3>
           <div className="space-y-6">
             {v2Responses.map((response) => (
-              <ProviderResponseCard key={response.id} response={response} />
+              <ProviderResponseCard key={response.id} response={response} imageUrls={imageUrls} />
             ))}
           </div>
         </div>

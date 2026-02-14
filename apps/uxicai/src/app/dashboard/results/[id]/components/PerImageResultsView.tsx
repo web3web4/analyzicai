@@ -1,14 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
 import type { PerImageResult, CategoryScore } from "@web3web4/ai-core";
 import { ScoreCircle } from "./ScoreCircle";
 import { CategoryCard } from "./CategoryCard";
 import { RecommendationCard } from "./RecommendationCard";
+import { ImageThumbnailGrid } from "./ImageThumbnailGrid";
+import { StickyImageViewer } from "./StickyImageViewer";
+import { FullscreenImageModal } from "./FullscreenImageModal";
+import { useImageNavigation } from "../hooks/useImageNavigation";
 import { sortRecommendationsBySeverity, roundScore } from "../lib/utils";
 
 interface PerImageResultsViewProps {
   perImageResults: PerImageResult[];
   selectedImageIndex: number;
+  imageUrls?: string[];
+  onSelectIndex?: (index: number) => void;
 }
 
 type CategoryKey = keyof PerImageResult["categories"];
@@ -27,7 +34,22 @@ const CATEGORY_KEYS: CategoryKey[] = [
 export function PerImageResultsView({
   perImageResults,
   selectedImageIndex,
+  imageUrls = [],
+  onSelectIndex,
 }: PerImageResultsViewProps) {
+  const navigation = useImageNavigation({
+    imageCount: imageUrls.length,
+    initialIndex: selectedImageIndex,
+    onSelectIndex,
+  });
+
+  // Sync external selectedImageIndex with internal state
+  useEffect(() => {
+    if (selectedImageIndex !== navigation.selectedIndex) {
+      navigation.selectIndex(selectedImageIndex);
+    }
+  }, [selectedImageIndex]);
+
   // Handle case when no per-image results are available
   if (!perImageResults || perImageResults.length === 0) {
     return (
@@ -55,26 +77,46 @@ export function PerImageResultsView({
   }
 
   const sortedRecommendations = sortRecommendationsBySeverity(result.recommendations);
+  const currentImageUrl = imageUrls[navigation.selectedIndex];
+  const scores = perImageResults.map((r) => r.overallScore);
 
   return (
-    <div className="space-y-6">
-      {/* Header with score */}
-      <div className="flex items-center gap-6 pb-4 border-b border-border">
-        <ScoreCircle score={result.overallScore} />
-        <div>
-          <h3 className="text-xl font-semibold mb-2">
-            Image {selectedImageIndex + 1} Analysis
-          </h3>
-          {result.summary && (
-            <p className="text-muted">{result.summary}</p>
-          )}
-        </div>
-      </div>
+    <div className="space-y-6" onKeyDown={navigation.handleKeyDown} tabIndex={0}>
+      {/* Image thumbnails for selection */}
+      <ImageThumbnailGrid
+        imageUrls={imageUrls}
+        selectedIndex={navigation.selectedIndex}
+        onSelectIndex={navigation.selectIndex}
+        imageLoadErrors={navigation.imageLoadErrors}
+        onImageError={navigation.handleImageError}
+        scores={scores}
+        showScores={true}
+      />
 
-      {/* Categories grid */}
-      <div>
-        <h4 className="font-semibold mb-4">Category Breakdown</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <StickyImageViewer
+        imageUrl={currentImageUrl}
+        imageAlt={`Screenshot ${navigation.selectedIndex + 1}`}
+        onImageClick={() => navigation.setIsFullscreen(true)}
+        onImageError={() => navigation.handleImageError(navigation.selectedIndex)}
+        imageLoadError={navigation.imageLoadErrors.has(navigation.selectedIndex)}
+      >
+          {/* Header with score */}
+          <div className="flex items-center gap-6 pb-4 border-b border-border">
+            <ScoreCircle score={result.overallScore} />
+            <div>
+              <h3 className="text-xl font-semibold mb-2">
+                Image {navigation.selectedIndex + 1} Analysis
+              </h3>
+              {result.summary && (
+                <p className="text-muted">{result.summary}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Categories grid */}
+          <div>
+            <h4 className="font-semibold mb-4">Category Breakdown</h4>
+            <div className="grid gap-4">
           {CATEGORY_KEYS.map((categoryKey) => {
             const category = result.categories[categoryKey] as CategoryScore;
             if (!category) return null;
@@ -86,29 +128,45 @@ export function PerImageResultsView({
               />
             );
           })}
-        </div>
-      </div>
+            </div>
+          </div>
 
-      {/* Recommendations */}
-      <div>
-        <h4 className="font-semibold mb-4">
-          Image-Specific Recommendations ({result.recommendations.length})
-        </h4>
-        {sortedRecommendations.length > 0 ? (
-          <div className="space-y-4">
-            {sortedRecommendations.slice(0, 5).map((rec, i) => (
-              <RecommendationCard key={i} recommendation={rec} />
-            ))}
-            {sortedRecommendations.length > 5 && (
-              <p className="text-sm text-muted text-center">
-                + {sortedRecommendations.length - 5} more recommendations
-              </p>
+          {/* Recommendations */}
+          <div>
+            <h4 className="font-semibold mb-4">
+              Image-Specific Recommendations ({result.recommendations.length})
+            </h4>
+            {sortedRecommendations.length > 0 ? (
+              <div className="space-y-4">
+                {sortedRecommendations.slice(0, 5).map((rec, i) => (
+                  <RecommendationCard key={i} recommendation={rec} />
+                ))}
+                {sortedRecommendations.length > 5 && (
+                  <p className="text-sm text-muted text-center">
+                    + {sortedRecommendations.length - 5} more recommendations
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="text-muted">No specific recommendations for this image</p>
             )}
           </div>
-        ) : (
-          <p className="text-muted">No specific recommendations for this image</p>
-        )}
-      </div>
+        </StickyImageViewer>
+
+      {/* Fullscreen modal */}
+      <FullscreenImageModal
+        isOpen={navigation.isFullscreen}
+        onClose={() => navigation.setIsFullscreen(false)}
+        imageUrl={currentImageUrl || ""}
+        imageIndex={navigation.selectedIndex}
+        totalImages={imageUrls.length}
+        imageUrls={imageUrls}
+        onPrevious={navigation.handlePrevious}
+        onNext={navigation.handleNext}
+        onSelectIndex={navigation.selectIndex}
+        imageLoadErrors={navigation.imageLoadErrors}
+        onImageError={navigation.handleImageError}
+      />
     </div>
   );
 }

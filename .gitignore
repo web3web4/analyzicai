@@ -23,12 +23,14 @@ build
 # misc
 .DS_Store
 *.pem
+temp
 
 # debug
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -36,3 +38,4 @@ build
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

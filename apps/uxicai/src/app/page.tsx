@@ -1,7 +1,32 @@
+'use client';
+
 import Link from "next/link";
-import { Logo } from "@web3web4/ui-library";
+import { Logo } from "@web3web4/shared-platform";
+import { createBrowserClient } from '@web3web4/shared-platform/supabase/client';
+import { useEffect, useState } from 'react';
+import { User } from 'lucide-react';
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+    };
+
+    checkAuth();
+
+    const supabase = createBrowserClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -27,18 +52,40 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-muted hover:text-foreground transition-colors"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              className="btn-primary px-5 py-2 rounded-full text-white font-medium"
-            >
-              Get Started
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <form action="/api/auth/signout" method="post">
+                  <button
+                    type="submit"
+                    className="text-muted hover:text-foreground transition-colors"
+                  >
+                    Sign out
+                  </button>
+                </form>
+                <Link
+                  href="/dashboard"
+                  className="btn-primary px-5 py-2 rounded-full text-white font-medium flex items-center gap-2"
+                >
+                  <User className="w-4 h-4" />
+                  Dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-muted hover:text-foreground transition-colors"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="btn-primary px-5 py-2 rounded-full text-white font-medium"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </nav>
 
@@ -185,13 +232,13 @@ export default function Home() {
             Ready to improve your designs?
           </h2>
           <p className="text-muted text-lg mb-10">
-            Get started with 10 free analyses per day. No credit card required.
+            Sign up free and use your own API keys, or join the waitlist for our upcoming subscription plans. No credit card required.
           </p>
           <Link
             href="/signup"
             className="btn-primary px-10 py-4 rounded-full text-white font-semibold text-lg glow inline-block"
           >
-            Create Free Account
+            Get Started
           </Link>
         </div>
       </section>

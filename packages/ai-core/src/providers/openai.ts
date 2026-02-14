@@ -78,7 +78,8 @@ export class OpenAIProvider<
       model: this.model,
       messages,
       // GPT-5 models use max_completion_tokens instead of max_tokens
-      max_completion_tokens: 4096,
+      // Increased to 16384 to support large synthesis responses with multiple images
+      max_completion_tokens: 16384,
     };
 
     // Only add response_format if no images (vision models don't support it)

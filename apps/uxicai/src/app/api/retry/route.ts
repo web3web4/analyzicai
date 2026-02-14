@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@web3web4/shared-platform/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { AIProvider } from "@web3web4/ai-core";
@@ -94,8 +94,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Initialize orchestrator
-    const { AnalysisOrchestrator, analysisResultSchema } =
-      await import("@web3web4/ai-core");
+    const { AnalysisOrchestrator, analysisResultSchema } = await import(
+      "@web3web4/ai-core"
+    );
     const orchestrator = new AnalysisOrchestrator({
       apiKeys: {
         openai: process.env.OPENAI_API_KEY,
@@ -110,8 +111,9 @@ export async function POST(request: NextRequest) {
     try {
       if (retryStep === "v1_initial") {
         // Retry failed initial analyses (with optional provider substitution)
-        const { getUXTemplates, buildUXPrompt } =
-          await import("@web3web4/ai-core");
+        const { getUXTemplates, buildUXPrompt } = await import(
+          "@web3web4/ai-core"
+        );
         const imageCount = imagesBase64.length;
         const templates = getUXTemplates(imageCount);
         const systemPrompt = templates.initial.systemPrompt;
@@ -220,8 +222,9 @@ export async function POST(request: NextRequest) {
             .eq("step", "v3_synthesis");
 
           // Retry synthesis
-          const { getUXTemplates, buildUXPrompt } =
-            await import("@web3web4/ai-core");
+          const { getUXTemplates, buildUXPrompt } = await import(
+            "@web3web4/ai-core"
+          );
           const templates = getUXTemplates(imagesBase64.length);
           const systemPrompt = templates.synthesis.systemPrompt;
           const userPrompt = buildUXPrompt(
@@ -303,8 +306,9 @@ export async function POST(request: NextRequest) {
           .eq("analysis_id", analysisId)
           .eq("step", "v3_synthesis");
 
-        const { getUXTemplates, buildUXPrompt } =
-          await import("@web3web4/ai-core");
+        const { getUXTemplates, buildUXPrompt } = await import(
+          "@web3web4/ai-core"
+        );
         const templates = getUXTemplates(imagesBase64.length);
         const systemPrompt = templates.synthesis.systemPrompt;
         const userPrompt = buildUXPrompt(
@@ -347,7 +351,10 @@ export async function POST(request: NextRequest) {
 
         const message =
           newMasterProvider && newMasterProvider !== masterProvider
-            ? `Successfully retried synthesis with ${PROVIDER_INFO[newMasterProvider as AIProvider]?.name || newMasterProvider}`
+            ? `Successfully retried synthesis with ${
+                PROVIDER_INFO[newMasterProvider as AIProvider]?.name ||
+                newMasterProvider
+              }`
             : "Successfully retried synthesis";
 
         return NextResponse.json({

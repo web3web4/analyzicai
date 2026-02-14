@@ -303,6 +303,13 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
     promptContext: { systemSuffix?: string; userVars: Record<string, any> },
     imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
+    onStepComplete?: (
+      step: "v1" | "v2" | "v3",
+      results: Map<
+        AIProvider,
+        { result: TResult; tokensUsed: number; latencyMs: number }
+      >,
+    ) => Promise<void>,
   ): Promise<OrchestratorResult<TResult>> {
     // Validate providers
     this.validateProviders(config);
@@ -324,6 +331,11 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
     console.log(
       `[Orchestrator] Step 1 complete: ${v1Results.size} successful, ${step1.errors.length} failed`,
     );
+
+    // Call callback after step 1 completes
+    if (onStepComplete && v1Results.size > 0) {
+      await onStepComplete("v1", v1Results);
+    }
 
     if (v1Results.size === 0) {
       throw new Error(
@@ -348,6 +360,16 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
       imagesBase64,
       onProgress,
     );
+
+    // Call callback after step 3 completes
+    if (onStepComplete && synthesisResult) {
+      const synthesisMap = new Map<
+        AIProvider,
+        { result: TResult; tokensUsed: number; latencyMs: number }
+      >();
+      synthesisMap.set(config.masterProvider, synthesisResult);
+      await onStepComplete("v3", synthesisMap);
+    }
 
     if (!synthesisResult) {
       allErrors.push({

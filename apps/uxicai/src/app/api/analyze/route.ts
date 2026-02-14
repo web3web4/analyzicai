@@ -1,6 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import {
+  createClient,
+  createServiceClient,
+} from "@web3web4/shared-platform/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@web3web4/shared-platform/auth/rate-limit";
+import { decryptApiKey } from "@web3web4/shared-platform/auth/crypto";
 import { z } from "zod";
 import {
   AIProvider,
@@ -50,6 +54,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Fetch user's stored API keys from profile
+    const serviceSupabase = await createServiceClient();
+    const { data: profile } = await serviceSupabase
+      .from("user_profiles")
+      .select(
+        "encrypted_openai_key, encrypted_anthropic_key, encrypted_gemini_key",
+      )
+      .eq("user_id", user.id)
+      .single();
+
+    // Decrypt stored API keys if they exist
+    const storedApiKeys = {
+      openai: profile?.encrypted_openai_key
+        ? await decryptApiKey(profile.encrypted_openai_key)
+        : null,
+      anthropic: profile?.encrypted_anthropic_key
+        ? await decryptApiKey(profile.encrypted_anthropic_key)
+        : null,
+      gemini: profile?.encrypted_gemini_key
+        ? await decryptApiKey(profile.encrypted_gemini_key)
+        : null,
+    };
+
+    console.log("[API] Stored API keys available:", {
+      openai: !!storedApiKeys.openai,
+      anthropic: !!storedApiKeys.anthropic,
+      gemini: !!storedApiKeys.gemini,
+    });
+
     // Parse and validate request
     const body = await request.json();
     const {
@@ -60,13 +93,6 @@ export async function POST(request: NextRequest) {
       websiteContext,
       userApiKeys,
     } = analyzeRequestSchema.parse(body);
-
-    // Check if user provided any API keys
-    const hasUserKeys = !!(
-      userApiKeys?.openai ||
-      userApiKeys?.anthropic ||
-      userApiKeys?.gemini
-    );
 
     // Get analysis record
     const { data: analysis, error: fetchError } = await supabase
@@ -160,16 +186,35 @@ export async function POST(request: NextRequest) {
 
     try {
       // Initialize orchestrator with API keys and per-provider model tiers
-      // Prioritize user-provided keys, fall back to server keys
+      // Priority: 1. Stored keys (from user profile), 2. Request-provided keys, 3. Server keys
       const orchestrator = new AnalysisOrchestrator({
         apiKeys: {
-          openai: userApiKeys?.openai || process.env.OPENAI_API_KEY,
-          gemini: userApiKeys?.gemini || process.env.GEMINI_API_KEY,
-          anthropic: userApiKeys?.anthropic || process.env.ANTHROPIC_API_KEY,
+          openai:
+            storedApiKeys.openai ||
+            userApiKeys?.openai ||
+            process.env.OPENAI_API_KEY,
+          gemini:
+            storedApiKeys.gemini ||
+            userApiKeys?.gemini ||
+            process.env.GEMINI_API_KEY,
+          anthropic:
+            storedApiKeys.anthropic ||
+            userApiKeys?.anthropic ||
+            process.env.ANTHROPIC_API_KEY,
         },
         providerModelTiers,
         schema: analysisResultSchema,
       });
+
+      // Track if using user keys (stored or provided in request)
+      const hasUserKeys = !!(
+        storedApiKeys.openai ||
+        storedApiKeys.anthropic ||
+        storedApiKeys.gemini ||
+        userApiKeys?.openai ||
+        userApiKeys?.anthropic ||
+        userApiKeys?.gemini
+      );
 
       // Update status and track if using user keys
       await supabase

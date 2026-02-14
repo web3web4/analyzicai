@@ -51,8 +51,8 @@ export default function CTA() {
         {/* Features grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
           <div className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-            <div className="text-3xl font-bold text-white mb-2">Free Start</div>
-            <div className="text-white/80">Create an account for free</div>
+            <div className="text-3xl font-bold text-white mb-2">Free Sign Up</div>
+            <div className="text-white/80">No credit card required</div>
           </div>
           
           <div className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">

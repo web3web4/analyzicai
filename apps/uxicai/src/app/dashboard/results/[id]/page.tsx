@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@web3web4/shared-platform/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import type { SynthesizedResult } from "@web3web4/ai-core";
 import { ResultsHeader } from "./components/ResultsHeader";
 import { ScoreOverview } from "./components/ScoreOverview";
 import { ResultsContent } from "./components/ResultsContent";
-import { StatusBanner, LoadingState } from "@web3web4/ui-library";
+import { StatusBanner, LoadingState } from "@web3web4/shared-platform";
 
 interface PageProps {
   params: Promise<{ id: string }>;
