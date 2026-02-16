@@ -1,44 +1,62 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type MouseEvent } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { scrollToSection } from '@/lib/scroll-config';
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [active, setActive] = useState('');
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleHash = () => {
+      setActive(window.location.hash);
+    };
+    window.addEventListener('hashchange', handleHash);
+    handleHash();
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
   const navLinks = [
-    { href: '#features', label: 'Features' },
     { href: '#apps', label: 'AnalyzicAI Apps' },
+    { href: '#features', label: 'Features' },
     { href: '#how-it-works', label: 'How It Works' },
   ];
+
+  const handleNav = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    scrollToSection(href);
+    setActive(href);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg'
+          ? 'bg-surface-900/90 backdrop-blur-xl border-b border-white/10'
           : 'bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
+          <Link href="/" className="flex items-center space-x-2 group">
+            <div className="w-10 h-10 bg-surface-800 flex items-center justify-center border border-cyan/40">
               <span className="text-white font-bold text-xl">A</span>
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold text-cyan tracking-widest font-mono group-hover:text-gradient-cyber transition-colors">
               AnalyzicAI
             </span>
           </Link>
@@ -46,61 +64,72 @@ export default function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
-                className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-medium"
+                onClick={(e) => handleNav(e, link.href)}
+                className={`relative font-mono text-white/80 hover:text-cyan transition-colors cursor-pointer ${
+                  active === link.href
+                    ? 'text-cyan after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[2px] after:bg-cyan'
+                    : ''
+                }`}
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
-            <Link
+            <a
               href="#cta"
-              className="px-6 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-lg hover:from-primary-700 hover:to-secondary-700 transition-all font-medium shadow-lg hover:shadow-xl"
+              onClick={(e) => handleNav(e, '#cta')}
+              className="px-6 py-2 border-2 border-cyan text-cyan font-mono font-bold transition-all hover:bg-cyan hover:text-black cursor-pointer"
             >
               Get Started
-            </Link>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="md:hidden p-2 border border-cyan/40 bg-surface-800 text-cyan transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={isMobileMenuOpen}
           >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-          <div className="px-4 py-4 space-y-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="md:hidden fixed top-16 right-0 w-72 h-[calc(100vh-4rem)] bg-surface-900 border-l border-cyan/20 z-50"
+          >
+            <div className="px-6 py-6 space-y-4">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="block font-mono text-white/80 hover:text-cyan transition-colors"
+                  onClick={(e) => handleNav(e, link.href)}
+                >
+                  {link.label}
+                </a>
+              ))}
+              <a
+                href="#cta"
+                className="block px-6 py-2 border-2 border-cyan text-cyan font-mono font-bold transition-all hover:bg-cyan hover:text-black text-center"
+                onClick={(e) => handleNav(e, '#cta')}
               >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              href="#cta"
-              className="block px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-lg text-center font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Get Started
-            </Link>
-          </div>
-        </div>
-      )}
+                Get Started
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

@@ -1,83 +1,123 @@
-import { ArrowRight, Sparkles } from 'lucide-react';
-import Link from 'next/link';
+'use client';
+
+import { ArrowRight, Sparkles, ChevronDown } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
+import GlitchText from './animations/GlitchText';
+import { scrollToSection } from '@/lib/scroll-config';
 
 export default function Hero() {
+  const noMotion = !!useReducedMotion();
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-secondary-50 to-primary-100 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 animate-gradient" />
-      
-      {/* Animated background shapes */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-primary-200/30 to-transparent rounded-full blur-3xl animate-float" />
-        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-secondary-200/30 to-transparent rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
-      </div>
+    <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+        {/* Badge */}
+        <motion.div
+          initial={noMotion ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          <div className="inline-flex items-center space-x-2 px-4 py-2 border border-cyan/30 bg-surface-800/60 backdrop-blur-sm mb-8 font-mono text-sm">
+            <Sparkles className="w-4 h-4 text-cyan" />
+            <span className="text-cyan">AI-Powered Analysis Tools</span>
+          </div>
+        </motion.div>
 
-      {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-        <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full mb-8 shadow-lg">
-          <Sparkles className="w-4 h-4 text-primary-600" />
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            AI-Powered Analysis Tools
-          </span>
-        </div>
-
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary-600 via-secondary-600 to-primary-600 bg-clip-text text-transparent animate-gradient">
+        {/* Heading */}
+        <motion.h1
+          className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight"
+          initial={noMotion ? false : { opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.25 }}
+        >
           Transform Your Workflow
           <br />
-          with AI Analysis
-        </h1>
+          with{' '}
+          <GlitchText trigger="viewport" variant="cyan" as="span" className="text-cyan text-glow-subtle">
+            AI Analysis
+          </GlitchText>
+        </motion.h1>
 
-        <p className="text-xl sm:text-2xl text-gray-700 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-          Comprehensive suite of AI-powered tools designed to analyze, optimize, and enhance your UI/UX designs, smart contracts, and more.
-        </p>
+        {/* Subtitle */}
+        <motion.p
+          className="text-lg sm:text-xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed"
+          initial={noMotion ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.45 }}
+        >
+          Comprehensive suite of AI-powered tools designed to analyze, optimize,
+          and enhance your UI/UX designs, smart contracts, and more.
+        </motion.p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link
-            href="#apps"
-            className="group px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl hover:from-primary-700 hover:to-secondary-700 transition-all font-semibold shadow-xl hover:shadow-2xl flex items-center space-x-2 text-lg"
+        {/* CTA buttons */}
+        <motion.div
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          initial={noMotion ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <button
+            onClick={() => scrollToSection('#apps')}
+            className="group px-8 py-4 bg-cyan text-black font-mono font-bold border-2 border-cyan transition-all hover:bg-cyan/90 flex items-center space-x-2 text-lg cursor-pointer"
           >
             <span>Explore AnalyzicAI Apps</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-          
-          <Link
-            href="#how-it-works"
-            className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700 text-lg"
+          </button>
+
+          <button
+            onClick={() => scrollToSection('#how-it-works')}
+            className="px-8 py-4 bg-transparent text-magenta font-mono font-bold border-2 border-magenta/50 transition-all hover:border-magenta hover:bg-magenta/5 text-lg cursor-pointer"
           >
             Learn More
-          </Link>
-        </div>
+          </button>
+        </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-20 max-w-4xl mx-auto">
-          <div className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg">
-            <div className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
-              Multi-AI
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 max-w-4xl mx-auto"
+          initial={noMotion ? false : { opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+        >
+          {[
+            { value: 'Multi-AI', label: 'OpenAI, Gemini & Claude', color: 'cyan' as const },
+            { value: 'Real-time', label: 'Instant Analysis', color: 'magenta' as const },
+            { value: 'Secure', label: 'Enterprise-grade Privacy', color: 'cyan' as const },
+          ].map((stat) => (
+            <div
+              key={stat.value}
+              className="p-6 bg-surface-800/50 backdrop-blur-sm border border-white/10 transition-all hover:border-cyan/30"
+            >
+              <div
+                className={`text-3xl sm:text-4xl font-bold font-mono mb-2 ${
+                  stat.color === 'cyan' ? 'text-cyan' : 'text-magenta'
+                }`}
+              >
+                {stat.value}
+              </div>
+              <div className="text-white/60 font-medium text-sm">
+                {stat.label}
+              </div>
             </div>
-            <div className="text-gray-600 dark:text-gray-400 font-medium">
-              OpenAI, Gemini & Claude
-            </div>
-          </div>
-          
-          <div className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg">
-            <div className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
-              Real-time
-            </div>
-            <div className="text-gray-600 dark:text-gray-400 font-medium">
-              Instant Analysis
-            </div>
-          </div>
-          
-          <div className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg">
-            <div className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
-              Secure
-            </div>
-            <div className="text-gray-600 dark:text-gray-400 font-medium">
-              Enterprise-grade Privacy
-            </div>
-          </div>
-        </div>
+          ))}
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          className="mt-10 flex flex-col items-center gap-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+          aria-hidden="true"
+        >
+          <span className="text-xs font-mono text-white/50 tracking-widest uppercase">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <ChevronDown className="w-5 h-5 text-cyan/60" />
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

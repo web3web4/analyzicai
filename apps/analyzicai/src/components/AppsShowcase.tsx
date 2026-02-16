@@ -1,5 +1,8 @@
+'use client';
+
 import { Palette, Code2, ArrowRight, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+import ScrollReveal from './animations/ScrollReveal';
 
 const apps = [
   {
@@ -7,7 +10,7 @@ const apps = [
     tagline: 'AI-Powered UI/UX Analysis',
     description: 'Upload screenshots or capture screens to get comprehensive design feedback from multiple AI providers. Analyze visual hierarchy, accessibility, user experience, and design consistency.',
     icon: Palette,
-    color: 'from-blue-500 to-purple-500',
+    accent: 'cyan' as const,
     features: [
       'Screenshot analysis with WebRTC capture',
       'Multi-provider AI vision analysis',
@@ -23,7 +26,7 @@ const apps = [
     tagline: 'Smart Contract Intelligence',
     description: 'Analyze Solidity smart contracts for security vulnerabilities, gas optimization opportunities, and best practice compliance. Get expert-level code review powered by AI.',
     icon: Code2,
-    color: 'from-emerald-500 to-teal-500',
+    accent: 'magenta' as const,
     features: [
       'Security vulnerability detection',
       'Gas optimization analysis',
@@ -38,81 +41,105 @@ const apps = [
 
 export default function AppsShowcase() {
   return (
-    <section id="apps" className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-            AnalyzicAI Apps Family
+    <section id="apps" className="relative py-10">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section heading */}
+        <ScrollReveal className="text-center mb-10">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
+            AnalyzicAI <span className="text-magenta">Apps</span> Family
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg text-white/70 max-w-2xl mx-auto font-mono">
             Specialized AI-powered analysis tools for different domains
           </p>
-        </div>
+        </ScrollReveal>
 
-        <div className="space-y-8">
-          {apps.map((app, index) => (
-            <div
-              key={index}
-              className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 lg:p-12">
-                {/* Left side - Info */}
-                <div className="flex flex-col justify-center">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className={`w-16 h-16 bg-gradient-to-br ${app.color} rounded-2xl flex items-center justify-center shadow-lg`}>
-                      <app.icon className="w-8 h-8 text-white" />
+        {/* App cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {apps.map((app, index) => {
+            const isCyan = app.accent === 'cyan';
+            return (
+              <ScrollReveal
+                key={index}
+                direction={isCyan ? 'left' : 'right'}
+                delay={index * 0.15}
+              >
+                <div className="group relative h-full bg-surface-800/60 border border-white/[0.08] transition-all duration-300 hover:border-cyan/20 overflow-hidden">
+                  {/* Left accent border */}
+                  <div
+                    className={`absolute top-0 left-0 w-[2px] h-full ${
+                      isCyan ? 'bg-cyan' : 'bg-magenta'
+                    }`}
+                  />
+
+                  <div className="p-8 lg:p-10">
+                    {/* Header */}
+                    <div className="flex items-center space-x-4 mb-6">
+                      <div
+                        className={`w-14 h-14 flex items-center justify-center border ${
+                          isCyan
+                            ? 'border-cyan/30 bg-cyan/[0.08]'
+                            : 'border-magenta/30 bg-magenta/[0.08]'
+                        }`}
+                      >
+                        <app.icon className={`w-7 h-7 ${isCyan ? 'text-cyan' : 'text-magenta'}`} />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-white">{app.name}</h3>
+                        <p className={`text-sm font-mono ${isCyan ? 'text-cyan' : 'text-magenta'}`}>
+                          {app.tagline}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                        {app.name}
-                      </h3>
-                      <p className={`text-sm font-semibold bg-gradient-to-r ${app.color} bg-clip-text text-transparent`}>
-                        {app.tagline}
-                      </p>
+
+                    {/* Description */}
+                    <p className="text-white/70 leading-relaxed mb-6">
+                      {app.description}
+                    </p>
+
+                    {/* Features */}
+                    <ul className="space-y-2 mb-8">
+                      {app.features.map((feature, fi) => (
+                        <li key={fi} className="flex items-start space-x-3">
+                          <span
+                            className={`mt-2 w-1.5 h-1.5 flex-shrink-0 ${
+                              isCyan ? 'bg-cyan' : 'bg-magenta'
+                            }`}
+                          />
+                          <span className="text-white/70 text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Actions */}
+                    <div className="flex items-center space-x-4">
+                      <Link
+                        href={app.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`group/btn px-6 py-3 font-mono font-bold text-sm flex items-center space-x-2 transition-all border-2 ${
+                          isCyan
+                            ? 'border-cyan bg-cyan text-black hover:bg-cyan/90'
+                            : 'border-magenta bg-magenta text-white hover:bg-magenta/90'
+                        }`}
+                      >
+                        <span>Visit {app.name}</span>
+                        <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+                      </Link>
+                      <span
+                        className={`px-3 py-1 text-xs font-mono border ${
+                          isCyan
+                            ? 'border-cyan/30 text-cyan bg-cyan/[0.06]'
+                            : 'border-magenta/30 text-magenta bg-magenta/[0.06]'
+                        }`}
+                      >
+                        {app.status}
+                      </span>
                     </div>
                   </div>
-
-                  <p className="text-lg text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                    {app.description}
-                  </p>
-
-                  <div className="flex items-center space-x-3 mb-8">
-                    <Link
-                      href={app.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`group px-6 py-3 bg-gradient-to-r ${app.color} text-white rounded-xl hover:shadow-lg transition-all font-semibold flex items-center space-x-2`}
-                    >
-                      <span>Visit {app.name}</span>
-                      <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                    <span className="px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg font-medium text-sm">
-                      {app.status}
-                    </span>
-                  </div>
                 </div>
-
-                {/* Right side - Features */}
-                <div className="flex flex-col justify-center">
-                  <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                    Key Features
-                  </h4>
-                  <ul className="space-y-3">
-                    {app.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start space-x-3">
-                        <div className={`mt-1 w-5 h-5 bg-gradient-to-br ${app.color} rounded-full flex items-center justify-center flex-shrink-0`}>
-                          <ArrowRight className="w-3 h-3 text-white" />
-                        </div>
-                        <span className="text-gray-700 dark:text-gray-300">
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          ))}
+              </ScrollReveal>
+            );
+          })}
         </div>
       </div>
     </section>
