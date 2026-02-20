@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { scrollToSection } from '@/lib/scroll-config';
+import { Logo } from '@web3web4/shared-platform';
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -53,12 +54,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-surface-800 flex items-center justify-center border border-ai/40">
-              <span className="text-white font-bold text-xl">A</span>
-            </div>
-            <span className="text-xl font-bold tracking-widest font-mono group-hover:text-gradient-cyber transition-colors">
-              <span className="text-white">Analyzic</span><span className="text-ai">AI</span>
-            </span>
+            <Logo prefix="Analyzic" containerSize="sm" />
           </Link>
 
           {/* Desktop Navigation */}

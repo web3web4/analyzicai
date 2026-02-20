@@ -67,6 +67,23 @@ UXicAI      →  [UXic:     #FF2D9E]  [AI: #C044FF]
 
 ---
 
+## Logo System
+
+The AnalyzicAI family uses the **"AI Spark"** geometric logo system. Every product features a domain-specific container powered by a shared central element: the **AI Spark** (a 4-pointed purple star).
+
+| Product | Concept | Container Shape | Container Color | Center Element |
+|---|---|---|---|---|
+| **AnalyzicAI** | The Data Apex | Chevron (`^`) | `#FFFFFF` (Analyzic White) | AI Spark (`#C044FF`) |
+| **SolidicAI** | The Code Core | Cascadia Code Braces (`{ }`) | `#00FFD1` (Blockchain Cyan) | AI Spark (`#C044FF`) |
+| **UXicAI** | The Viewfinder | Viewfinder Brackets (`[ ]` style) | `#FF2D9E` (UX Pink) | AI Spark (`#C044FF`) |
+
+**Design Rules:**
+- **Stroke:** `stroke-linecap="round"`, `stroke-linejoin="round"`.
+- **Glow:** The central AI Spark has a subtle `feGaussianBlur` glow effect on dark backgrounds (`#0F0F18`).
+- **Proportions:** The internal negative space of the SolidicAI `{ }` braces is widened to form a perfect square, matching the exact gap proportions of the UXicAI viewfinder brackets.
+
+---
+
 ## Background Scale
 
 ```
@@ -145,5 +162,5 @@ UXicAI      →  [UXic:     #FF2D9E]  [AI: #C044FF]
 
 ## Preview Files
 
-- `temp/brand-colors.html` — palette swatches, wordmarks, usage contexts, gradients
-- `temp/ux-color-check.html` — UX pink variant comparison across all contexts
+- `archive/brand-and-logo/brand-colors.html` — palette swatches, wordmarks, usage contexts, gradients
+- `archive/brand-and-logo/ux-color-check.html` — UX pink variant comparison across all contexts

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Github, Mail } from 'lucide-react';
+import { Logo } from '@web3web4/shared-platform';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -28,12 +29,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4 group">
-              <div className="w-10 h-10 bg-surface-800 flex items-center justify-center border border-ai/40">
-                <span className="text-white font-bold text-xl">A</span>
-              </div>
-              <span className="text-xl font-bold tracking-widest font-mono">
-                <span className="text-white">Analyzic</span><span className="text-ai">AI</span>
-              </span>
+              <Logo prefix="Analyzic" containerSize="sm" />
             </Link>
             <p className="text-white/60 mb-4 max-w-md text-sm">
               Empowering developers and designers with AI-powered analysis tools for UI/UX, smart contracts, and more.

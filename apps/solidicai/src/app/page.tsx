@@ -154,7 +154,7 @@ export default function Home() {
       <footer className="py-12 px-6 border-t border-white/10 bg-slate-900/50">
         <div className="max-w-7xl mx-auto md:items-start lg:items-start flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
           <div className="flex flex-col md:flex-row gap-6 max-w-2xl">
-            <Logo containerSize="md" prefix="Solidic" prefixSize="medium" />
+            <Logo containerSize="md" prefix="Solidic" />
             <div className="flex flex-col gap-1">
               <div className="text-sm text-gray-400">
                 AI-powered smart contract analysis

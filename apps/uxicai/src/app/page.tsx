@@ -42,7 +42,7 @@ export default function Home() {
 
         <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
-            <Logo containerSize="sm" />
+            <Logo prefix="UXic" containerSize="sm" />
             <div className="h-8 w-[1px] bg-border mx-1 hidden md:block" />
             <div className="hidden md:block">
               <div className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">
@@ -246,7 +246,7 @@ export default function Home() {
       <footer className="py-12 px-6 border-t border-border bg-surface">
         <div className="max-w-7xl mx-auto md:items-start lg:items-start flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
           <div className="flex flex-col md:flex-row gap-6 max-w-2xl">
-            <Logo containerSize="md" />
+            <Logo prefix="UXic" containerSize="md" />
             <div className="flex flex-col gap-1">
               <div className="text-sm text-muted">
                 AI-powered UI/UX analysis

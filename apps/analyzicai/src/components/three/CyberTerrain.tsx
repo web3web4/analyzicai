@@ -274,12 +274,10 @@ function EndLogo() {
       core: [
         strokeBox(-s * 0.52, -s, 0, s, core),
         strokeBox(0, s, s * 0.52, -s, core),
-        strokeBox(-s * 0.28, -s * 0.15, s * 0.28, -s * 0.15, core * 0.75),
       ],
       halo: [
         strokeBox(-s * 0.52, -s, 0, s, glow),
         strokeBox(0, s, s * 0.52, -s, glow),
-        strokeBox(-s * 0.28, -s * 0.15, s * 0.28, -s * 0.15, glow * 0.75),
       ],
     };
   }, []);
@@ -291,31 +289,31 @@ function EndLogo() {
     groupRef.current.rotation.y = Math.sin(clock.current * 0.3) * 0.15;
   });
 
-  // Flat-top hex rotation (Math.PI / 6 = 30°)
-  const hexRot: [number, number, number] = [0, 0, Math.PI / 6];
+  // Square rotation (Math.PI / 4 = 45°)
+  const hexRot: [number, number, number] = [0, 0, Math.PI / 4];
 
   return (
     <group ref={groupRef} position={[0, 6, Z_END + 5]}>
-      {/* ── Hexagon — one ring, glow bleeds from its own edges ── */}
+      {/* ── Square — one ring, glow bleeds from its own edges ── */}
       {/* Outer bloom (bleeds outside the ring) */}
       <mesh rotation={hexRot} position={[0, 0, -0.2]}>
-        <ringGeometry args={[7.4, 8.5, 6]} />
+        <ringGeometry args={[7.4, 8.5, 4]} />
         <meshBasicMaterial color="#C044FF" transparent opacity={0.06} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
       {/* Inner bloom (bleeds inside the ring) */}
       <mesh rotation={hexRot} position={[0, 0, -0.1]}>
-        <ringGeometry args={[5.4, 6.1, 6]} />
+        <ringGeometry args={[5.4, 6.1, 4]} />
         <meshBasicMaterial color="#D060FF" transparent opacity={0.2} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
-      {/* Core ring — single hexagon outline */}
+      {/* Core ring — single square outline */}
       <mesh rotation={hexRot} position={[0, 0, 0]}>
-        <ringGeometry args={[6.1, 7.4, 6]} />
+        <ringGeometry args={[6.1, 7.4, 4]} />
         <meshBasicMaterial color="#C844FF" transparent opacity={0.8} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 
       {/* ── Center glow disc ── */}
       <mesh position={[0, 0, -0.3]}>
-        <circleGeometry args={[5.8, 6]} />
+        <circleGeometry args={[5.8, 4]} />
         <meshBasicMaterial color="#9020D0" transparent opacity={0.05} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 

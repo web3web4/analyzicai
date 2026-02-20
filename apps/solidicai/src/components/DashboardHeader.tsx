@@ -8,7 +8,7 @@ export function DashboardHeader() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
-            <Logo prefix="Solidic" suffix="AI" containerSize="md" prefixSize="medium" />
+            <Logo prefix="Solidic" containerSize="md" />
           </Link>
           <div className="h-8 w-[1px] bg-white/10 hidden md:block" />
           <Link
