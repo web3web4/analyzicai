@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  *, *::before, *::after {
+    border-radius: 4px;
+  }
+}
+
 /* ──────────────────────────────────────────────────
    BRAND DARK THEME — AnalyzicAI Family
    AI Purple #C044FF • UX Pink #FF2D9E • Chain Cyan #00FFD1

@@ -21,7 +21,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-surface-950 border-t border-white/[0.08]">
+    <footer className="border-t border-white/[0.08] bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Top section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
@@ -57,8 +57,8 @@ export default function Footer() {
 
           {/* Apps */}
           <div>
-            <h3 className="text-white font-mono font-bold text-sm tracking-wider mb-4">Analyzic<span className="text-ai-soft">AI</span> Apps</h3>
-            <ul className="space-y-2 font-bold">
+            <h3 className="font-mono font-bold text-sm tracking-wider mb-4">Analyzic<span className="text-ai-soft">AI</span> Apps</h3>
+            <ul className="space-y-2">
               {links.apps.map((link, index) => (
                 <li key={index}>
                   <Link
@@ -66,7 +66,7 @@ export default function Footer() {
                     className="hover:opacity-80 transition-opacity text-sm"
                     target="_blank"
                   >
-                    <span className={link.accent === 'ux' ? 'text-ux' : 'text-chain'}>{link.name.slice(0, -2)}</span><span className="text-ai-soft">AI</span>
+                    <span>{link.name.slice(0, -2)}</span>AI
                   </Link>
                 </li>
               ))}
@@ -81,7 +81,7 @@ export default function Footer() {
                 <li key={index}>
                   <Link
                     href={link.href}
-                    className="text-white/60 hover:text-ai transition-colors text-sm"
+                    className="text-white/80 hover:text-ai transition-colors text-sm"
                     target="_blank"
                   >
                     {link.name}
