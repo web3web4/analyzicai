@@ -1,0 +1,36 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="analyzic-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0EA5E9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer circle background -->
+  <circle cx="100" cy="100" r="95" fill="url(#analyzic-gradient)" opacity="0.1"/>
+  
+  <!-- Data streams converging to form "A" -->
+  <path d="M 60 150 L 100 50 L 140 150" stroke="url(#analyzic-gradient)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Horizontal bar in "A" with analytical segments -->
+  <rect x="75" y="105" width="50" height="8" fill="url(#analyzic-gradient)" rx="4"/>
+  
+  <!-- Data points/nodes -->
+  <circle cx="100" cy="50" r="8" fill="#0EA5E9"/>
+  <circle cx="75" cy="109" r="6" fill="#0EA5E9"/>
+  <circle cx="125" cy="109" r="6" fill="#0EA5E9"/>
+  <circle cx="60" cy="150" r="6" fill="#06B6D4"/>
+  <circle cx="140" cy="150" r="6" fill="#06B6D4"/>
+  
+  <!-- Neural network connections -->
+  <line x1="100" y1="50" x2="75" y2="109" stroke="#0EA5E9" stroke-width="2" opacity="0.3"/>
+  <line x1="100" y1="50" x2="125" y2="109" stroke="#0EA5E9" stroke-width="2" opacity="0.3"/>
+  <line x1="75" y1="109" x2="60" y2="150" stroke="#06B6D4" stroke-width="2" opacity="0.3"/>
+  <line x1="125" y1="109" x2="140" y2="150" stroke="#06B6D4" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Bar chart elements in corners -->
+  <rect x="30" y="130" width="6" height="20" fill="#0EA5E9" opacity="0.4" rx="3"/>
+  <rect x="40" y="120" width="6" height="30" fill="#0EA5E9" opacity="0.6" rx="3"/>
+  <rect x="154" y="130" width="6" height="20" fill="#06B6D4" opacity="0.4" rx="3"/>
+  <rect x="164" y="120" width="6" height="30" fill="#06B6D4" opacity="0.6" rx="3"/>
+</svg>

@@ -29,7 +29,7 @@ export default function Navigation() {
   }, []);
 
   const navLinks = [
-    { href: '#apps', label: 'AnalyzicAI Apps' },
+    { href: '#apps', label: 'Apps' },
     { href: '#features', label: 'Features' },
     { href: '#how-it-works', label: 'How It Works' },
   ];
@@ -53,11 +53,11 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-surface-800 flex items-center justify-center border border-cyan/40">
+            <div className="w-10 h-10 bg-surface-800 flex items-center justify-center border border-ai/40">
               <span className="text-white font-bold text-xl">A</span>
             </div>
-            <span className="text-xl font-bold text-cyan tracking-widest font-mono group-hover:text-gradient-cyber transition-colors">
-              AnalyzicAI
+            <span className="text-xl font-bold tracking-widest font-mono group-hover:text-gradient-cyber transition-colors">
+              <span className="text-white">Analyzic</span><span className="text-ai">AI</span>
             </span>
           </Link>
 
@@ -68,9 +68,9 @@ export default function Navigation() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNav(e, link.href)}
-                className={`relative font-mono text-white/80 hover:text-cyan transition-colors cursor-pointer ${
+                className={`relative font-mono text-white/80 hover:text-ai transition-colors cursor-pointer ${
                   active === link.href
-                    ? 'text-cyan after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[2px] after:bg-cyan'
+                    ? 'text-ai after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[2px] after:bg-ai'
                     : ''
                 }`}
               >
@@ -80,7 +80,7 @@ export default function Navigation() {
             <a
               href="#cta"
               onClick={(e) => handleNav(e, '#cta')}
-              className="px-6 py-2 border-2 border-cyan text-cyan font-mono font-bold transition-all hover:bg-cyan hover:text-black cursor-pointer"
+              className="px-6 py-2 border-2 border-ai text-ai font-mono font-bold transition-all hover:bg-ai hover:text-white cursor-pointer"
             >
               Get Started
             </a>
@@ -88,7 +88,7 @@ export default function Navigation() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 border border-cyan/40 bg-surface-800 text-cyan transition-colors"
+            className="md:hidden p-2 border border-ai/40 bg-surface-800 text-ai transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={isMobileMenuOpen}
@@ -106,14 +106,14 @@ export default function Navigation() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="md:hidden fixed top-16 right-0 w-72 h-[calc(100vh-4rem)] bg-surface-900 border-l border-cyan/20 z-50"
+            className="md:hidden fixed top-16 right-0 w-72 h-[calc(100vh-4rem)] bg-surface-900 border-l border-ai/20 z-50"
           >
             <div className="px-6 py-6 space-y-4">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="block font-mono text-white/80 hover:text-cyan transition-colors"
+                  className="block font-mono text-white/80 hover:text-ai transition-colors"
                   onClick={(e) => handleNav(e, link.href)}
                 >
                   {link.label}
@@ -121,7 +121,7 @@ export default function Navigation() {
               ))}
               <a
                 href="#cta"
-                className="block px-6 py-2 border-2 border-cyan text-cyan font-mono font-bold transition-all hover:bg-cyan hover:text-black text-center"
+                className="block px-6 py-2 border-2 border-ai text-ai font-mono font-bold transition-all hover:bg-ai hover:text-white text-center"
                 onClick={(e) => handleNav(e, '#cta')}
               >
                 Get Started

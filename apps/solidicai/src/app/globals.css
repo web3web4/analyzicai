@@ -4,18 +4,18 @@
 
 :root {
   /* Web3Web4 Official Brand Colors */
-  --brand-web4-purple: #FF75FF;
-  --brand-web3-cyan: #00ffd1;
-  
-  /* AnalyzicAI Brand Colors */
-  --background: #0a0a0a;
+  --brand-web4-purple: #C044FF;
+  --brand-web3-cyan: #00FFD1;
+
+  /* SolidicAI Brand Colors */
+  --background: #08080D;
   --foreground: #ededed;
-  --primary: #9151ff;
-  --primary-light: #a58bfd;
-  --primary-dark: #5b21b6;
-  --accent: #06b6d4;
-  --surface: #18181b;
-  --surface-light: #27272a;
+  --primary: #00FFD1;       /* Blockchain cyan — this app's accent */
+  --primary-light: #5FFAE0;
+  --primary-dark: #C044FF;  /* AI purple as dark fallback */
+  --accent: #C044FF;        /* AI purple as secondary accent */
+  --surface: #0F0F18;
+  --surface-light: #16162A;
   --border: #3f3f46;
   --muted: #71717a;
   --success: #22c55e;
@@ -48,7 +48,7 @@ body {
 
 /* Glass morphism card */
 .glass-card {
-  background: rgba(24, 24, 27, 0.7);
+  background: rgba(15, 15, 24, 0.7);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(63, 63, 70, 0.5);
 }
@@ -65,7 +65,7 @@ body {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 8px 25px rgba(0, 255, 209, 0.3);
 }
 
 .btn-secondary {

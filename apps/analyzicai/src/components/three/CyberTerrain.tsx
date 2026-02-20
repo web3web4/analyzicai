@@ -109,7 +109,7 @@ function MountainTerrain({ side }: { side: 'left' | 'right' }) {
 
   return (
     <mesh geometry={geometry}>
-      <meshBasicMaterial color="#00FFD1" wireframe transparent opacity={0.18} />
+      <meshBasicMaterial color="#C044FF" wireframe transparent opacity={0.18} />
     </mesh>
   );
 }
@@ -168,14 +168,14 @@ function NeonRidgeLines({ side }: { side: 'left' | 'right' }) {
         const g2 = Math.max(0, 1 - Math.abs(i - p2) / width);
         const glow = Math.pow(Math.max(g1, g2), 1.5);
 
-        // Cyan base (#00FFD1): R=0, G=1, B=0.82
-        // Magenta pulse (#E500CE): R=0.898, G=0, B=0.808
-        // Lerp from cyan to magenta based on glow intensity
-        const cR = 0, cG = baseBrightness, cB = baseBrightness * 0.82;
-        const pR = 0.95, pG = 0.0, pB = 0.85;
-        arr[i * 3]     = Math.min(1, cR + glow * pR);           // R: 0 → bright pink
-        arr[i * 3 + 1] = Math.min(1, cG * (1 - glow * 0.8));   // G: cyan → suppressed
-        arr[i * 3 + 2] = Math.min(1, cB + glow * pB);           // B: stays strong
+        // AI Purple base (#C044FF): R=0.753, G=0.267, B=1.0
+        // UX Pink pulse  (#FF2D9E): R=1.0,   G=0.176, B=0.62
+        // Lerp from purple to pink based on glow intensity
+        const cR = 0.75 * baseBrightness, cG = 0.27 * baseBrightness, cB = baseBrightness;
+        const pR = 1.0, pG = 0.18, pB = 0.62;
+        arr[i * 3]     = Math.min(1, cR + glow * pR);           // R: purple dim → bright pink
+        arr[i * 3 + 1] = Math.min(1, cG * (1 - glow * 0.8));   // G: suppressed
+        arr[i * 3 + 2] = Math.min(1, cB * (1 - glow * 0.4) + glow * pB); // B: purple → pink
       }
 
       (line.geometry.attributes.color as THREE.BufferAttribute).needsUpdate = true;
@@ -195,7 +195,7 @@ function CanyonFloor() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, -30]}>
       <planeGeometry args={[6, 120, 6, 120]} />
-      <meshBasicMaterial color="#00FFD1" wireframe transparent opacity={0.08} />
+      <meshBasicMaterial color="#C044FF" wireframe transparent opacity={0.08} />
     </mesh>
   );
 }
@@ -253,60 +253,60 @@ function EndLogo() {
     <group ref={groupRef} position={[0, 6, Z_END + 5]}>
       {/* Glow layers — progressively larger, more transparent copies */}
       <lineSegments geometry={letterA} scale={[1.15, 1.15, 1]}>
-        <lineBasicMaterial color="#00FFD1" transparent opacity={0.12} />
+        <lineBasicMaterial color="#C044FF" transparent opacity={0.12} />
       </lineSegments>
       <lineSegments geometry={letterA} scale={[1.3, 1.3, 1]}>
-        <lineBasicMaterial color="#00FFD1" transparent opacity={0.06} />
+        <lineBasicMaterial color="#C044FF" transparent opacity={0.06} />
       </lineSegments>
       <lineSegments geometry={letterA} scale={[1.5, 1.5, 1]}>
-        <lineBasicMaterial color="#00FFD1" transparent opacity={0.03} />
+        <lineBasicMaterial color="#C044FF" transparent opacity={0.03} />
       </lineSegments>
 
-      {/* Core cyan A */}
+      {/* Core AI purple A */}
       <lineSegments geometry={letterA}>
-        <lineBasicMaterial color="#00FFD1" transparent opacity={1.0} />
+        <lineBasicMaterial color="#C044FF" transparent opacity={1.0} />
       </lineSegments>
 
-      {/* Magenta glow layers */}
+      {/* UX pink glow layers */}
       <lineSegments geometry={letterA} position={[0.1, -0.1, -0.2]} scale={[1.15, 1.15, 1]}>
-        <lineBasicMaterial color="#E500CE" transparent opacity={0.15} />
+        <lineBasicMaterial color="#FF2D9E" transparent opacity={0.15} />
       </lineSegments>
       <lineSegments geometry={letterA} position={[0.1, -0.1, -0.2]} scale={[1.3, 1.3, 1]}>
-        <lineBasicMaterial color="#E500CE" transparent opacity={0.08} />
+        <lineBasicMaterial color="#FF2D9E" transparent opacity={0.08} />
       </lineSegments>
 
-      {/* Core magenta A */}
+      {/* Core UX pink A */}
       <lineSegments geometry={letterA} position={[0.1, -0.1, -0.2]}>
-        <lineBasicMaterial color="#E500CE" transparent opacity={0.5} />
+        <lineBasicMaterial color="#FF2D9E" transparent opacity={0.5} />
       </lineSegments>
 
       {/* Outer rings with glow */}
       <mesh>
         <ringGeometry args={[5.5, 5.8, 6]} />
-        <meshBasicMaterial color="#00FFD1" transparent opacity={0.06} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#C044FF" transparent opacity={0.06} side={THREE.DoubleSide} />
       </mesh>
       <mesh>
         <ringGeometry args={[6, 6.3, 6]} />
-        <meshBasicMaterial color="#00FFD1" transparent opacity={0.4} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#C044FF" transparent opacity={0.4} side={THREE.DoubleSide} />
       </mesh>
       <mesh>
         <ringGeometry args={[6.3, 7, 6]} />
-        <meshBasicMaterial color="#00FFD1" transparent opacity={0.08} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#C044FF" transparent opacity={0.08} side={THREE.DoubleSide} />
       </mesh>
 
       <mesh>
         <ringGeometry args={[6.6, 6.9, 6]} />
-        <meshBasicMaterial color="#E500CE" transparent opacity={0.25} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#FF2D9E" transparent opacity={0.25} side={THREE.DoubleSide} />
       </mesh>
       <mesh>
         <ringGeometry args={[6.9, 7.6, 6]} />
-        <meshBasicMaterial color="#E500CE" transparent opacity={0.06} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#FF2D9E" transparent opacity={0.06} side={THREE.DoubleSide} />
       </mesh>
 
       {/* Center glow disc */}
       <mesh>
         <circleGeometry args={[4, 32]} />
-        <meshBasicMaterial color="#00FFD1" transparent opacity={0.04} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#C044FF" transparent opacity={0.04} side={THREE.DoubleSide} />
       </mesh>
     </group>
   );
@@ -316,7 +316,7 @@ function EndLogo() {
 export default function CyberTerrain() {
   const handleCreated = useCallback(
     ({ gl }: { gl: THREE.WebGLRenderer }) => {
-      gl.setClearColor('#0A0A0F', 0);
+      gl.setClearColor('#08080D', 0);
     },
     []
   );
@@ -333,7 +333,7 @@ export default function CyberTerrain() {
         onCreated={handleCreated}
         gl={{ alpha: true, antialias: false, powerPreference: 'high-performance' }}
       >
-        <fog attach="fog" args={['#0A0A0F', 10, 70]} />
+        <fog attach="fog" args={['#08080D', 10, 70]} />
         <ScrollCamera />
         <MountainTerrain side="left" />
         <MountainTerrain side="right" />

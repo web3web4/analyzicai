@@ -1,16 +1,25 @@
 # AnalyzicAI
 
-AI-powered analysis platform monorepo with multi-agent iterative rethinking consensus (OpenAI GPT, Google Gemini, Anthropic Claude).
+**AnalyzicAI** is the umbrella brand for a family of AI-powered analysis tools. This monorepo contains the brand website and specialized analysis applications.
 
-## Apps
+## Landing Page
 
-- **solidicai.com** — Smart contract analysis platform
-- **uxicai.com** — UI/UX design analysis platform
+- **[analyzicai.com](https://analyzicai.com)** — Brand website and ecosystem hub
+
+## Analysis Apps
+
+- **[solidicai.com](https://solidicai.com)** — Smart contract analysis platform
+- **[uxicai.com](https://uxicai.com)** — UI/UX design analysis platform
+
+*All analysis apps leverage multi-agent iterative rethinking consensus (OpenAI GPT, Google Gemini, Anthropic Claude).*
+
+> 💡 **Interested in analysis tools for legal cases, medical data, or other domains?** [Open a GitHub issue](https://github.com/web3web4/analyzicai/issues) to suggest it!
 
 ## Packages
 
 - **ai-core** — Shared AI provider logic and pipeline
-- **ui-library** — Shared UI components
+- **ai-ui-library** — Shared UI components
+- **shared-platform** — Common platform utilities
 
 ## Quick Start
 

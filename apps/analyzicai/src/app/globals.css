@@ -3,17 +3,37 @@
 @tailwind utilities;
 
 /* ──────────────────────────────────────────────────
-   CYBER / BLOCKCHAIN DARK THEME — AnalyzicAI v2
-   Colors: #00FFD1 (cyan) • #E500CE (magenta) • white text
+   BRAND DARK THEME — AnalyzicAI Family
+   AI Purple #C044FF • UX Pink #FF2D9E • Chain Cyan #00FFD1
    No glow spam. Solid outlines. Clean contrast.
    ────────────────────────────────────────────────── */
 
 :root {
-  --color-cyan: #00FFD1;
-  --color-magenta: #E500CE;
-  --color-surface-900: #0A0A0F;
-  --color-surface-800: #12121A;
-  --color-surface-700: #1A1A2E;
+  /* AI — all products */
+  --color-ai-brand:    #C044FF;
+  --color-ai-text:     #C084FC;
+
+  /* Blockchain — SolidicAI */
+  --color-chain-brand: #00FFD1;
+  --color-chain-text:  #5FFAE0;
+
+  /* UX — UXicAI */
+  --color-ux-brand:    #FF2D9E;
+  --color-ux-text:     #FF79C6;
+
+  /* Analyzic anchor */
+  --color-analyzic:    #FFFFFF;
+
+  /* Backgrounds */
+  --bg-900: #08080D;
+  --bg-800: #0F0F18;
+  --bg-700: #16162A;
+  --bg-600: #1E1E38;
+
+  /* Legacy surface aliases (for Tailwind compat) */
+  --color-surface-900: #08080D;
+  --color-surface-800: #0F0F18;
+  --color-surface-700: #16162A;
 }
 
 html {
@@ -22,18 +42,18 @@ html {
 
 body {
   color: #ffffff;
-  background: var(--color-surface-900);
+  background: var(--bg-900);
 }
 
 /* ── Custom scrollbar ── */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--color-surface-900); }
-::-webkit-scrollbar-thumb { background: rgba(0, 255, 209, 0.3); }
-::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 209, 0.6); }
-* { scrollbar-width: thin; scrollbar-color: rgba(0, 255, 209, 0.3) var(--color-surface-900); }
+::-webkit-scrollbar-track { background: var(--bg-900); }
+::-webkit-scrollbar-thumb { background: rgba(192, 68, 255, 0.3); }
+::-webkit-scrollbar-thumb:hover { background: rgba(192, 68, 255, 0.6); }
+* { scrollbar-width: thin; scrollbar-color: rgba(192, 68, 255, 0.3) var(--bg-900); }
 
 ::selection {
-  background: rgba(0, 255, 209, 0.25);
+  background: rgba(192, 68, 255, 0.25);
   color: #ffffff;
 }
 
@@ -42,12 +62,12 @@ body {
 
   /* Single restrained text glow — hero title only */
   .text-glow-subtle {
-    text-shadow: 0 0 12px rgba(0, 255, 209, 0.35);
+    text-shadow: 0 0 12px rgba(192, 68, 255, 0.35);
   }
 
-  /* Gradient text — cyan to magenta */
+  /* Gradient text — AI purple to UX pink */
   .text-gradient-cyber {
-    background: linear-gradient(135deg, #00FFD1, #E500CE);
+    background: linear-gradient(135deg, #C044FF, #FF2D9E);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -56,7 +76,7 @@ body {
 
 /* ── Focus outlines — cyber style ── */
 *:focus-visible {
-  outline: 2px solid var(--color-cyan);
+  outline: 2px solid var(--color-ai-brand);
   outline-offset: 2px;
 }
 

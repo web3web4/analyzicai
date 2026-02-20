@@ -186,14 +186,14 @@ export default function ClientPage() {
               whileTap={{ scale: 0.97 }}
             >
               <motion.div
-                className="absolute inset-0 border-2 border-cyan/60"
+                className="absolute inset-0 border-2 border-ai/60"
                 style={{ opacity: introBorderOpacity }}
               />
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight text-center">
                 Transform Your Workflow
                 <br />
                 with{' '}
-                <span className="text-cyan text-glow-subtle">AI Analysis</span>
+                <span className="text-ai text-glow-subtle">AI Analysis</span>
               </h1>
               <div className="mt-4 text-white/50 text-sm font-mono text-center group-hover:text-white/70 transition-colors">
                 Click to enter ▾

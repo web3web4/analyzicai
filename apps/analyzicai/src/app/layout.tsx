@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Space_Mono } from 'next/font/google';
+import { Inter, Cascadia_Code } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({
@@ -7,7 +7,7 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const spaceMono = Space_Mono({
+const cascadiaCode = Cascadia_Code({
   weight: ['400', '700'],
   subsets: ['latin'],
   variable: '--font-mono',
@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${cascadiaCode.variable}`}>
       <body className={`${inter.className} bg-surface-900 text-white antialiased`}>
         {children}
       </body>

@@ -10,7 +10,7 @@ const apps = [
     tagline: 'AI-Powered UI/UX Analysis',
     description: 'Upload screenshots or capture screens to get comprehensive design feedback from multiple AI providers. Analyze visual hierarchy, accessibility, user experience, and design consistency.',
     icon: Palette,
-    accent: 'cyan' as const,
+    accent: 'ux' as const,
     features: [
       'Screenshot analysis with WebRTC capture',
       'Multi-provider AI vision analysis',
@@ -26,7 +26,7 @@ const apps = [
     tagline: 'Smart Contract Intelligence',
     description: 'Analyze Solidity smart contracts for security vulnerabilities, gas optimization opportunities, and best practice compliance. Get expert-level code review powered by AI.',
     icon: Code2,
-    accent: 'magenta' as const,
+    accent: 'chain' as const,
     features: [
       'Security vulnerability detection',
       'Gas optimization analysis',
@@ -46,7 +46,7 @@ export default function AppsShowcase() {
         {/* Section heading */}
         <ScrollReveal className="text-center mb-10">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
-            AnalyzicAI <span className="text-magenta">Apps</span> Family
+            Analyzic<span className="text-ai">AI</span> <span className="text-ai-soft">Apps</span> Family
           </h2>
           <p className="text-lg text-white/70 max-w-2xl mx-auto font-mono">
             Specialized AI-powered analysis tools for different domains
@@ -56,18 +56,18 @@ export default function AppsShowcase() {
         {/* App cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {apps.map((app, index) => {
-            const isCyan = app.accent === 'cyan';
+            const isUx = app.accent === 'ux';
             return (
               <ScrollReveal
                 key={index}
-                direction={isCyan ? 'left' : 'right'}
+                direction={isUx ? 'left' : 'right'}
                 delay={index * 0.15}
               >
-                <div className="group relative h-full bg-surface-800/60 border border-white/[0.08] transition-all duration-300 hover:border-cyan/20 overflow-hidden">
+                <div className="group relative h-full bg-surface-800/60 border border-white/[0.08] transition-all duration-300 hover:border-ai/20 overflow-hidden">
                   {/* Left accent border */}
                   <div
                     className={`absolute top-0 left-0 w-[2px] h-full ${
-                      isCyan ? 'bg-cyan' : 'bg-magenta'
+                      isUx ? 'bg-ux' : 'bg-chain'
                     }`}
                   />
 
@@ -76,16 +76,18 @@ export default function AppsShowcase() {
                     <div className="flex items-center space-x-4 mb-6">
                       <div
                         className={`w-14 h-14 flex items-center justify-center border ${
-                          isCyan
-                            ? 'border-cyan/30 bg-cyan/[0.08]'
-                            : 'border-magenta/30 bg-magenta/[0.08]'
+                          isUx
+                            ? 'border-ux/30 bg-ux/[0.08]'
+                            : 'border-chain/30 bg-chain/[0.08]'
                         }`}
                       >
-                        <app.icon className={`w-7 h-7 ${isCyan ? 'text-cyan' : 'text-magenta'}`} />
+                        <app.icon className={`w-7 h-7 ${isUx ? 'text-white' : 'text-white'}`} />
                       </div>
                       <div>
-                        <h3 className="text-2xl font-bold text-white">{app.name}</h3>
-                        <p className={`text-sm font-mono ${isCyan ? 'text-cyan' : 'text-magenta'}`}>
+                        <h3 className="text-2xl font-bold">
+                          <span className={isUx ? 'text-ux' : 'text-chain'}>{app.name.slice(0, -2)}</span><span className="text-ai-soft">AI</span>
+                        </h3>
+                        <p className={`text-sm font-mono ${isUx ? 'text-ux' : 'text-chain'}`}>
                           {app.tagline}
                         </p>
                       </div>
@@ -102,7 +104,7 @@ export default function AppsShowcase() {
                         <li key={fi} className="flex items-start space-x-3">
                           <span
                             className={`mt-2 w-1.5 h-1.5 flex-shrink-0 ${
-                              isCyan ? 'bg-cyan' : 'bg-magenta'
+                              isUx ? 'bg-ux' : 'bg-chain'
                             }`}
                           />
                           <span className="text-white/70 text-sm">{feature}</span>
@@ -117,9 +119,9 @@ export default function AppsShowcase() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`group/btn px-6 py-3 font-mono font-bold text-sm flex items-center space-x-2 transition-all border-2 ${
-                          isCyan
-                            ? 'border-cyan bg-cyan text-black hover:bg-cyan/90'
-                            : 'border-magenta bg-magenta text-white hover:bg-magenta/90'
+                          isUx
+                            ? 'border-ux bg-ux text-white hover:bg-ux/90'
+                            : 'border-chain bg-chain text-black hover:bg-chain/90'
                         }`}
                       >
                         <span>Visit {app.name}</span>
@@ -127,9 +129,9 @@ export default function AppsShowcase() {
                       </Link>
                       <span
                         className={`px-3 py-1 text-xs font-mono border ${
-                          isCyan
-                            ? 'border-cyan/30 text-cyan bg-cyan/[0.06]'
-                            : 'border-magenta/30 text-magenta bg-magenta/[0.06]'
+                          isUx
+                            ? 'border-ux/30 text-ux bg-ux/[0.06]'
+                            : 'border-chain/30 text-chain bg-chain/[0.06]'
                         }`}
                       >
                         {app.status}

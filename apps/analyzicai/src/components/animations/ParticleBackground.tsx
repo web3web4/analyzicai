@@ -30,10 +30,10 @@ export default function ParticleBackground() {
       detectRetina: true,
       particles: {
         color: {
-          value: '#00FFD1',
+          value: '#C044FF',
         },
         links: {
-          color: '#E500CE',
+          color: '#FF2D9E',
           distance: isMobile ? 100 : 140,
           enable: true,
           opacity: isMobile ? 0.08 : 0.12,

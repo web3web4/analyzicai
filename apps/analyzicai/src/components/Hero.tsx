@@ -17,9 +17,9 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <div className="inline-flex items-center space-x-2 px-4 py-2 border border-cyan/30 bg-surface-800/60 backdrop-blur-sm mb-8 font-mono text-sm">
-            <Sparkles className="w-4 h-4 text-cyan" />
-            <span className="text-cyan">AI-Powered Analysis Tools</span>
+          <div className="inline-flex items-center font-semibold space-x-2 px-4 py-2 border border-ai/30 bg-surface-800/60 backdrop-blur-sm mb-8 font-mono text-sm">
+            <Sparkles className="w-4 h-4 text-ai-soft" />
+            <span className="text-ai-soft">AI-Powered Analysis Tools</span>
           </div>
         </motion.div>
 
@@ -33,7 +33,7 @@ export default function Hero() {
           Transform Your Workflow
           <br />
           with{' '}
-          <GlitchText trigger="viewport" variant="cyan" as="span" className="text-cyan text-glow-subtle">
+          <GlitchText trigger="viewport" variant="ai" as="span" className="text-ai text-glow-subtle">
             AI Analysis
           </GlitchText>
         </motion.h1>
@@ -58,15 +58,15 @@ export default function Hero() {
         >
           <button
             onClick={() => scrollToSection('#apps')}
-            className="group px-8 py-4 bg-cyan text-black font-mono font-bold border-2 border-cyan transition-all hover:bg-cyan/90 flex items-center space-x-2 text-lg cursor-pointer"
+            className="group px-8 py-4 bg-gradient-to-r from-ai to-ai-soft text-white font-mono font-bold border-2 border-ai transition-all hover:opacity-90 flex items-center space-x-2 text-lg cursor-pointer"
           >
-            <span>Explore AnalyzicAI Apps</span>
+            <span>Explore <span className="opacity-90">Analyzic</span><span className="opacity-70">AI</span> Apps</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
 
           <button
             onClick={() => scrollToSection('#how-it-works')}
-            className="px-8 py-4 bg-transparent text-magenta font-mono font-bold border-2 border-magenta/50 transition-all hover:border-magenta hover:bg-magenta/5 text-lg cursor-pointer"
+            className="px-8 py-4 bg-transparent text-ai-soft font-mono font-bold border-2 border-ai-soft/50 transition-all hover:border-ai-soft hover:bg-ai-soft/5 text-lg cursor-pointer"
           >
             Learn More
           </button>
@@ -80,17 +80,17 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.8 }}
         >
           {[
-            { value: 'Multi-AI', label: 'OpenAI, Gemini & Claude', color: 'cyan' as const },
-            { value: 'Real-time', label: 'Instant Analysis', color: 'magenta' as const },
-            { value: 'Secure', label: 'Enterprise-grade Privacy', color: 'cyan' as const },
+            { value: 'Multi-AI', label: 'OpenAI, Gemini & Claude', color: 'ai' as const },
+            { value: 'Real-time', label: 'Instant Analysis', color: 'soft' as const },
+            { value: 'Secure', label: 'Enterprise-grade Privacy', color: 'ai' as const },
           ].map((stat) => (
             <div
               key={stat.value}
-              className="p-6 bg-surface-800/50 backdrop-blur-sm border border-white/10 transition-all hover:border-cyan/30"
+              className="p-6 bg-surface-800/50 backdrop-blur-sm border border-white/10 transition-all hover:border-ai/30"
             >
               <div
                 className={`text-3xl sm:text-4xl font-bold font-mono mb-2 ${
-                  stat.color === 'cyan' ? 'text-cyan' : 'text-magenta'
+                  stat.color === 'ai' ? 'text-ai' : 'text-ai-soft'
                 }`}
               >
                 {stat.value}
@@ -115,7 +115,7 @@ export default function Hero() {
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <ChevronDown className="w-5 h-5 text-cyan/60" />
+            <ChevronDown className="w-5 h-5 text-ai/60" />
           </motion.div>
         </motion.div>
       </div>
