@@ -1,5 +1,9 @@
 # AnalyzicAI
 
+![Status](https://img.shields.io/badge/status-pre--alpha-orange) ![Version](https://img.shields.io/badge/version-v1-blue)
+
+> ⚠️ **This project is in pre-alpha.** Expect breaking changes, incomplete features, and rough edges.
+
 **AnalyzicAI** is the umbrella brand for a family of AI-powered analysis tools. This monorepo contains the brand website and specialized analysis applications.
 
 ## Landing Page

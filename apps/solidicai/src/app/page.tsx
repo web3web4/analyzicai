@@ -28,10 +28,15 @@ export default function Home() {
     };
   }, []);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-accent/20 to-slate-900 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-primary/8 to-slate-950">
       {/* Navigation */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
-        <Logo containerSize="lg" prefix="Solidic" />
+        <div className="flex items-center gap-3">
+          <Logo containerSize="lg" prefix="Solidic" />
+          <span className="text-xs px-2 py-0.5 rounded-full border border-primary text-primary font-mono">
+            v1 pre-alpha
+          </span>
+        </div>
         <div className="flex items-center gap-4">
           {isLoggedIn ? (
             <>
@@ -45,7 +50,7 @@ export default function Home() {
               </form>
               <Link
                 href="/dashboard"
-                className="px-5 py-2 bg-gradient-to-r from-accent to-primary text-white rounded-full font-medium hover:opacity-90 transition-all flex items-center gap-2"
+                className="px-5 py-2 bg-gradient-to-r from-accent-light to-primary-light text-black rounded-full font-bold border border-transparent hover:[background-image:none] hover:bg-slate-900 hover:text-primary hover:border-primary/40 transition-all flex items-center gap-2"
               >
                 <User className="w-4 h-4" />
                 Dashboard
@@ -61,7 +66,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/signup"
-                className="px-5 py-2 bg-gradient-to-r from-accent to-primary text-white rounded-full font-medium hover:opacity-90 transition-all"
+                className="px-5 py-2 bg-gradient-to-r from-accent-light to-primary-light text-black rounded-full font-bold border border-transparent hover:[background-image:none] hover:bg-slate-900 hover:text-primary hover:border-primary/40 transition-all"
               >
                 Get Started
               </Link>
@@ -70,79 +75,162 @@ export default function Home() {
         </div>
       </nav>
 
-      <div className="flex-1 flex items-center justify-center">
-        <div className="max-w-4xl mx-auto p-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
-            <span className="text-xs font-bold text-primary uppercase tracking-widest">
-              AnalyzicAI Ecosystem
+      {/* Hero */}
+      <header className="relative py-24 md:py-32 px-6 text-center">
+        <div className="max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 mb-8">
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            <span className="text-sm text-gray-400">
+              Powered by GPT, Gemini & Claude
             </span>
           </div>
 
-          <h1 className="text-6xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-accent to-primary">
-            SolidicAI
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+            Audit Smarter.
           </h1>
-          <div className="text-sm font-bold text-gray-500 uppercase tracking-[0.2em] mb-8">
-            by Web3Web4.com
-          </div>
 
-          <p className="text-2xl text-gray-300 mb-8">
-            AI-Powered Smart Contract Security & Gas Optimization
+          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-6">
+            AI-powered smart contract security audits and gas optimization — Solidity, Vyper, and beyond.
           </p>
-          <p className="text-lg text-gray-400 mb-12">
-            Comprehensive analysis powered by multi-provider AI consensus. Part of
-            the <span className="text-white font-semibold">AnalyzicAI</span>{" "}
-            family.
+          <p className="text-gray-500 mb-12">
+            Multiple AI providers independently analyze your contract, then synthesize a single prioritized report.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 border border-white/20">
-              <div className="text-4xl mb-4">🔒</div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Security Audit
-              </h3>
-              <p className="text-gray-300 text-sm">
-                Detect reentrancy, overflow, access control, and 20+ vulnerability
-                patterns
-              </p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 border border-white/20">
-              <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Gas Optimization
-              </h3>
-              <p className="text-gray-300 text-sm">
-                Identify storage patterns, loop optimizations, and data type
-                improvements
-              </p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 border border-white/20">
-              <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Multi-AI Consensus
-              </h3>
-              <p className="text-gray-300 text-sm">
-                Powered by OpenAI, Gemini, and Claude for comprehensive analysis
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/dashboard/analyze"
-              className="px-8 py-3 bg-gradient-to-r from-accent to-primary text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
+              href="/signup"
+              className="px-8 py-4 bg-gradient-to-r from-accent-light to-primary-light text-black font-bold rounded-full border border-transparent hover:[background-image:none] hover:bg-slate-900 hover:text-primary hover:border-primary/40 transition-all shadow-lg hover:shadow-xl text-lg"
             >
-              Start Analysis
+              Start Auditing Free
             </Link>
-            {/* <button className="px-8 py-3 bg-white/10 backdrop-blur-lg text-white font-semibold rounded-lg hover:bg-white/20 transition-all border border-white/20">
-            View Demo
-          </button> */}
+            <Link
+              href="#features"
+              className="px-8 py-4 bg-primary/10 text-primary font-semibold rounded-full hover:bg-primary/20 transition-all border border-primary/30 text-lg"
+            >
+              See How It Works
+            </Link>
           </div>
         </div>
-      </div>
+      </header>
 
-      <footer className="py-12 px-6 border-t border-white/10 bg-slate-900/50">
+      {/* Features / Pipeline */}
+      <section id="features" className="py-24 px-6 bg-slate-950/70">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Multi-Provider Intelligence
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              No single AI has the full picture. Running independent models in parallel reduces bias — catching vulnerabilities one model misses while filtering out false positives others over-report.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-slate-900/80 backdrop-blur-lg rounded-2xl p-8 border border-primary/20">
+              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-6">
+                <span className="text-xl font-bold text-primary">01</span>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3">
+                Parallel Audit
+              </h3>
+              <p className="text-gray-400">
+                Each AI provider independently analyzes your contract, scoring security, gas efficiency, code quality, and best practices.
+              </p>
+            </div>
+
+            <div className="bg-slate-900/80 backdrop-blur-lg rounded-2xl p-8 border border-accent/20 border-dashed">
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-6">
+                  <span className="text-xl font-bold text-accent">02</span>
+                </div>
+                <span className="ml-2 text-xs px-2 py-1 rounded-full bg-accent/20 text-accent">
+                  Coming in V2
+                </span>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3">
+                Cross-Review & Rethinking
+              </h3>
+              <p className="text-gray-400">
+                Providers review each other&apos;s findings, reconsidering assessments and surfacing blind spots before synthesis.
+              </p>
+            </div>
+
+            <div className="bg-slate-900/80 backdrop-blur-lg rounded-2xl p-8 border border-primary/20">
+              <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mb-6">
+                <span className="text-xl font-bold text-green-400">03</span>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3">
+                Master Synthesis
+              </h3>
+              <p className="text-gray-400">
+                Your trusted provider consolidates all findings into a final, actionable report with severity-ranked vulnerabilities.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Coverage */}
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              What We Analyze
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Every audit covers the critical vulnerability classes and optimization opportunities in your smart contracts.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { name: "Reentrancy", icon: "🔁" },
+              { name: "Access Control", icon: "🔐" },
+              { name: "Integer Overflow", icon: "💥" },
+              { name: "Front-Running", icon: "🏃" },
+              { name: "Gas Optimization", icon: "⚡" },
+              { name: "Logic Errors", icon: "🧠" },
+              { name: "Oracle Manipulation", icon: "🔮" },
+              { name: "Code Quality", icon: "✅" },
+            ].map((item) => (
+              <div
+                key={item.name}
+                className="flex items-center gap-3 p-4 rounded-xl bg-slate-900/60 hover:bg-slate-900 transition-colors border border-primary/15"
+              >
+                <span className="text-2xl">{item.icon}</span>
+                <span className="font-medium text-gray-300">{item.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-24 px-6 bg-slate-950/70">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Ship with confidence.
+          </h2>
+          <p className="text-gray-400 text-lg mb-3">
+            Start free with your own API keys. No credit card required.
+          </p>
+          <p className="text-sm text-gray-500 mb-10">
+            Subscription plans coming soon —{" "}
+            <Link href="/waitlist" className="underline underline-offset-2 hover:text-primary transition-colors">
+              join the waitlist
+            </Link>{" "}
+            for early access.
+          </p>
+          <Link
+            href="/signup"
+            className="px-10 py-4 bg-gradient-to-r from-accent-light to-primary-light text-black font-bold rounded-full border border-transparent hover:[background-image:none] hover:bg-slate-900 hover:text-primary hover:border-primary/40 transition-all shadow-lg hover:shadow-xl text-lg inline-block"
+          >
+            Start Auditing Free
+          </Link>
+        </div>
+      </section>
+
+      <footer className="py-12 px-6 border-t border-primary/15 bg-slate-950/90">
         <div className="max-w-7xl mx-auto md:items-start lg:items-start flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
           <div className="flex flex-col max-w-2xl">
             <Logo containerSize="md" prefix="Solidic" />
@@ -186,11 +274,11 @@ export default function Home() {
                 </li>
                 <li>
                   <Link
-                    href="https://solidicai.com"
+                    href="https://uxicai.com"
                     target="_blank"
                     className="hover:text-primary transition-colors"
                   >
-                    SolidicAI.com
+                    UXicAI.com
                   </Link>
                 </li>
               </ul>
@@ -205,6 +293,15 @@ export default function Home() {
                     className="hover:text-primary transition-colors"
                   >
                     Web3Web4.com
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://github.com/web3web4/analyzicai"
+                    target="_blank"
+                    className="hover:text-primary transition-colors"
+                  >
+                    GitHub
                   </Link>
                 </li>
               </ul>

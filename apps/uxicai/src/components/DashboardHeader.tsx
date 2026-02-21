@@ -10,6 +10,9 @@ export function DashboardHeader() {
           <Link href="/" className="flex items-center gap-2">
             <Logo prefix="UXic" containerSize="md" />
           </Link>
+          <span className="text-xs px-2 py-0.5 rounded-full border border-border border-foreground text-foreground font-mono sm:inline">
+            v1 pre-alpha
+          </span>
           <div className="h-8 w-[1px] bg-border hidden md:block" />
           <Link
             href="/dashboard"
