@@ -161,7 +161,7 @@ SSO_TOKEN_SECRET=<64-char-hex-secret>  # For signing exchange tokens
 SSO_TOKEN_EXPIRY=300                    # 5 minutes in seconds
 
 # Allowed app domains (whitelist for redirects)
-ALLOWED_APP_DOMAINS=http://localhost:3001,http://localhost:3002,http://localhost:3003,https://uxicai.com,https://solidicai.com,https://analyzicai.com
+ALLOWED_APP_DOMAINS=http://localhost:3001,http://localhost:3002,http://localhost:3003,https://analyzicai.com,https://solidicai.com,https://uxicai.com
 
 # This auth domain URL
 NEXT_PUBLIC_AUTH_URL=http://localhost:3000
@@ -679,16 +679,16 @@ export async function GET(request: NextRequest) {
 cd apps/auth-web3web4
 pnpm dev  # localhost:3000
 
-# Terminal 2: UXicAI
-cd apps/uxicai
+# Terminal 4: AnalyzicAI
+cd apps/analyzicai
 pnpm dev  # localhost:3001
 
 # Terminal 3: SolidicAI
 cd apps/solidicai
 pnpm dev  # localhost:3002
 
-# Terminal 4: AnalyzicAI
-cd apps/analyzicai
+# Terminal 2: UXicAI
+cd apps/uxicai
 pnpm dev  # localhost:3003
 ```
 

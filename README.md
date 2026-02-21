@@ -32,7 +32,7 @@ pnpm install
 pnpm run dev
 ```
 
-Auto-starts Supabase, applies migrations, and launches Next.js on [http://localhost:3001](http://localhost:3001).
+Auto-starts Supabase, applies migrations, and launches Next.js on [http://localhost:3000](http://localhost:3000), [http://localhost:3001](http://localhost:3001) and [http://localhost:3002](http://localhost:3002).
 
 ## Tech Stack
 
