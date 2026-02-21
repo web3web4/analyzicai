@@ -33,7 +33,7 @@ export function getScoreColor(
   variant: ThemeVariant,
 ): string {
   if (score === null || score === undefined) {
-    return variant === "uxic" ? "text-muted" : "text-gray-500";
+    return variant === "uxic" ? "text-muted" : "text-fg-tertiary";
   }
 
   if (variant === "uxic") {

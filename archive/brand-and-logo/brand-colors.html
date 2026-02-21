@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brand Color System — AnalyzicAI Family</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-900: #08080D;
+      --bg-800: #0F0F18;
+      --bg-700: #16162A;
+      --bg-600: #1E1E38;
+    }
+
+    body {
+      background: #08080D;
+      color: #ffffff;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 48px 32px;
+    }
+
+    h1 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; color: #44445A; margin-bottom: 48px; }
+
+    .section-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em;
+      color: #33334A; margin-bottom: 20px; padding-bottom: 8px;
+      border-bottom: 1px solid #1A1A2E;
+    }
+
+    section { margin-bottom: 60px; }
+
+    /* ── Wordmarks ── */
+    .wordmarks { display: flex; flex-direction: column; gap: 32px; }
+    .wm { display: flex; align-items: baseline; line-height: 1; }
+    .wm span { font-size: 56px; font-weight: 800; letter-spacing: -0.02em; }
+    .wm .label { font-size: 13px; font-weight: 400; color: #33334A; margin-left: 18px;
+                 letter-spacing: 0.08em; align-self: flex-end; padding-bottom: 8px; }
+
+    /* Brand tokens — display/wordmark/buttons/large UI */
+    .ai          { color: #C044FF; }
+    .chain       { color: #00FFD1; }
+    .ux          { color: #FF2D9E; }
+
+    /* Text tokens — inline text/badges/labels/small UI */
+    .ai-text     { color: #C084FC; }
+    .chain-text  { color: #5FFAE0; }
+    .ux-text     { color: #FF79C6; }
+
+    .white  { color: #FFFFFF; }
+    .amber  { color: #FFAB00; }
+    .silver { color: #9A9AAF; }
+    .grad   { background: linear-gradient(90deg,#C084FC,#C044FF);
+              -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* ── Swatches ── */
+    .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    .swatch { border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,.06); }
+    .swatch-color { height: 60px; }
+    .swatch-info { background: #0F0F18; padding: 10px 12px; }
+    .swatch-name { font-size: 12px; font-weight: 600; color: #CCCCDD; }
+    .swatch-hex  { font-size: 11px; color: #44445A; font-family: monospace; margin-top: 2px; }
+    .swatch-role { font-size: 10px; color: #2A2A40; text-transform: uppercase;
+                   letter-spacing: .1em; margin-top: 4px; }
+    .swatch-tag  { display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase;
+                   letter-spacing: .1em; padding: 2px 6px; border-radius: 3px; margin-top: 6px; }
+
+    /* ── Alt swatches ── */
+    .alts { display: flex; flex-wrap: wrap; gap: 10px; }
+    .alt { display: flex; align-items: center; gap: 10px; background: #0F0F18;
+           border: 1px solid rgba(255,255,255,.06); border-radius: 6px; padding: 10px 14px; }
+    .dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; }
+    .alt-name { font-size: 12px; font-weight: 600; color: #CCCCDD; }
+    .alt-hex  { font-size: 11px; color: #44445A; font-family: monospace; }
+
+    /* ── Backgrounds ── */
+    .bgs { display: flex; gap: 10px; }
+    .bg { flex: 1; height: 44px; border-radius: 5px; border: 1px solid rgba(255,255,255,.05);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 10px; font-family: monospace; color: rgba(255,255,255,.25); }
+
+    /* ── Token table ── */
+    .token-table { width: 100%; border-collapse: collapse; }
+    .token-table th { font-size: 10px; text-transform: uppercase; letter-spacing: .15em;
+                      color: #33334A; font-weight: 600; text-align: left;
+                      padding: 0 16px 12px 0; border-bottom: 1px solid #1A1A2E; }
+    .token-table td { padding: 12px 16px 12px 0; border-bottom: 1px solid #0F0F18;
+                      font-size: 13px; vertical-align: middle; }
+    .token-table td:first-child { font-family: monospace; font-size: 12px; color: #555570; }
+    .token-name { font-weight: 600; color: #CCCCDD; }
+    .token-hex  { font-family: monospace; font-size: 12px; color: #44445A; }
+    .token-dot  { width: 14px; height: 14px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 8px; }
+    .tag-brand { background: rgba(255,255,255,.06); color: #555570; }
+    .tag-text  { background: rgba(255,255,255,.04); color: #333348; }
+
+    /* ── Usage ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .card { background: #0F0F18; border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 22px; }
+    .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: .15em; color: #33334A; margin-bottom: 14px; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .pill { font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 999px; border: 1.5px solid; }
+    .mt { margin-top: 8px; font-size: 13px; line-height: 1.6; color: #888899; }
+    .hr { height: 1px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+
+<h1>AnalyzicAI Family · Brand Color System · Dark Theme · Two-Token</h1>
+
+<!-- 1. Token System -->
+<section>
+  <p class="section-label">1 · Two-Token Color System</p>
+  <table class="token-table">
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Color</th>
+        <th>Hex</th>
+        <th>Usage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>--ai-brand</td>
+        <td><span class="token-dot" style="background:#C044FF;"></span><span class="token-name" style="color:#C044FF;">AI Purple</span></td>
+        <td class="token-hex">#C044FF</td>
+        <td style="color:#555570;font-size:12px;">Wordmarks, filled buttons, large display</td>
+      </tr>
+      <tr>
+        <td>--ai-text</td>
+        <td><span class="token-dot" style="background:#C084FC;"></span><span class="token-name" style="color:#C084FC;">AI Lavender</span></td>
+        <td class="token-hex">#C084FC</td>
+        <td style="color:#555570;font-size:12px;">Inline text, badges, labels, small UI</td>
+      </tr>
+      <tr>
+        <td>--chain-brand</td>
+        <td><span class="token-dot" style="background:#00FFD1;"></span><span class="token-name" style="color:#00FFD1;">Electric Cyan</span></td>
+        <td class="token-hex">#00FFD1</td>
+        <td style="color:#555570;font-size:12px;">Wordmarks, filled buttons, large display</td>
+      </tr>
+      <tr>
+        <td>--chain-text</td>
+        <td><span class="token-dot" style="background:#5FFAE0;"></span><span class="token-name" style="color:#5FFAE0;">Soft Cyan</span></td>
+        <td class="token-hex">#5FFAE0</td>
+        <td style="color:#555570;font-size:12px;">Inline text, badges, labels, small UI</td>
+      </tr>
+      <tr>
+        <td>--ux-brand</td>
+        <td><span class="token-dot" style="background:#FF2D9E;"></span><span class="token-name" style="color:#FF2D9E;">Hot Pink</span></td>
+        <td class="token-hex">#FF2D9E</td>
+        <td style="color:#555570;font-size:12px;">Wordmarks, filled buttons, large display</td>
+      </tr>
+      <tr>
+        <td>--ux-text</td>
+        <td><span class="token-dot" style="background:#FF79C6;"></span><span class="token-name" style="color:#FF79C6;">Neon Pink</span></td>
+        <td class="token-hex">#FF79C6</td>
+        <td style="color:#555570;font-size:12px;">Inline text, badges, labels, small UI</td>
+      </tr>
+      <tr>
+        <td>--analyzic</td>
+        <td><span class="token-dot" style="background:#FFFFFF;"></span><span class="token-name" style="color:#FFFFFF;">White</span></td>
+        <td class="token-hex">#FFFFFF</td>
+        <td style="color:#555570;font-size:12px;">AnalyzicAI wordmark</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 2. Backgrounds -->
+<section>
+  <p class="section-label">2 · Background Scale</p>
+  <div class="bgs">
+    <div class="bg" style="background:#08080D;">#08080D · 900</div>
+    <div class="bg" style="background:#0F0F18;">#0F0F18 · 800</div>
+    <div class="bg" style="background:#16162A;">#16162A · 700</div>
+    <div class="bg" style="background:#1E1E38;">#1E1E38 · 600</div>
+  </div>
+</section>
+
+<!-- 3. Wordmarks — brand token -->
+<section>
+  <p class="section-label">3 · Wordmarks — Brand Token</p>
+  <div class="wordmarks">
+    <div class="wm"><span class="white">Analyzic</span><span class="ai">AI</span><span class="label">platform / landing</span></div>
+    <div class="wm"><span class="chain">Solidic</span><span class="ai">AI</span><span class="label">blockchain · smart contracts</span></div>
+    <div class="wm"><span class="ux">UXic</span><span class="ai">AI</span><span class="label">ui/ux analysis</span></div>
+  </div>
+</section>
+
+<!-- 4. "Analyzic" — Chosen -->
+<section>
+  <p class="section-label">4 · "Analyzic" Color — Chosen</p>
+  <div class="wordmarks">
+    <div>
+      <div style="font-size:11px;color:#2A2A40;text-transform:uppercase;letter-spacing:.15em;margin-bottom:8px;">White #FFFFFF ✓ chosen</div>
+      <div class="wm"><span class="white">Analyzic</span><span class="ai">AI</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Usage Contexts — two tokens in action -->
+<section>
+  <p class="section-label">5 · Usage Contexts — Two Tokens in Action</p>
+  <div class="cards">
+
+    <!-- Wordmarks: brand token -->
+    <div class="card">
+      <div class="card-title">Wordmarks · brand token</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:28px;font-weight:800;letter-spacing:-0.02em;line-height:1;">
+          <span class="white">Analyzic</span><span class="ai">AI</span>
+        </div>
+        <div style="font-size:28px;font-weight:800;letter-spacing:-0.02em;line-height:1;">
+          <span class="chain">Solidic</span><span class="ai">AI</span>
+        </div>
+        <div style="font-size:28px;font-weight:800;letter-spacing:-0.02em;line-height:1;">
+          <span class="ux">UXic</span><span class="ai">AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filled buttons: brand token -->
+    <div class="card">
+      <div class="card-title">Filled Buttons · brand token</div>
+      <div class="pills">
+        <span class="pill" style="color:#ffffff;border-color:#C044FF;background:#C044FF;">Analyze Now</span>
+        <span class="pill" style="color:#08080D;border-color:#00FFD1;background:#00FFD1;">Audit Contract</span>
+        <span class="pill" style="color:#ffffff;border-color:#FF2D9E;background:#FF2D9E;">Start UX Review</span>
+      </div>
+    </div>
+
+    <!-- Outline buttons: text token -->
+    <div class="card">
+      <div class="card-title">Outline Buttons · text token</div>
+      <div class="pills">
+        <span class="pill" style="color:#C084FC;border-color:#C084FC;background:rgba(192,132,252,.06);">Analyze Now</span>
+        <span class="pill" style="color:#5FFAE0;border-color:#5FFAE0;background:rgba(95,250,224,.06);">Audit Contract</span>
+        <span class="pill" style="color:#FF79C6;border-color:#FF79C6;background:rgba(255,121,198,.06);">Start UX Review</span>
+      </div>
+    </div>
+
+    <!-- Badges: text token -->
+    <div class="card">
+      <div class="card-title">Badges / Tags · text token</div>
+      <div class="pills">
+        <span class="pill" style="color:#C084FC;border-color:#C084FC;background:rgba(192,132,252,.08);">AI-Powered</span>
+        <span class="pill" style="color:#5FFAE0;border-color:#5FFAE0;background:rgba(95,250,224,.08);">On-Chain</span>
+        <span class="pill" style="color:#FF79C6;border-color:#FF79C6;background:rgba(255,121,198,.08);">UX Score</span>
+      </div>
+    </div>
+
+    <!-- Inline text: text token -->
+    <div class="card">
+      <div class="card-title">Inline Accent Text · text token</div>
+      <div class="mt">Powered by <span class="ai-text">multiple AI models</span> — GPT, Gemini and Claude.</div>
+      <div class="mt">Audit your <span class="chain-text">smart contracts</span> with on-chain verification.</div>
+      <div class="mt">Get detailed <span class="ux-text">UX feedback</span> on layout and contrast.</div>
+    </div>
+
+    <!-- Borders/separators: text token at low opacity -->
+    <div class="card">
+      <div class="card-title">Separators · text token at 30%</div>
+      <div class="hr" style="background:rgba(192,132,252,.3);"></div>
+      <div class="hr" style="background:rgba(95,250,224,.3);"></div>
+      <div class="hr" style="background:rgba(255,121,198,.3);"></div>
+      <div class="hr" style="background:linear-gradient(90deg,rgba(192,132,252,.6),rgba(95,250,224,.6),rgba(255,121,198,.6));"></div>
+    </div>
+
+    <!-- Score cards: brand border + text value -->
+    <div class="card">
+      <div class="card-title">Score Cards · mixed</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:#16162A;border:1px solid rgba(192,132,252,.2);border-radius:6px;padding:10px 14px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#C084FC;margin-bottom:4px;">AI Confidence</div>
+          <div style="font-size:22px;font-weight:800;color:#C044FF;">94<span style="font-size:14px;color:#33334A;">/100</span></div>
+        </div>
+        <div style="background:#16162A;border:1px solid rgba(95,250,224,.2);border-radius:6px;padding:10px 14px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#5FFAE0;margin-bottom:4px;">Security Score</div>
+          <div style="font-size:22px;font-weight:800;color:#00FFD1;">81<span style="font-size:14px;color:#33334A;">/100</span></div>
+        </div>
+        <div style="background:#16162A;border:1px solid rgba(255,121,198,.2);border-radius:6px;padding:10px 14px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#FF79C6;margin-bottom:4px;">UX Score</div>
+          <div style="font-size:22px;font-weight:800;color:#FF2D9E;">87<span style="font-size:14px;color:#33334A;">/100</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav items: text token -->
+    <div class="card">
+      <div class="card-title">Nav Items · text token</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;background:#16162A;border-radius:5px;padding:9px 12px;">
+          <div style="width:7px;height:7px;border-radius:50%;background:#C084FC;"></div>
+          <span style="font-size:13px;color:#C084FC;font-weight:500;">AnalyzicAI</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:#16162A;border-radius:5px;padding:9px 12px;">
+          <div style="width:7px;height:7px;border-radius:50%;background:#5FFAE0;"></div>
+          <span style="font-size:13px;color:#5FFAE0;font-weight:500;">SolidicAI</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:#16162A;border-radius:5px;padding:9px 12px;">
+          <div style="width:7px;height:7px;border-radius:50%;background:#FF79C6;"></div>
+          <span style="font-size:13px;color:#FF79C6;font-weight:500;">UXicAI</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 6. Gradients -->
+<section>
+  <p class="section-label">6 · Gradient Combinations</p>
+  <div class="swatches" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">
+    <div class="swatch">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#C044FF,#00FFD1);"></div>
+      <div class="swatch-info"><div class="swatch-name">AI → Blockchain</div><div class="swatch-hex">#C044FF → #00FFD1</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#C044FF,#FF2D9E);"></div>
+      <div class="swatch-info"><div class="swatch-name">AI → UX</div><div class="swatch-hex">#C044FF → #FF2D9E</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#00FFD1,#FF2D9E);"></div>
+      <div class="swatch-info"><div class="swatch-name">Blockchain → UX</div><div class="swatch-hex">#00FFD1 → #FF2D9E</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#C044FF,#00FFD1,#FF2D9E);"></div>
+      <div class="swatch-info"><div class="swatch-name">Full Spectrum</div><div class="swatch-hex">All three brands</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#C084FC,#5FFAE0,#FF79C6);"></div>
+      <div class="swatch-info"><div class="swatch-name">Full Spectrum · Text</div><div class="swatch-hex">Text token variants</div></div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

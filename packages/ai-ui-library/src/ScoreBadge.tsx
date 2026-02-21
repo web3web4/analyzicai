@@ -37,7 +37,7 @@ export function ScoreBadge({
               className={
                 variant === "uxic"
                   ? "text-xs text-muted"
-                  : "text-xs text-gray-500"
+                  : "text-xs text-fg-tertiary"
               }
             >
               /100
@@ -49,7 +49,7 @@ export function ScoreBadge({
           className={
             variant === "uxic"
               ? "text-muted text-sm capitalize"
-              : "text-gray-500"
+              : "text-fg-tertiary"
           }
         >
           {status || "..."}

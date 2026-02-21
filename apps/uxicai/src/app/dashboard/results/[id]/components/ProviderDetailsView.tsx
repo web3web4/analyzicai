@@ -122,7 +122,7 @@ export function ProviderDetailsView({
       {/* Step 1: Initial Analysis */}
       {v1Responses.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4 text-muted">
+          <h3 className="text-lg font-semibold mb-4 text-fg-secondary">
             Step 1: Initial Analysis
           </h3>
           <div className="space-y-6">
@@ -136,7 +136,7 @@ export function ProviderDetailsView({
       {/* Step 2: Rethink Analysis */}
       {v2Responses.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4 text-muted">
+          <h3 className="text-lg font-semibold mb-4 text-fg-secondary">
             Step 2: Rethink Analysis
           </h3>
           <div className="space-y-6">

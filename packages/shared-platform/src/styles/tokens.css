@@ -1,0 +1,49 @@
+/* ──────────────────────────────────────────────────
+   BRAND DESIGN TOKENS — AnalyzicAI Family
+   Single source of truth for all CSS custom properties.
+   Apps override only --primary / --accent slots in their own :root.
+   ────────────────────────────────────────────────── */
+
+:root {
+  /* ── Immutable brand palette ── */
+  --brand-web4-purple:       #C044FF;
+  --brand-web4-purple-soft:  #B06EFF;
+  --brand-web4-purple-light: #C084FC;
+  --brand-web3-cyan:         #00FFD1;
+  --brand-web3-cyan-light:   #5FFAE0;
+  --brand-ux-pink:           #ff4eac;
+  --brand-ux-pink-dark:      #FF2D9E;
+  --brand-ux-pink-light:     #ff9ad3;
+  --brand-black:             #000000;
+  --brand-white:             #ffffff;
+
+  /* ── Background scale ── */
+  --bg-950: #04040A;
+  --bg-900: #08080D;
+  --bg-800: #0F0F18;
+  --bg-700: #16162A;
+  --bg-600: #1E1E38;
+  --bg-500: #2A2A48;
+
+  /* ── Foreground ── */
+  --fg-primary:   #ffffff;   /* 21:1  on bg-900 */
+  --fg-muted:     #ededed;   /* 17.8:1 — default body text */
+  --fg-secondary: #d4d4d8;   /* 13.6:1 — secondary paragraphs */
+  --fg-tertiary:  #d1d1da;   /* 8.3:1  — captions, hints  (== --muted) */
+
+  /* ── Shared semantic (no --color-* prefix — avoids @theme inline collision) ── */
+  --border:  #3f3f46;
+  --muted:   #d1d1da;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error:   #ef4444;
+
+  /* ── Per-app semantic slots (defaults = AI purple leads) ──
+     Each app overrides these in its own globals.css :root block. */
+  --primary:       #C044FF;
+  --primary-light: #C084FC;
+  --primary-dark:  #8c00d9;
+  --primary-soft:  #B06EFF;
+  --accent:        #FF2D9E;
+  --accent-light:  #FF79C6;
+}

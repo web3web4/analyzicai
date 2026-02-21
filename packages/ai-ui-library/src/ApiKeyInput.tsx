@@ -31,7 +31,7 @@ export function ApiKeyInput({
           />
           <div className="text-sm">
             <p className="font-medium mb-1 text-white">Privacy & Security</p>
-            <ul className="text-gray-400 space-y-1">
+            <ul className="text-fg-tertiary space-y-1">
               <li>
                 • Your keys are sent directly to AI providers (OpenAI,
                 Anthropic, Google)
@@ -47,9 +47,9 @@ export function ApiKeyInput({
       <div className="space-y-4">
         {providers.map((provider) => (
           <div key={provider.id}>
-            <label className="block text-sm font-medium mb-2 text-gray-300">
+            <label className="block text-sm font-medium mb-2 text-fg-secondary">
               {provider.label}
-              <span className="text-gray-500 font-normal ml-2">
+              <span className="text-fg-tertiary font-normal ml-2">
                 (optional)
               </span>
             </label>
@@ -58,7 +58,7 @@ export function ApiKeyInput({
               placeholder={provider.placeholder}
               value={apiKeys[provider.id] || ""}
               onChange={(e) => onApiKeyChange(provider.id, e.target.value)}
-              className={`w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:outline-none ${accentClasses.focus} focus:ring-1 transition-colors font-mono text-sm text-gray-300`}
+              className={`w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:outline-none ${accentClasses.focus} focus:ring-1 transition-colors font-mono text-sm text-fg-secondary`}
             />
           </div>
         ))}

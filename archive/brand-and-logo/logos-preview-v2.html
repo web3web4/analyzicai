@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo Concepts v2 — The AI Spark System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #08080D;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #fff;
+      padding: 56px 64px;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      margin-bottom: 24px;
+    }
+
+    .concept-rationale {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.6);
+      max-width: 600px;
+      margin-bottom: 64px;
+    }
+
+    .product-section {
+      margin-bottom: 72px;
+    }
+
+    .product-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 4px;
+    }
+
+    .concept-name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+
+    .size-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .size-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .size-cell-label {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .lockup-row {
+      display: flex;
+      align-items: center;
+      gap: 56px;
+      flex-wrap: wrap;
+    }
+
+    .lockup-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    hr.section-divider {
+      border: none;
+      border-top: 1px solid #1E1E38;
+      margin: 72px 0;
+    }
+
+    .all-three-row {
+      display: flex;
+      align-items: center;
+      gap: 64px;
+      flex-wrap: wrap;
+    }
+
+    .col-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .all-three-section {
+      margin-top: 80px;
+    }
+
+    .all-three-title {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      margin-bottom: 36px;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="page-header">Logo Concepts v2 — The "AI Spark" System</p>
+  <p class="concept-rationale">
+    A highly cohesive, modern geometric system. Every product features a domain-specific container (Data Peak, Hex Node, Viewfinder) powered by a shared central element: the <strong>AI Spark</strong> (a 4-pointed purple star). This creates an undeniable family resemblance while keeping each logo abstract, scalable, and premium.
+  </p>
+
+  <!-- ─────────────────────────── ANALYZICAI ─────────────────────────── -->
+  <div class="product-section">
+    <p class="product-label">AnalyzicAI</p>
+    <p class="concept-name" style="color:#ffffff;">The Data Apex</p>
+
+    <div class="size-row">
+
+      <!-- 96px -->
+      <div class="size-cell">
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-a" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <!-- White Chevron (The 'A' / Data Peak) -->
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Purple Spark (Center 32, 38, Radius 12) -->
+          <circle cx="32" cy="38" r="12" fill="#C044FF" opacity="0.25" filter="url(#glow-a)"/>
+          <path d="M 32 24 C 32 33 41 38 46 38 C 41 38 32 43 32 52 C 32 43 23 38 18 38 C 23 38 32 33 32 24 Z" fill="#C044FF" />
+        </svg>
+        <span class="size-cell-label">96px</span>
+      </div>
+
+      <!-- 48px -->
+      <div class="size-cell">
+        <svg width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 32 24 C 32 33 41 38 46 38 C 41 38 32 43 32 52 C 32 43 23 38 18 38 C 23 38 32 33 32 24 Z" fill="#C044FF" />
+        </svg>
+        <span class="size-cell-label">48px</span>
+      </div>
+
+      <!-- 24px favicon sim -->
+      <div class="size-cell">
+        <svg width="24" height="24" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 32 24 C 32 33 41 38 46 38 C 41 38 32 43 32 52 C 32 43 23 38 18 38 C 23 38 32 33 32 24 Z" fill="#C044FF" />
+        </svg>
+        <span class="size-cell-label">24px</span>
+      </div>
+
+    </div>
+
+    <!-- Lockups -->
+    <div class="lockup-row">
+
+      <!-- Horizontal lockup large -->
+      <div class="lockup-cell">
+        <svg width="280" height="52" viewBox="0 0 280 52" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <!-- Glyph -->
+          <rect x="0" y="0" width="52" height="52" rx="11" fill="#0F0F18"/>
+          <g transform="scale(0.8125) translate(0,0)">
+            <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 32 24 C 32 33 41 38 46 38 C 41 38 32 43 32 52 C 32 43 23 38 18 38 C 23 38 32 33 32 24 Z" fill="#C044FF" />
+          </g>
+          <!-- Wordmark -->
+          <text x="68" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#FFFFFF" letter-spacing="-0.03em">Analyzic</text>
+          <text x="212" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#C044FF" letter-spacing="-0.03em">AI</text>
+        </svg>
+        <span class="size-cell-label">Horizontal lockup</span>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ─────────────────────────── SOLIDICAI ─────────────────────────── -->
+  <div class="product-section">
+    <p class="product-label">SolidicAI</p>
+    <p class="concept-name" style="color:#00FFD1;">The Code Core</p>
+
+    <div class="size-row">
+
+      <!-- 96px -->
+      <div class="size-cell">
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-s" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <!-- Cascadia Code style Curly Braces { } - Matched to UXicAI spacing -->
+          <path d="M 26 14 L 19 14 C 13 14 13 18 13 22 L 13 28 C 13 32 10 32 10 32 C 13 32 13 32 13 36 L 13 42 C 13 46 13 50 19 50 L 26 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 38 14 L 45 14 C 51 14 51 18 51 22 L 51 28 C 51 32 54 32 54 32 C 51 32 51 32 51 36 L 51 42 C 51 46 51 50 45 50 L 38 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Purple Spark (Center 32, 32, Radius 14) -->
+          <circle cx="32" cy="32" r="14" fill="#C044FF" opacity="0.25" filter="url(#glow-s)"/>
+          <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+        </svg>
+        <span class="size-cell-label">96px</span>
+      </div>
+
+      <!-- 48px -->
+      <div class="size-cell">
+        <svg width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 26 14 L 19 14 C 13 14 13 18 13 22 L 13 28 C 13 32 10 32 10 32 C 13 32 13 32 13 36 L 13 42 C 13 46 13 50 19 50 L 26 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 38 14 L 45 14 C 51 14 51 18 51 22 L 51 28 C 51 32 54 32 54 32 C 51 32 51 32 51 36 L 51 42 C 51 46 51 50 45 50 L 38 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+        </svg>
+        <span class="size-cell-label">48px</span>
+      </div>
+
+      <!-- 24px favicon -->
+      <div class="size-cell">
+        <svg width="24" height="24" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 26 14 L 19 14 C 13 14 13 18 13 22 L 13 28 C 13 32 10 32 10 32 C 13 32 13 32 13 36 L 13 42 C 13 46 13 50 19 50 L 26 50" stroke="#00FFD1" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 38 14 L 45 14 C 51 14 51 18 51 22 L 51 28 C 51 32 54 32 54 32 C 51 32 51 32 51 36 L 51 42 C 51 46 51 50 45 50 L 38 50" stroke="#00FFD1" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+        </svg>
+        <span class="size-cell-label">24px</span>
+      </div>
+
+    </div>
+
+    <!-- Lockups -->
+    <div class="lockup-row">
+
+      <div class="lockup-cell">
+        <svg width="270" height="52" viewBox="0 0 270 52" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <!-- Glyph at 52x52 -->
+          <rect x="0" y="0" width="52" height="52" rx="11" fill="#0F0F18"/>
+          <g transform="scale(0.8125) translate(0,0)">
+            <path d="M 26 14 L 19 14 C 13 14 13 18 13 22 L 13 28 C 13 32 10 32 10 32 C 13 32 13 32 13 36 L 13 42 C 13 46 13 50 19 50 L 26 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 38 14 L 45 14 C 51 14 51 18 51 22 L 51 28 C 51 32 54 32 54 32 C 51 32 51 32 51 36 L 51 42 C 51 46 51 50 45 50 L 38 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+          </g>
+          <!-- Wordmark -->
+          <text x="68" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#00FFD1" letter-spacing="-0.03em">Solidic</text>
+          <text x="205" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#C044FF" letter-spacing="-0.03em">AI</text>
+        </svg>
+        <span class="size-cell-label">Horizontal lockup</span>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ─────────────────────────── UXICAI ─────────────────────────── -->
+  <div class="product-section">
+    <p class="product-label">UXicAI</p>
+    <p class="concept-name" style="color:#FF2D9E;">The Viewfinder</p>
+
+    <div class="size-row">
+
+      <!-- 96px -->
+      <div class="size-cell">
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-u" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <!-- Pink Viewfinder -->
+          <path d="M 24 14 L 14 14 L 14 24 M 40 14 L 50 14 L 50 24 M 24 50 L 14 50 L 14 40 M 40 50 L 50 50 L 50 40" stroke="#FF2D9E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Purple Spark (Center 32, 32, Radius 14) -->
+          <circle cx="32" cy="32" r="14" fill="#C044FF" opacity="0.25" filter="url(#glow-u)"/>
+          <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+        </svg>
+        <span class="size-cell-label">96px</span>
+      </div>
+
+      <!-- 48px -->
+      <div class="size-cell">
+        <svg width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 24 14 L 14 14 L 14 24 M 40 14 L 50 14 L 50 24 M 24 50 L 14 50 L 14 40 M 40 50 L 50 50 L 50 40" stroke="#FF2D9E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+        </svg>
+        <span class="size-cell-label">48px</span>
+      </div>
+
+      <!-- 24px favicon -->
+      <div class="size-cell">
+        <svg width="24" height="24" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 24 14 L 14 14 L 14 24 M 40 14 L 50 14 L 50 24 M 24 50 L 14 50 L 14 40 M 40 50 L 50 50 L 50 40" stroke="#FF2D9E" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+        </svg>
+        <span class="size-cell-label">24px</span>
+      </div>
+
+    </div>
+
+    <!-- Lockups -->
+    <div class="lockup-row">
+
+      <div class="lockup-cell">
+        <svg width="250" height="52" viewBox="0 0 250 52" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <!-- Glyph at 52x52 -->
+          <rect x="0" y="0" width="52" height="52" rx="11" fill="#0F0F18"/>
+          <g transform="scale(0.8125) translate(0,0)">
+            <path d="M 24 14 L 14 14 L 14 24 M 40 14 L 50 14 L 50 24 M 24 50 L 14 50 L 14 40 M 40 50 L 50 50 L 50 40" stroke="#FF2D9E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+          </g>
+          <!-- Wordmark -->
+          <text x="68" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#FF2D9E" letter-spacing="-0.03em">UXic</text>
+          <text x="165" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#C044FF" letter-spacing="-0.03em">AI</text>
+        </svg>
+        <span class="size-cell-label">Horizontal lockup</span>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ─────────────────────────── ALL THREE TOGETHER ─────────────────────────── -->
+  <div class="all-three-section">
+    <p class="all-three-title">All three — family view · glyphs · 80px</p>
+    <div class="all-three-row">
+
+      <!-- AnalyzicAI -->
+      <div>
+        <svg width="80" height="80" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 32 24 C 32 33 41 38 46 38 C 41 38 32 43 32 52 C 32 43 23 38 18 38 C 23 38 32 33 32 24 Z" fill="#C044FF" />
+        </svg>
+        <p class="col-label">AnalyzicAI</p>
+      </div>
+
+      <!-- SolidicAI -->
+      <div>
+        <svg width="80" height="80" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 26 14 L 19 14 C 13 14 13 18 13 22 L 13 28 C 13 32 10 32 10 32 C 13 32 13 32 13 36 L 13 42 C 13 46 13 50 19 50 L 26 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 38 14 L 45 14 C 51 14 51 18 51 22 L 51 28 C 51 32 54 32 54 32 C 51 32 51 32 51 36 L 51 42 C 51 46 51 50 45 50 L 38 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+        </svg>
+        <p class="col-label">SolidicAI</p>
+      </div>
+
+      <!-- UXicAI -->
+      <div>
+        <svg width="80" height="80" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 24 14 L 14 14 L 14 24 M 40 14 L 50 14 L 50 24 M 24 50 L 14 50 L 14 40 M 40 50 L 50 50 L 50 40" stroke="#FF2D9E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
+        </svg>
+        <p class="col-label">UXicAI</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom padding -->
+  <div style="height: 96px;"></div>
+
+  <hr class="section-divider">
+
+  <!-- ─────────────────────────── SPARK ALTERNATIVES ─────────────────────────── -->
+  <div class="all-three-section">
+    <p class="all-three-title">AI Spark alternatives — all shown in AnalyzicAI container · 96px</p>
+    <p class="concept-rationale" style="margin-bottom: 40px;">
+      Current spark (A) vs multi-element alternatives. Mix of size hierarchy, asymmetry, and constellation arrangements.
+    </p>
+
+    <div class="all-three-row" style="align-items: flex-start; gap: 48px;">
+
+      <!-- A — Current: single centered 4-pt star -->
+      <div>
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 32 24 C 32 33 41 38 46 38 C 41 38 32 43 32 52 C 32 43 23 38 18 38 C 23 38 32 33 32 24 Z" fill="#C044FF"/>
+        </svg>
+        <p class="col-label">A — Current</p>
+      </div>
+
+      <!-- B — Large + two small (Sparkles-style: 1 dominant + 2 satellites) -->
+      <div>
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Main star (large, center-right) -->
+          <path d="M 36 30 C 36 35.5 40.5 38 43 38 C 40.5 38 36 40.5 36 46 C 36 40.5 31.5 38 29 38 C 31.5 38 36 35.5 36 30 Z" fill="#C044FF"/>
+          <!-- Small star top-left -->
+          <path d="M 23 22 C 23 24.8 25.2 26 26.5 26 C 25.2 26 23 27.2 23 30 C 23 27.2 20.8 26 19.5 26 C 20.8 26 23 24.8 23 22 Z" fill="#C044FF" opacity="0.7"/>
+          <!-- Tiny star bottom-left -->
+          <path d="M 19 38 C 19 39.4 20.2 40 21 40 C 20.2 40 19 40.6 19 42 C 19 40.6 17.8 40 17 40 C 17.8 40 19 39.4 19 38 Z" fill="#C044FF" opacity="0.45"/>
+        </svg>
+        <p class="col-label">B — 1 large + 2 small</p>
+      </div>
+
+      <!-- C — Three equal stars in triangle (constellation) -->
+      <div>
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Top star -->
+          <path d="M 32 22 C 32 25.5 34.5 27 36 27 C 34.5 27 32 28.5 32 32 C 32 28.5 29.5 27 28 27 C 29.5 27 32 25.5 32 22 Z" fill="#C044FF"/>
+          <!-- Bottom-left star -->
+          <path d="M 22 36 C 22 39.5 24.5 41 26 41 C 24.5 41 22 42.5 22 46 C 22 42.5 19.5 41 18 41 C 19.5 41 22 39.5 22 36 Z" fill="#C044FF" opacity="0.75"/>
+          <!-- Bottom-right star -->
+          <path d="M 42 36 C 42 39.5 44.5 41 46 41 C 44.5 41 42 42.5 42 46 C 42 42.5 39.5 41 38 41 C 39.5 41 42 39.5 42 36 Z" fill="#C044FF" opacity="0.75"/>
+        </svg>
+        <p class="col-label">C — Triangle constellation</p>
+      </div>
+
+      <!-- D — Lucide Sparkles-style: 1 big + 1 medium + 1 tiny, diagonal cascade -->
+      <div>
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Large star (center) -->
+          <path d="M 34 27 C 34 33 38.5 36 41 36 C 38.5 36 34 39 34 45 C 34 39 29.5 36 27 36 C 29.5 36 34 33 34 27 Z" fill="#C044FF"/>
+          <!-- Medium star (top-left) -->
+          <path d="M 22 20 C 22 23 24.2 24.5 25.5 24.5 C 24.2 24.5 22 26 22 29 C 22 26 19.8 24.5 18.5 24.5 C 19.8 24.5 22 23 22 20 Z" fill="#C044FF" opacity="0.65"/>
+          <!-- Tiny dot-star (far top-right) -->
+          <path d="M 43 22 C 43 23.4 44 24 44.7 24 C 44 24 43 24.6 43 26 C 43 24.6 42 24 41.3 24 C 42 24 43 23.4 43 22 Z" fill="#C044FF" opacity="0.4"/>
+        </svg>
+        <p class="col-label">D — Diagonal cascade</p>
+      </div>
+
+      <!-- E — Star cluster: 1 large center + 4 tiny orbiting dots -->
+      <div>
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Main star -->
+          <path d="M 32 26 C 32 32 36.5 35 39 35 C 36.5 35 32 38 32 44 C 32 38 27.5 35 25 35 C 27.5 35 32 32 32 26 Z" fill="#C044FF"/>
+          <!-- 4 tiny orbiting circles -->
+          <circle cx="32" cy="21" r="1.4" fill="#C044FF" opacity="0.5"/>
+          <circle cx="42" cy="35" r="1.1" fill="#C044FF" opacity="0.4"/>
+          <circle cx="32" cy="48" r="1.4" fill="#C044FF" opacity="0.35"/>
+          <circle cx="22" cy="35" r="1.1" fill="#C044FF" opacity="0.4"/>
+        </svg>
+        <p class="col-label">E — Star + orbit dots</p>
+      </div>
+
+      <!-- F — Two interlocked stars (large 4-pt + rotated 45° medium 4-pt) -->
+      <div>
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Large 4-pt star (axis-aligned) -->
+          <path d="M 33 26 C 33 32.5 38 36 41 36 C 38 36 33 39.5 33 46 C 33 39.5 28 36 25 36 C 28 36 33 32.5 33 26 Z" fill="#C044FF"/>
+          <!-- Medium 4-pt star rotated 45° (diamond orientation) — offset slightly -->
+          <path d="M 24 23 C 26.5 25.5 26.5 25.5 24 28 C 21.5 25.5 21.5 25.5 24 23 Z" fill="none"/>
+          <path d="M 22 22 C 22 25 24 26.2 25.5 26.2 C 24 26.2 22 27.4 22 30.4 C 22 27.4 20 26.2 18.5 26.2 C 20 26.2 22 25 22 22 Z" fill="#C044FF" opacity="0.6" transform="rotate(45 22 26)"/>
+        </svg>
+        <p class="col-label">F — Dual star (rotated)</p>
+      </div>
+
+      <!-- G — Sparkles icon style: sharp thin 4-pt, 3 sizes, left-to-right diagonal -->
+      <div>
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Large sharp star (bottom-right of crossbar area) -->
+          <path d="M 37 29 L 38.4 34 L 43 35 L 38.4 36 L 37 41 L 35.6 36 L 31 35 L 35.6 34 Z" fill="#C044FF"/>
+          <!-- Medium sharp star (top-left) -->
+          <path d="M 23 20 L 24 23.5 L 27.5 24.5 L 24 25.5 L 23 29 L 22 25.5 L 18.5 24.5 L 22 23.5 Z" fill="#C044FF" opacity="0.7"/>
+          <!-- Tiny sharp star -->
+          <path d="M 42 22 L 42.6 24 L 44.6 24.5 L 42.6 25 L 42 27 L 41.4 25 L 39.4 24.5 L 41.4 24 Z" fill="#C044FF" opacity="0.4"/>
+        </svg>
+        <p class="col-label">G — Sharp 4-pt sparkles</p>
+      </div>
+
+      <!-- H — Glint style: very thin elongated cross + 2 tiny crosses -->
+      <div>
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path d="M 14 48 L 32 14 L 50 48" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Large glint (elongated vertical + short horizontal) -->
+          <path d="M 34 26 C 34 30 35.8 33 38 35 C 35.8 33 34 36 34 44 C 34 36 32.2 33 30 35 C 32.2 33 34 30 34 26 Z" fill="#C044FF"/>
+          <!-- Medium glint top-left -->
+          <path d="M 22 19 C 22 21.5 23 23 24.5 24 C 23 23 22 24.5 22 27 C 22 24.5 21 23 19.5 24 C 21 23 22 21.5 22 19 Z" fill="#C044FF" opacity="0.65"/>
+          <!-- Tiny glint -->
+          <path d="M 43 23 C 43 24.2 43.5 25 44.3 25.5 C 43.5 25 43 25.8 43 27 C 43 25.8 42.5 25 41.7 25.5 C 42.5 25 43 24.2 43 23 Z" fill="#C044FF" opacity="0.38"/>
+        </svg>
+        <p class="col-label">H — Glint / lens flare</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom padding -->
+  <div style="height: 96px;"></div>
+
+</body>
+</html>

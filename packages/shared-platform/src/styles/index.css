@@ -1,0 +1,17 @@
+@import "./tokens.css";
+@import "./utilities.css";
+
+/*
+ * Cascadia Mono fallback font — minimises CLS while the Google Font loads.
+ * Metrics derived from Cascadia Mono OpenType tables:
+ *   UPM=2048  ascender=1900  descender=480  lineGap=0
+ * size-adjust=100% because Courier New has the same advance width ratio (60%).
+ */
+@font-face {
+  font-family: "Cascadia Mono Fallback";
+  src: local("Courier New");
+  ascent-override: 92.77%;
+  descent-override: 23.44%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}

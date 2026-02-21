@@ -1,40 +1,39 @@
 'use client';
 
-import { Palette, Code2, ArrowRight, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+import { Logo } from '@web3web4/shared-platform';
 import ScrollReveal from './animations/ScrollReveal';
 
 const apps = [
   {
-    name: 'UXicAI',
-    tagline: 'AI-Powered UI/UX Analysis',
-    description: 'Upload screenshots or capture screens to get comprehensive design feedback from multiple AI providers. Analyze visual hierarchy, accessibility, user experience, and design consistency.',
-    icon: Palette,
-    accent: 'cyan' as const,
-    features: [
-      'Screenshot analysis with WebRTC capture',
-      'Multi-provider AI vision analysis',
-      'Design system recommendations',
-      'Accessibility compliance checks',
-      'Real-time feedback',
-    ],
-    url: 'https://UXicAI.com',
-    status: 'Live',
-  },
-  {
     name: 'SolidicAI',
-    tagline: 'Smart Contract Intelligence',
+    tagline: 'Smart Contract Intensive AI Analysis',
     description: 'Analyze Solidity smart contracts for security vulnerabilities, gas optimization opportunities, and best practice compliance. Get expert-level code review powered by AI.',
-    icon: Code2,
-    accent: 'magenta' as const,
+    logoPrefix: 'Solidic' as const,
+    accent: 'chain' as const,
     features: [
       'Security vulnerability detection',
       'Gas optimization analysis',
-      'Best practice compliance',
       'Code quality assessment',
-      'Automated documentation',
+      'Multi-provider AI code analysis',
     ],
     url: 'https://SolidicAI.com',
+    status: 'Live',
+  },
+  {
+    name: 'UXicAI',
+    tagline: 'AI-Powered UI/UX Analysis',
+    description: 'Upload or capture screenshots to get comprehensive design feedback from multiple AI providers. Analyze visual hierarchy, accessibility, user experience, and design consistency.',
+    logoPrefix: 'UXic' as const,
+    accent: 'ux' as const,
+    features: [
+      'Screenshot analysis with WebRTC capture',
+      'Design system recommendations',
+      'Accessibility compliance checks',
+      'Multi-provider AI vision analysis',
+    ],
+    url: 'https://UXicAI.com',
     status: 'Live',
   },
 ];
@@ -46,9 +45,9 @@ export default function AppsShowcase() {
         {/* Section heading */}
         <ScrollReveal className="text-center mb-10">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
-            AnalyzicAI <span className="text-magenta">Apps</span> Family
+            Analyzic<span className="text-ai">AI</span> <span className="text-ai-soft">Apps</span> Family
           </h2>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto font-mono">
+          <p className="text-lg text-fg-secondary max-w-2xl mx-auto font-mono">
             Specialized AI-powered analysis tools for different domains
           </p>
         </ScrollReveal>
@@ -56,43 +55,37 @@ export default function AppsShowcase() {
         {/* App cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {apps.map((app, index) => {
-            const isCyan = app.accent === 'cyan';
+            const isUx = app.accent === 'ux';
             return (
               <ScrollReveal
                 key={index}
-                direction={isCyan ? 'left' : 'right'}
+                direction={isUx ? 'left' : 'right'}
                 delay={index * 0.15}
               >
-                <div className="group relative h-full bg-surface-800/60 border border-white/[0.08] transition-all duration-300 hover:border-cyan/20 overflow-hidden">
+                <div className="group relative h-full bg-surface-800/60 border border-white/[0.08] transition-all duration-300 hover:border-ai/20 overflow-hidden">
                   {/* Left accent border */}
                   <div
                     className={`absolute top-0 left-0 w-[2px] h-full ${
-                      isCyan ? 'bg-cyan' : 'bg-magenta'
+                      isUx ? 'bg-ux' : 'bg-chain'
                     }`}
                   />
 
                   <div className="p-8 lg:p-10">
                     {/* Header */}
                     <div className="flex items-center space-x-4 mb-6">
-                      <div
-                        className={`w-14 h-14 flex items-center justify-center border ${
-                          isCyan
-                            ? 'border-cyan/30 bg-cyan/[0.08]'
-                            : 'border-magenta/30 bg-magenta/[0.08]'
-                        }`}
-                      >
-                        <app.icon className={`w-7 h-7 ${isCyan ? 'text-cyan' : 'text-magenta'}`} />
-                      </div>
+                      <Logo prefix={app.logoPrefix} containerSize="lg" showText={false} />
                       <div>
-                        <h3 className="text-2xl font-bold text-white">{app.name}</h3>
-                        <p className={`text-sm font-mono ${isCyan ? 'text-cyan' : 'text-magenta'}`}>
+                        <h3 className="text-2xl font-bold">
+                          <span className={isUx ? 'text-ux' : 'text-chain'}>{app.name.slice(0, -2)}</span><span className="text-ai-soft">AI</span>
+                        </h3>
+                        <p className={`text-sm font-mono ${isUx ? 'text-ux' : 'text-chain'}`}>
                           {app.tagline}
                         </p>
                       </div>
                     </div>
 
                     {/* Description */}
-                    <p className="text-white/70 leading-relaxed mb-6">
+                    <p className="text-fg-secondary leading-relaxed mb-6">
                       {app.description}
                     </p>
 
@@ -102,10 +95,10 @@ export default function AppsShowcase() {
                         <li key={fi} className="flex items-start space-x-3">
                           <span
                             className={`mt-2 w-1.5 h-1.5 flex-shrink-0 ${
-                              isCyan ? 'bg-cyan' : 'bg-magenta'
+                              isUx ? 'bg-ux' : 'bg-chain'
                             }`}
                           />
-                          <span className="text-white/70 text-sm">{feature}</span>
+                          <span className="text-fg-secondary text-sm">{feature}</span>
                         </li>
                       ))}
                     </ul>
@@ -117,9 +110,9 @@ export default function AppsShowcase() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`group/btn px-6 py-3 font-mono font-bold text-sm flex items-center space-x-2 transition-all border-2 ${
-                          isCyan
-                            ? 'border-cyan bg-cyan text-black hover:bg-cyan/90'
-                            : 'border-magenta bg-magenta text-white hover:bg-magenta/90'
+                          isUx
+                            ? 'border-ux bg-ux text-white hover:bg-ux/90'
+                            : 'border-chain bg-chain text-black hover:bg-chain/90'
                         }`}
                       >
                         <span>Visit {app.name}</span>
@@ -127,9 +120,9 @@ export default function AppsShowcase() {
                       </Link>
                       <span
                         className={`px-3 py-1 text-xs font-mono border ${
-                          isCyan
-                            ? 'border-cyan/30 text-cyan bg-cyan/[0.06]'
-                            : 'border-magenta/30 text-magenta bg-magenta/[0.06]'
+                          isUx
+                            ? 'border-ux/30 text-ux bg-ux/[0.06]'
+                            : 'border-chain/30 text-chain bg-chain/[0.06]'
                         }`}
                       >
                         {app.status}
