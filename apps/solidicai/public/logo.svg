@@ -1,39 +1,8 @@
-<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
- <defs>
-  <linearGradient y2="100%" x2="100%" y1="0%" x1="0%" id="solidic-gradient">
-   <stop stop-color="#10B981" offset="0%"/>
-   <stop stop-color="#14B8A6" offset="100%"/>
-  </linearGradient>
-  <linearGradient y2="100%" x2="0%" y1="0%" x1="0%" id="solidic-shield">
-   <stop stop-color="#10B981" stop-opacity="0.2" offset="0%"/>
-   <stop stop-color="#14B8A6" stop-opacity="0.1" offset="100%"/>
-  </linearGradient>
- </defs>
- <!-- Shield shape -->
- <!-- Hexagonal blocks (Solidity style) -->
- <!-- Checkmark for security -->
- <!-- Scanning lines effect -->
- <g>
-  <title>background</title>
-  <rect fill="none" id="canvas_background" height="602" width="802" y="-1" x="-1"/>
- </g>
- <g>
-  <title>Layer 1</title>
-  <path stroke="url(#solidic-gradient)" id="svg_1" stroke-width="4" fill="url(#solidic-shield)" d="m102.000005,4l69.000005,27.600002l0,69.000005q0,55.200004 -69.000005,96.600006q-69.000005,-41.400003 -69.000005,-96.600006l0,-69.000005l69.000005,-27.600002z"/>
-  <g stroke="null" id="svg_2">
-   <!-- Center hexagon -->
-   <polygon stroke="null" id="svg_3" fill="url(#solidic-gradient)" points="102,55.53520965576172 126.71830749511719,69.7957763671875 126.71830749511719,98.31690979003906 102,112.57746887207031 77.28169250488281,98.31690979003906 77.28169250488281,69.7957763671875 "/>
-   <!-- Top hexagon -->
-   <polygon stroke="null" id="svg_4" opacity="0.7" fill="#10B981" points="102,8 126.71830749511719,22.260562896728516 126.71830749511719,50.78169250488281 102,65.0422592163086 77.28169250488281,50.78169250488281 77.28169250488281,22.260562896728516 "/>
-   <!-- Bottom left hexagon -->
-   <polygon stroke="null" id="svg_5" opacity="0.5" fill="#10B981" points="59.21830749511719,74.54930114746094 83.9366226196289,88.80986785888672 83.9366226196289,117.33098602294922 59.21830749511719,131.59156799316406 34.5,117.33098602294922 34.5,88.80986785888672 "/>
-   <!-- Bottom right hexagon -->
-   <polygon stroke="null" id="svg_6" opacity="0.5" fill="#14B8A6" points="144.7816925048828,74.54930114746094 169.5,88.80986785888672 169.5,117.33098602294922 144.7816925048828,131.59156799316406 120.06338500976562,117.33098602294922 120.06338500976562,88.80986785888672 "/>
-  </g>
-  <path id="svg_7" fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="6" stroke="#FFFFFF" d="m84,87l15,15l30,-40"/>
-  <line id="svg_8" opacity="0.3" stroke="#10B981" y2="60" x2="135" y1="60" x1="65"/>
-  <line id="svg_9" opacity="0.3" stroke="#10B981" y2="80" x2="140" y1="80" x1="60"/>
-  <line id="svg_10" opacity="0.3" stroke="#14B8A6" y2="120" x2="140" y1="120" x1="60"/>
-  <line id="svg_11" opacity="0.3" stroke="#14B8A6" y2="140" x2="130" y1="140" x1="70"/>
- </g>
+<svg width="200" height="200" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="4" fill="#0F0F18"/>
+  <!-- Cascadia Code style Curly Braces { } (Code Core) -->
+  <path d="M 26 14 L 19 14 C 13 14 13 18 13 22 L 13 28 C 13 32 10 32 10 32 C 13 32 13 32 13 36 L 13 42 C 13 46 13 50 19 50 L 26 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 38 14 L 45 14 C 51 14 51 18 51 22 L 51 28 C 51 32 54 32 54 32 C 51 32 51 32 51 36 L 51 42 C 51 46 51 50 45 50 L 38 50" stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Purple AI Spark -->
+  <path d="M 32 16 C 32 26 42 32 48 32 C 42 32 32 38 32 48 C 32 38 22 32 16 32 C 22 32 32 26 32 16 Z" fill="#C044FF" />
 </svg>

@@ -344,8 +344,8 @@ export default function CyberTerrain() {
 
   return (
     <div
-      className="fixed left-0 right-0 bottom-0 z-0"
-      style={{ pointerEvents: 'none', background: 'transparent', top: '80px' }}
+      className="fixed inset-0 z-0"
+      style={{ pointerEvents: 'none', background: 'transparent' }}
       aria-hidden="true"
     >
       <Canvas

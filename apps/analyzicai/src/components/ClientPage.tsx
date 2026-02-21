@@ -43,7 +43,7 @@ export default function ClientPage() {
 
 
       {/* Spacer — roughly one footer-height, keeps content from scrolling up over the logo */}
-      <div className="relative z-0 h-[280px]" aria-hidden="true" />
+      <div className="relative z-0 h-[20rem]" aria-hidden="true" />
       {/* Footer — normal scroll flow, transparent so canvas shows through */}
       <div className="relative z-10">
         <Footer />

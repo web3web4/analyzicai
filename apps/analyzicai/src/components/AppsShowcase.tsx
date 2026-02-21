@@ -1,40 +1,39 @@
 'use client';
 
-import { Palette, Code2, ArrowRight, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+import { Logo } from '@web3web4/shared-platform';
 import ScrollReveal from './animations/ScrollReveal';
 
 const apps = [
   {
-    name: 'UXicAI',
-    tagline: 'AI-Powered UI/UX Analysis',
-    description: 'Upload screenshots or capture screens to get comprehensive design feedback from multiple AI providers. Analyze visual hierarchy, accessibility, user experience, and design consistency.',
-    icon: Palette,
-    accent: 'ux' as const,
-    features: [
-      'Screenshot analysis with WebRTC capture',
-      'Multi-provider AI vision analysis',
-      'Design system recommendations',
-      'Accessibility compliance checks',
-      'Real-time feedback',
-    ],
-    url: 'https://UXicAI.com',
-    status: 'Live',
-  },
-  {
     name: 'SolidicAI',
-    tagline: 'Smart Contract Intelligence',
+    tagline: 'Smart Contract Intensive AI Analysis',
     description: 'Analyze Solidity smart contracts for security vulnerabilities, gas optimization opportunities, and best practice compliance. Get expert-level code review powered by AI.',
-    icon: Code2,
+    logoPrefix: 'Solidic' as const,
     accent: 'chain' as const,
     features: [
       'Security vulnerability detection',
       'Gas optimization analysis',
-      'Best practice compliance',
       'Code quality assessment',
-      'Automated documentation',
+      'Multi-provider AI code analysis',
     ],
     url: 'https://SolidicAI.com',
+    status: 'Live',
+  },
+  {
+    name: 'UXicAI',
+    tagline: 'AI-Powered UI/UX Analysis',
+    description: 'Upload or capture screenshots to get comprehensive design feedback from multiple AI providers. Analyze visual hierarchy, accessibility, user experience, and design consistency.',
+    logoPrefix: 'UXic' as const,
+    accent: 'ux' as const,
+    features: [
+      'Screenshot analysis with WebRTC capture',
+      'Design system recommendations',
+      'Accessibility compliance checks',
+      'Multi-provider AI vision analysis',
+    ],
+    url: 'https://UXicAI.com',
     status: 'Live',
   },
 ];
@@ -74,15 +73,7 @@ export default function AppsShowcase() {
                   <div className="p-8 lg:p-10">
                     {/* Header */}
                     <div className="flex items-center space-x-4 mb-6">
-                      <div
-                        className={`w-14 h-14 flex items-center justify-center border ${
-                          isUx
-                            ? 'border-ux/30 bg-ux/[0.08]'
-                            : 'border-chain/30 bg-chain/[0.08]'
-                        }`}
-                      >
-                        <app.icon className={`w-7 h-7 ${isUx ? 'text-white' : 'text-white'}`} />
-                      </div>
+                      <Logo prefix={app.logoPrefix} containerSize="lg" showText={false} />
                       <div>
                         <h3 className="text-2xl font-bold">
                           <span className={isUx ? 'text-ux' : 'text-chain'}>{app.name.slice(0, -2)}</span><span className="text-ai-soft">AI</span>

@@ -1,16 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter, Cascadia_Code } from 'next/font/google';
-import './globals.css';
+import { Cascadia_Mono } from "next/font/google";
+import "./globals.css";
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-});
-
-const cascadiaCode = Cascadia_Code({
-  weight: ['400', '700'],
-  subsets: ['latin'],
-  variable: '--font-mono',
+const font = Cascadia_Mono({
+  variable: "--font-cascadia-mono",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -18,6 +12,11 @@ export const metadata: Metadata = {
   description: 'Comprehensive AI-powered analysis tools for UI/UX design, smart contracts, and more. Transform your workflow with intelligent automation.',
   keywords: 'AI, analysis, UI/UX, smart contracts, design tools, automation',
   authors: [{ name: 'AnalyzicAI Team' }],
+  icons: {
+    icon: '/logo.svg',
+    shortcut: '/logo.svg',
+    apple: '/logo.svg',
+  },
   openGraph: {
     title: 'AnalyzicAI - AI-Powered Analysis Tools',
     description: 'Comprehensive AI-powered analysis tools for UI/UX design, smart contracts, and more.',
@@ -37,8 +36,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${cascadiaCode.variable}`}>
-      <body className={`${inter.className} bg-surface-900 text-white antialiased`}>
+    <html lang="en">
+      <body className={`${font.className} bg-surface-900 text-white antialiased`}>
         {children}
       </body>
     </html>
