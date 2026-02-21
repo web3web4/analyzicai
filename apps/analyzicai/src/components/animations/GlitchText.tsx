@@ -9,8 +9,8 @@ interface GlitchTextProps {
   trigger?: 'hover' | 'viewport' | 'loop';
   /** CSS classes applied to the wrapper */
   className?: string;
-  /** Cyan or magenta glitch color offset (default uses both) */
-  variant?: 'cyan' | 'magenta' | 'dual';
+  /** AI purple or UX pink glitch color offset (default uses both) */
+  variant?: 'ai' | 'ux' | 'dual';
   /** Intensity — controls how many times the glitch cycles. 1 = subtle, 3 = aggressive. Default: 1 */
   intensity?: 1 | 2 | 3;
   /** Render as a different HTML element (default: span) */
@@ -38,9 +38,9 @@ export default function GlitchText({
   }, [trigger]);
 
   const glitchColors = {
-    cyan: { layer1: '#00FFD1', layer2: '#00FFD1' },
-    magenta: { layer1: '#E500CE', layer2: '#E500CE' },
-    dual: { layer1: '#00FFD1', layer2: '#E500CE' },
+    ai: { layer1: '#C044FF', layer2: '#C044FF' },
+    ux: { layer1: '#FF2D9E', layer2: '#FF2D9E' },
+    dual: { layer1: '#C044FF', layer2: '#FF2D9E' },
   };
 
   const colors = glitchColors[variant];

@@ -1,3 +1,3 @@
-// Middleware-specific exports (Edge Runtime compatible)
-// This file exports ONLY the middleware function without server-only dependencies
-export { middleware } from "./auth/middleware";
+// Proxy-specific exports (Node.js runtime)
+// This file exports ONLY the proxy function without server-only dependencies
+export { proxy } from "./auth/middleware";

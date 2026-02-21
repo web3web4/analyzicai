@@ -5,6 +5,9 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useScroll } from 'framer-motion';
 import * as THREE from 'three';
 
+// Module-level ref: a single value written by ScrollCamera, read by all terrain components
+const terrainFade = { value: 1 };
+
 function hash(x: number, y: number): number {
   let n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
   return n - Math.floor(n);
@@ -70,6 +73,12 @@ const Z_END = -90;
 const TERRAIN_WIDTH = 35; // how far left/right each side extends
 
 function MountainTerrain({ side }: { side: 'left' | 'right' }) {
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+
+  useFrame(() => {
+    if (matRef.current) matRef.current.opacity = 0.18 * terrainFade.value;
+  });
+
   const geometry = useMemo(() => {
     const seed = side === 'left' ? 0.0 : 7.7;
     const xSign = side === 'left' ? -1 : 1;
@@ -109,7 +118,7 @@ function MountainTerrain({ side }: { side: 'left' | 'right' }) {
 
   return (
     <mesh geometry={geometry}>
-      <meshBasicMaterial color="#00FFD1" wireframe transparent opacity={0.18} />
+      <meshBasicMaterial ref={matRef} color="#C044FF" wireframe transparent opacity={0.18} />
     </mesh>
   );
 }
@@ -139,6 +148,7 @@ function NeonRidgeLines({ side }: { side: 'left' | 'right' }) {
       const mat = new THREE.LineBasicMaterial({
         vertexColors: true,
         transparent: true,
+        depthWrite: false,
         opacity: li === 0 ? 1.0 : li === 1 ? 0.85 : 0.65,
       });
       return new THREE.Line(geo, mat);
@@ -148,6 +158,7 @@ function NeonRidgeLines({ side }: { side: 'left' | 'right' }) {
   useFrame((_, delta) => {
     clock.current += delta;
     const total = SEG_Z + 1;
+    const fade = terrainFade.value;
 
     lines.forEach((line, li) => {
       const arr = (line.geometry.attributes.color as THREE.BufferAttribute)
@@ -168,17 +179,18 @@ function NeonRidgeLines({ side }: { side: 'left' | 'right' }) {
         const g2 = Math.max(0, 1 - Math.abs(i - p2) / width);
         const glow = Math.pow(Math.max(g1, g2), 1.5);
 
-        // Cyan base (#00FFD1): R=0, G=1, B=0.82
-        // Magenta pulse (#E500CE): R=0.898, G=0, B=0.808
-        // Lerp from cyan to magenta based on glow intensity
-        const cR = 0, cG = baseBrightness, cB = baseBrightness * 0.82;
-        const pR = 0.95, pG = 0.0, pB = 0.85;
-        arr[i * 3]     = Math.min(1, cR + glow * pR);           // R: 0 → bright pink
-        arr[i * 3 + 1] = Math.min(1, cG * (1 - glow * 0.8));   // G: cyan → suppressed
-        arr[i * 3 + 2] = Math.min(1, cB + glow * pB);           // B: stays strong
+        // AI Purple base (#C044FF): R=0.753, G=0.267, B=1.0
+        // UX Pink pulse  (#FF2D9E): R=1.0,   G=0.176, B=0.62
+        // Lerp from purple to pink based on glow intensity
+        const cR = 0.75 * baseBrightness, cG = 0.27 * baseBrightness, cB = baseBrightness;
+        const pR = 1.0, pG = 0.18, pB = 0.62;
+        arr[i * 3]     = Math.min(1, cR + glow * pR);           // R: purple dim → bright pink
+        arr[i * 3 + 1] = Math.min(1, cG * (1 - glow * 0.8));   // G: suppressed
+        arr[i * 3 + 2] = Math.min(1, cB * (1 - glow * 0.4) + glow * pB); // B: purple → pink
       }
 
       (line.geometry.attributes.color as THREE.BufferAttribute).needsUpdate = true;
+      (line.material as THREE.LineBasicMaterial).opacity = (li === 0 ? 1.0 : li === 1 ? 0.85 : 0.65) * fade;
     });
   });
 
@@ -192,13 +204,22 @@ function NeonRidgeLines({ side }: { side: 'left' | 'right' }) {
 }
 
 function CanyonFloor() {
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+
+  useFrame(() => {
+    if (matRef.current) matRef.current.opacity = 0.08 * terrainFade.value;
+  });
+
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, -30]}>
       <planeGeometry args={[6, 120, 6, 120]} />
-      <meshBasicMaterial color="#00FFD1" wireframe transparent opacity={0.08} />
+      <meshBasicMaterial ref={matRef} color="#C044FF" wireframe transparent opacity={0.08} />
     </mesh>
   );
 }
+
+const FADE_START = 0.68;
+const FADE_END   = 0.92;
 
 function ScrollCamera() {
   const { camera } = useThree();
@@ -211,10 +232,13 @@ function ScrollCamera() {
 
     camera.position.z += (targetZ.current - camera.position.z) * 0.06;
     camera.position.y += (2.0 - camera.position.y) * 0.05;
-    // Gentle lateral sway
     const sway = Math.sin(progress * Math.PI * 2) * 1.2;
     camera.position.x += (sway - camera.position.x) * 0.03;
     camera.lookAt(camera.position.x * 0.3, 1.5, camera.position.z - 30);
+
+    // Write terrain fade — smoothstep from 1→0 between FADE_START and FADE_END
+    const t = Math.max(0, Math.min(1, (progress - FADE_START) / (FADE_END - FADE_START)));
+    terrainFade.value = 1 - t * t * (3 - 2 * t);
   });
 
   return null;
@@ -225,21 +249,37 @@ function EndLogo() {
   const clock = useRef(0);
 
   const letterA = useMemo(() => {
-    // Build an "A" shape from line segments
-    const s = 5; // scale
-    const points = [
-      // Left leg
-      new THREE.Vector3(-s * 0.5, -s, 0),
-      new THREE.Vector3(0, s, 0),
-      // Right leg
-      new THREE.Vector3(0, s, 0),
-      new THREE.Vector3(s * 0.5, -s, 0),
-      // Crossbar
-      new THREE.Vector3(-s * 0.25, 0, 0),
-      new THREE.Vector3(s * 0.25, 0, 0),
-    ];
-    const geo = new THREE.BufferGeometry().setFromPoints(points);
-    return geo;
+    const s = 4;
+    const depth = 1.8;
+
+    function strokeBox(x1: number, y1: number, x2: number, y2: number, sw: number): THREE.BufferGeometry {
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const angle = Math.atan2(dy, dx) - Math.PI / 2;
+      const geo = new THREE.BoxGeometry(sw, len, depth);
+      geo.applyMatrix4(
+        new THREE.Matrix4().compose(
+          new THREE.Vector3((x1 + x2) / 2, (y1 + y2) / 2, 0),
+          new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), angle),
+          new THREE.Vector3(1, 1, 1)
+        )
+      );
+      return geo;
+    }
+
+    const core = 0.75;
+    const glow = 1.4; // larger sw for the same stroke path — no scaling needed
+
+    return {
+      core: [
+        strokeBox(-s * 0.52, -s, 0, s, core),
+        strokeBox(0, s, s * 0.52, -s, core),
+      ],
+      halo: [
+        strokeBox(-s * 0.52, -s, 0, s, glow),
+        strokeBox(0, s, s * 0.52, -s, glow),
+      ],
+    };
   }, []);
 
   useFrame((_, delta) => {
@@ -249,65 +289,46 @@ function EndLogo() {
     groupRef.current.rotation.y = Math.sin(clock.current * 0.3) * 0.15;
   });
 
+  // Square rotation (Math.PI / 4 = 45°)
+  const hexRot: [number, number, number] = [0, 0, Math.PI / 4];
+
   return (
     <group ref={groupRef} position={[0, 6, Z_END + 5]}>
-      {/* Glow layers — progressively larger, more transparent copies */}
-      <lineSegments geometry={letterA} scale={[1.15, 1.15, 1]}>
-        <lineBasicMaterial color="#00FFD1" transparent opacity={0.12} />
-      </lineSegments>
-      <lineSegments geometry={letterA} scale={[1.3, 1.3, 1]}>
-        <lineBasicMaterial color="#00FFD1" transparent opacity={0.06} />
-      </lineSegments>
-      <lineSegments geometry={letterA} scale={[1.5, 1.5, 1]}>
-        <lineBasicMaterial color="#00FFD1" transparent opacity={0.03} />
-      </lineSegments>
-
-      {/* Core cyan A */}
-      <lineSegments geometry={letterA}>
-        <lineBasicMaterial color="#00FFD1" transparent opacity={1.0} />
-      </lineSegments>
-
-      {/* Magenta glow layers */}
-      <lineSegments geometry={letterA} position={[0.1, -0.1, -0.2]} scale={[1.15, 1.15, 1]}>
-        <lineBasicMaterial color="#E500CE" transparent opacity={0.15} />
-      </lineSegments>
-      <lineSegments geometry={letterA} position={[0.1, -0.1, -0.2]} scale={[1.3, 1.3, 1]}>
-        <lineBasicMaterial color="#E500CE" transparent opacity={0.08} />
-      </lineSegments>
-
-      {/* Core magenta A */}
-      <lineSegments geometry={letterA} position={[0.1, -0.1, -0.2]}>
-        <lineBasicMaterial color="#E500CE" transparent opacity={0.5} />
-      </lineSegments>
-
-      {/* Outer rings with glow */}
-      <mesh>
-        <ringGeometry args={[5.5, 5.8, 6]} />
-        <meshBasicMaterial color="#00FFD1" transparent opacity={0.06} side={THREE.DoubleSide} />
+      {/* ── Square — one ring, glow bleeds from its own edges ── */}
+      {/* Outer bloom (bleeds outside the ring) */}
+      <mesh rotation={hexRot} position={[0, 0, -0.2]}>
+        <ringGeometry args={[7.4, 8.5, 4]} />
+        <meshBasicMaterial color="#C044FF" transparent opacity={0.06} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
-      <mesh>
-        <ringGeometry args={[6, 6.3, 6]} />
-        <meshBasicMaterial color="#00FFD1" transparent opacity={0.4} side={THREE.DoubleSide} />
+      {/* Inner bloom (bleeds inside the ring) */}
+      <mesh rotation={hexRot} position={[0, 0, -0.1]}>
+        <ringGeometry args={[5.4, 6.1, 4]} />
+        <meshBasicMaterial color="#D060FF" transparent opacity={0.2} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
-      <mesh>
-        <ringGeometry args={[6.3, 7, 6]} />
-        <meshBasicMaterial color="#00FFD1" transparent opacity={0.08} side={THREE.DoubleSide} />
+      {/* Core ring — single square outline */}
+      <mesh rotation={hexRot} position={[0, 0, 0]}>
+        <ringGeometry args={[6.1, 7.4, 4]} />
+        <meshBasicMaterial color="#C844FF" transparent opacity={0.8} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 
-      <mesh>
-        <ringGeometry args={[6.6, 6.9, 6]} />
-        <meshBasicMaterial color="#E500CE" transparent opacity={0.25} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh>
-        <ringGeometry args={[6.9, 7.6, 6]} />
-        <meshBasicMaterial color="#E500CE" transparent opacity={0.06} side={THREE.DoubleSide} />
+      {/* ── Center glow disc ── */}
+      <mesh position={[0, 0, -0.3]}>
+        <circleGeometry args={[5.8, 4]} />
+        <meshBasicMaterial color="#9020D0" transparent opacity={0.05} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 
-      {/* Center glow disc */}
-      <mesh>
-        <circleGeometry args={[4, 32]} />
-        <meshBasicMaterial color="#00FFD1" transparent opacity={0.04} side={THREE.DoubleSide} />
-      </mesh>
+      {/* ── Letter A — halo (wider same-path geometry, no scaling) ── */}
+      {letterA.halo.map((geo, i) => (
+        <mesh key={`halo-${i}`} geometry={geo} position={[0, 0, -0.1]}>
+          <meshBasicMaterial color="#C044FF" transparent opacity={0.12} side={THREE.DoubleSide} depthWrite={false} />
+        </mesh>
+      ))}
+      {/* ── Letter A — core ── */}
+      {letterA.core.map((geo, i) => (
+        <mesh key={`core-${i}`} geometry={geo} position={[0, 0, 0]}>
+          <meshBasicMaterial color="#E890FF" side={THREE.DoubleSide} depthWrite={false} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -316,7 +337,7 @@ function EndLogo() {
 export default function CyberTerrain() {
   const handleCreated = useCallback(
     ({ gl }: { gl: THREE.WebGLRenderer }) => {
-      gl.setClearColor('#0A0A0F', 0);
+      gl.setClearColor('#08080D', 0);
     },
     []
   );
@@ -324,16 +345,16 @@ export default function CyberTerrain() {
   return (
     <div
       className="fixed inset-0 z-0"
-      style={{ pointerEvents: 'none', background: 'transparent' }}
+      style={{ display: 'none', pointerEvents: 'none', background: 'transparent' }}
       aria-hidden="true"
     >
       <Canvas
         camera={{ position: [0, 2.0, 5], fov: 75, near: 0.1, far: 150 }}
-        dpr={[1, 1.5]}
+        dpr={[1, 2]}
         onCreated={handleCreated}
-        gl={{ alpha: true, antialias: false, powerPreference: 'high-performance' }}
+        gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
       >
-        <fog attach="fog" args={['#0A0A0F', 10, 70]} />
+        <fog attach="fog" args={['#08080D', 10, 70]} />
         <ScrollCamera />
         <MountainTerrain side="left" />
         <MountainTerrain side="right" />

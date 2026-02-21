@@ -24,5 +24,8 @@ export { default as SuspendedPage } from "./pages/SuspendedPage";
 // Config
 export * from "./config/models";
 
+// Brand design tokens (JS/TS mirror of tokens.css)
+export { tokens, brandColors } from "./styles/tokens";
+
 // API Handlers - Must import directly to avoid server/client conflicts
 // - import { handleX } from "@web3web4/shared-platform/api-handlers"
