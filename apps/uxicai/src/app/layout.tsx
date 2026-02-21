@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cascadia_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const font = Cascadia_Mono({
+  variable: "--font-cascadia-mono",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  adjustFontFallback: false, // custom fallback @font-face defined in shared index.css
+  fallback: ["Cascadia Mono Fallback", "Courier New", "monospace"],
 });
 
 export const metadata: Metadata = {
@@ -30,6 +27,11 @@ export const metadata: Metadata = {
       "AnalyzicAI ecosystem product by Web3Web4.com. Get comprehensive design feedback.",
     type: "website",
   },
+  icons: {
+    icon: '/logo.svg',
+    shortcut: '/logo.svg',
+    apple: '/logo.svg',
+  },
 };
 
 export default function RootLayout({
@@ -40,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
+        className={`${font.variable} antialiased min-h-screen`}
       >
         {children}
       </body>

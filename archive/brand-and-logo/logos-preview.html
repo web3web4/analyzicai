@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo Concepts — AnalyzicAI Family</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #08080D;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #fff;
+      padding: 56px 64px;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      margin-bottom: 64px;
+    }
+
+    .product-section {
+      margin-bottom: 72px;
+    }
+
+    .product-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 4px;
+    }
+
+    .concept-name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+
+    .size-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .size-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .size-cell-label {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .lockup-row {
+      display: flex;
+      align-items: center;
+      gap: 56px;
+      flex-wrap: wrap;
+    }
+
+    .lockup-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    hr.section-divider {
+      border: none;
+      border-top: 1px solid #1E1E38;
+      margin: 72px 0;
+    }
+
+    .all-three-row {
+      display: flex;
+      align-items: center;
+      gap: 64px;
+      flex-wrap: wrap;
+    }
+
+    .col-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .all-three-section {
+      margin-top: 80px;
+    }
+
+    .all-three-title {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      margin-bottom: 36px;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="page-header">Logo Concepts — AnalyzicAI Family · 2026-02-20 · Draft</p>
+
+  <!-- ─────────────────────────── ANALYZICAI ─────────────────────────── -->
+  <div class="product-section">
+    <p class="product-label">AnalyzicAI</p>
+    <p class="concept-name" style="color:#ffffff;">The Prism Scan</p>
+
+    <div class="size-row">
+
+      <!-- 96px -->
+      <div class="size-cell">
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-a-lg" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <!-- A letterform: outer shape + inner triangle hole via evenodd -->
+          <path fill-rule="evenodd" fill="#FFFFFF"
+            d="M32,8 L57,56 H47 L41,43 H23 L17,56 H7 Z
+               M32,19 L40.5,41 H23.5 Z"/>
+          <!-- Scan line with glow -->
+          <rect x="4" y="35.5" width="56" height="3" fill="#C044FF" filter="url(#glow-a-lg)" rx="1"/>
+        </svg>
+        <span class="size-cell-label">96px</span>
+      </div>
+
+      <!-- 48px -->
+      <div class="size-cell">
+        <svg width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-a-md" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path fill-rule="evenodd" fill="#FFFFFF"
+            d="M32,8 L57,56 H47 L41,43 H23 L17,56 H7 Z
+               M32,19 L40.5,41 H23.5 Z"/>
+          <rect x="4" y="35.5" width="56" height="3" fill="#C044FF" filter="url(#glow-a-md)" rx="1"/>
+        </svg>
+        <span class="size-cell-label">48px</span>
+      </div>
+
+      <!-- 24px favicon sim -->
+      <div class="size-cell">
+        <svg width="24" height="24" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path fill-rule="evenodd" fill="#FFFFFF"
+            d="M32,8 L57,56 H47 L41,43 H23 L17,56 H7 Z
+               M32,19 L40.5,41 H23.5 Z"/>
+          <rect x="4" y="35" width="56" height="4" fill="#C044FF" rx="1"/>
+        </svg>
+        <span class="size-cell-label">24px</span>
+      </div>
+
+    </div>
+
+    <!-- Lockups -->
+    <div class="lockup-row">
+
+      <!-- Horizontal lockup large -->
+      <div class="lockup-cell">
+        <svg width="280" height="52" viewBox="0 0 280 52" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-a-lock" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Glyph -->
+          <rect x="0" y="0" width="52" height="52" rx="11" fill="#0F0F18"/>
+          <path fill-rule="evenodd" fill="#FFFFFF" transform="scale(0.8125) translate(0,0)"
+            d="M32,8 L57,56 H47 L41,43 H23 L17,56 H7 Z
+               M32,19 L40.5,41 H23.5 Z"/>
+          <rect x="3" y="28.5" width="46" height="2.5" fill="#C044FF" filter="url(#glow-a-lock)" rx="0.5"/>
+          <!-- Wordmark -->
+          <text x="68" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#FFFFFF" letter-spacing="-0.03em">Analyzic</text>
+          <text x="68" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="transparent" letter-spacing="-0.03em">Analyzic</text>
+          <!-- measure Analyzic: approx 140px wide at 26px Inter 800 -->
+          <text x="212" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#C044FF" letter-spacing="-0.03em">AI</text>
+        </svg>
+        <span class="size-cell-label">Horizontal lockup</span>
+      </div>
+
+      <!-- Wordmark only (no glyph bg, transparent) -->
+      <div class="lockup-cell">
+        <svg width="260" height="52" viewBox="0 0 260 52" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <text x="0" y="38" font-family="'Inter', system-ui" font-size="32" font-weight="800" fill="#FFFFFF" letter-spacing="-0.04em">Analyzic</text>
+          <text x="178" y="38" font-family="'Inter', system-ui" font-size="32" font-weight="800" fill="#C044FF" letter-spacing="-0.04em">AI</text>
+        </svg>
+        <span class="size-cell-label">Wordmark only</span>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ─────────────────────────── SOLIDICAI ─────────────────────────── -->
+  <div class="product-section">
+    <p class="product-label">SolidicAI</p>
+    <p class="concept-name" style="color:#00FFD1;">The Hex Shield</p>
+
+    <div class="size-row">
+
+      <!-- 96px -->
+      <div class="size-cell">
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-s-lg" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="glow-s-inner" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <!-- Hexagon outline (pointy-top, r=26) -->
+          <polygon points="32,5 55,18.5 55,45.5 32,59 9,45.5 9,18.5"
+            stroke="#00FFD1" stroke-width="2.5" fill="#0A0A14"
+            filter="url(#glow-s-lg)"/>
+          <!-- S letterform as a stroke path -->
+          <path
+            d="M 41,23 C 41,23 40,18 32,18 C 24,18 22,23 22,27 C 22,34 30,33 34,34 C 38,35 42,37 42,42 C 42,47 39,47 32,47 C 25,47 22,43 22,43"
+            stroke="#00FFD1" stroke-width="3" stroke-linecap="round"
+            fill="none" filter="url(#glow-s-inner)"/>
+          <!-- Top serif tick -->
+          <line x1="26" y1="18" x2="40" y2="18" stroke="#00FFD1" stroke-width="3" stroke-linecap="round" filter="url(#glow-s-inner)"/>
+          <!-- Bottom serif tick -->
+          <line x1="24" y1="47" x2="38" y2="47" stroke="#00FFD1" stroke-width="3" stroke-linecap="round" filter="url(#glow-s-inner)"/>
+        </svg>
+        <span class="size-cell-label">96px</span>
+      </div>
+
+      <!-- 48px -->
+      <div class="size-cell">
+        <svg width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-s-md" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <polygon points="32,5 55,18.5 55,45.5 32,59 9,45.5 9,18.5"
+            stroke="#00FFD1" stroke-width="2.5" fill="#0A0A14"
+            filter="url(#glow-s-md)"/>
+          <path
+            d="M 41,23 C 41,23 40,18 32,18 C 24,18 22,23 22,27 C 22,34 30,33 34,34 C 38,35 42,37 42,42 C 42,47 39,47 32,47 C 25,47 22,43 22,43"
+            stroke="#00FFD1" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <line x1="26" y1="18" x2="40" y2="18" stroke="#00FFD1" stroke-width="3" stroke-linecap="round"/>
+          <line x1="24" y1="47" x2="38" y2="47" stroke="#00FFD1" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <span class="size-cell-label">48px</span>
+      </div>
+
+      <!-- 24px favicon -->
+      <div class="size-cell">
+        <svg width="24" height="24" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <polygon points="32,5 55,18.5 55,45.5 32,59 9,45.5 9,18.5"
+            stroke="#00FFD1" stroke-width="3" fill="#0A0A14"/>
+          <path
+            d="M 41,23 C 40,18 32,18 24,22 C 22,28 30,33 34,34 C 38,35 42,38 40,44 C 38,48 25,48 22,43"
+            stroke="#00FFD1" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        </svg>
+        <span class="size-cell-label">24px</span>
+      </div>
+
+    </div>
+
+    <!-- Lockups -->
+    <div class="lockup-row">
+
+      <div class="lockup-cell">
+        <svg width="270" height="52" viewBox="0 0 270 52" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-s-lock" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Glyph at 52x52 -->
+          <rect x="0" y="0" width="52" height="52" rx="11" fill="#0F0F18"/>
+          <polygon points="26,4 45.1,15.1 45.1,37.4 26,48.5 6.9,37.4 6.9,15.1"
+            stroke="#00FFD1" stroke-width="2" fill="#0A0A14" filter="url(#glow-s-lock)"/>
+          <path
+            d="M 33.8,19 C 33.2,14.7 26,14.7 19,17.7 C 17.5,22 23,26.5 26.3,27.3 C 30,28.2 33.8,30.3 32.5,35 C 31.3,39 20,38.7 18.5,35"
+            stroke="#00FFD1" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <!-- Wordmark -->
+          <text x="68" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#00FFD1" letter-spacing="-0.03em">Solidic</text>
+          <text x="205" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#C044FF" letter-spacing="-0.03em">AI</text>
+        </svg>
+        <span class="size-cell-label">Horizontal lockup</span>
+      </div>
+
+      <div class="lockup-cell">
+        <svg width="240" height="52" viewBox="0 0 240 52" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <text x="0" y="38" font-family="'Inter', system-ui" font-size="32" font-weight="800" fill="#00FFD1" letter-spacing="-0.04em">Solidic</text>
+          <text x="166" y="38" font-family="'Inter', system-ui" font-size="32" font-weight="800" fill="#C044FF" letter-spacing="-0.04em">AI</text>
+        </svg>
+        <span class="size-cell-label">Wordmark only</span>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ─────────────────────────── UXICAI ─────────────────────────── -->
+  <div class="product-section">
+    <p class="product-label">UXicAI</p>
+    <p class="concept-name" style="color:#FF2D9E;">The Lens Frame</p>
+
+    <div class="size-row">
+
+      <!-- 96px -->
+      <div class="size-cell">
+        <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-u-lg" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="glow-u-cursor" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <!-- Phone/screen frame -->
+          <rect x="15" y="7" width="34" height="50" rx="8" fill="#0A0A14"
+            stroke="#FF2D9E" stroke-width="2.5" filter="url(#glow-u-lg)"/>
+          <!-- Camera notch -->
+          <rect x="28" y="10.5" width="8" height="2.5" rx="1.25" fill="#FF2D9E" opacity="0.5"/>
+          <!-- Cursor arrow inside screen -->
+          <path d="M 24,20 L 24,42 L 29,36 L 33,45 L 37,43 L 33,34 L 40,34 Z"
+            fill="#C044FF" filter="url(#glow-u-cursor)"/>
+          <!-- Sparkle at cursor hotspot -->
+          <circle cx="24" cy="20" r="1.5" fill="#C044FF" filter="url(#glow-u-cursor)"/>
+          <line x1="24" y1="16" x2="24" y2="18.5" stroke="#C044FF" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="27.5" y1="17" x2="26" y2="18.5" stroke="#C044FF" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="28" y1="20" x2="25.5" y2="20" stroke="#C044FF" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <span class="size-cell-label">96px</span>
+      </div>
+
+      <!-- 48px -->
+      <div class="size-cell">
+        <svg width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-u-md" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <rect x="15" y="7" width="34" height="50" rx="8" fill="#0A0A14"
+            stroke="#FF2D9E" stroke-width="2.5" filter="url(#glow-u-md)"/>
+          <rect x="28" y="10.5" width="8" height="2.5" rx="1.25" fill="#FF2D9E" opacity="0.5"/>
+          <path d="M 24,20 L 24,42 L 29,36 L 33,45 L 37,43 L 33,34 L 40,34 Z" fill="#C044FF"/>
+        </svg>
+        <span class="size-cell-label">48px</span>
+      </div>
+
+      <!-- 24px favicon -->
+      <div class="size-cell">
+        <svg width="24" height="24" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <rect x="15" y="7" width="34" height="50" rx="8" fill="#0A0A14"
+            stroke="#FF2D9E" stroke-width="3"/>
+          <path d="M 23,19 L 23,43 L 29,37 L 33,46 L 38,44 L 34,35 L 41,35 Z" fill="#C044FF"/>
+        </svg>
+        <span class="size-cell-label">24px</span>
+      </div>
+
+    </div>
+
+    <!-- Lockups -->
+    <div class="lockup-row">
+
+      <div class="lockup-cell">
+        <svg width="250" height="52" viewBox="0 0 250 52" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-u-lock" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Glyph at 52x52 -->
+          <rect x="0" y="0" width="52" height="52" rx="11" fill="#0F0F18"/>
+          <rect x="12" y="5.5" width="28" height="41" rx="6.5" fill="#0A0A14"
+            stroke="#FF2D9E" stroke-width="2" filter="url(#glow-u-lock)"/>
+          <rect x="22.5" y="8.5" width="7" height="2" rx="1" fill="#FF2D9E" opacity="0.5"/>
+          <path d="M 19.5,16.5 L 19.5,36 L 23.5,30.5 L 26.5,38 L 30,36.5 L 27,29.5 L 32.5,29.5 Z" fill="#C044FF"/>
+          <!-- Wordmark -->
+          <text x="68" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#FF2D9E" letter-spacing="-0.03em">UXic</text>
+          <text x="165" y="36" font-family="'Inter', system-ui" font-size="26" font-weight="800" fill="#C044FF" letter-spacing="-0.03em">AI</text>
+        </svg>
+        <span class="size-cell-label">Horizontal lockup</span>
+      </div>
+
+      <div class="lockup-cell">
+        <svg width="200" height="52" viewBox="0 0 200 52" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <text x="0" y="38" font-family="'Inter', system-ui" font-size="32" font-weight="800" fill="#FF2D9E" letter-spacing="-0.04em">UXic</text>
+          <text x="110" y="38" font-family="'Inter', system-ui" font-size="32" font-weight="800" fill="#C044FF" letter-spacing="-0.04em">AI</text>
+        </svg>
+        <span class="size-cell-label">Wordmark only</span>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ─────────────────────────── ALL THREE TOGETHER ─────────────────────────── -->
+  <div class="all-three-section">
+    <p class="all-three-title">All three — family view · glyphs · 80px</p>
+    <div class="all-three-row">
+
+      <!-- AnalyzicAI -->
+      <div>
+        <svg width="80" height="80" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-a-fam" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <path fill-rule="evenodd" fill="#FFFFFF"
+            d="M32,8 L57,56 H47 L41,43 H23 L17,56 H7 Z
+               M32,19 L40.5,41 H23.5 Z"/>
+          <rect x="4" y="35.5" width="56" height="3" fill="#C044FF" filter="url(#glow-a-fam)" rx="1"/>
+        </svg>
+        <p class="col-label">AnalyzicAI</p>
+      </div>
+
+      <!-- SolidicAI -->
+      <div>
+        <svg width="80" height="80" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-s-fam" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <polygon points="32,5 55,18.5 55,45.5 32,59 9,45.5 9,18.5"
+            stroke="#00FFD1" stroke-width="2.5" fill="#0A0A14" filter="url(#glow-s-fam)"/>
+          <path
+            d="M 41,23 C 41,23 40,18 32,18 C 24,18 22,23 22,27 C 22,34 30,33 34,34 C 38,35 42,37 42,42 C 42,47 39,47 32,47 C 25,47 22,43 22,43"
+            stroke="#00FFD1" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <line x1="26" y1="18" x2="40" y2="18" stroke="#00FFD1" stroke-width="3" stroke-linecap="round"/>
+          <line x1="24" y1="47" x2="38" y2="47" stroke="#00FFD1" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <p class="col-label">SolidicAI</p>
+      </div>
+
+      <!-- UXicAI -->
+      <div>
+        <svg width="80" height="80" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <filter id="glow-u-fam" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="#0F0F18"/>
+          <rect x="15" y="7" width="34" height="50" rx="8" fill="#0A0A14"
+            stroke="#FF2D9E" stroke-width="2.5" filter="url(#glow-u-fam)"/>
+          <rect x="28" y="10.5" width="8" height="2.5" rx="1.25" fill="#FF2D9E" opacity="0.5"/>
+          <path d="M 24,20 L 24,42 L 29,36 L 33,45 L 37,43 L 33,34 L 40,34 Z"
+            fill="#C044FF"/>
+          <circle cx="24" cy="20" r="1.5" fill="#C044FF"/>
+        </svg>
+        <p class="col-label">UXicAI</p>
+      </div>
+
+    </div>
+
+    <!-- Wordmarks family row -->
+    <div style="margin-top: 56px;">
+      <p class="all-three-title">Wordmarks · family</p>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <svg width="320" height="44" viewBox="0 0 320 44" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <text x="0" y="34" font-family="'Inter', system-ui" font-size="30" font-weight="800" fill="#FFFFFF" letter-spacing="-0.04em">Analyzic</text>
+          <text x="167" y="34" font-family="'Inter', system-ui" font-size="30" font-weight="800" fill="#C044FF" letter-spacing="-0.04em">AI</text>
+        </svg>
+        <svg width="260" height="44" viewBox="0 0 260 44" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <text x="0" y="34" font-family="'Inter', system-ui" font-size="30" font-weight="800" fill="#00FFD1" letter-spacing="-0.04em">Solidic</text>
+          <text x="153" y="34" font-family="'Inter', system-ui" font-size="30" font-weight="800" fill="#C044FF" letter-spacing="-0.04em">AI</text>
+        </svg>
+        <svg width="200" height="44" viewBox="0 0 200 44" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <text x="0" y="34" font-family="'Inter', system-ui" font-size="30" font-weight="800" fill="#FF2D9E" letter-spacing="-0.04em">UXic</text>
+          <text x="100" y="34" font-family="'Inter', system-ui" font-size="30" font-weight="800" fill="#C044FF" letter-spacing="-0.04em">AI</text>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom padding -->
+  <div style="height: 96px;"></div>
+
+</body>
+</html>

@@ -77,7 +77,7 @@ export function StatusBanner({
             className={
               variant === "uxic"
                 ? "text-sm text-muted"
-                : "text-sm text-gray-400"
+                : "text-sm text-fg-tertiary"
             }
           >
             {message}

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UX Color Check — AnalyzicAI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #08080D;
+      color: #ffffff;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 48px 32px;
+    }
+
+    h1 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: #33334A; margin-bottom: 48px; }
+
+    :root {
+      --c1: #FF6EC7;
+      --c2: #FF5EBB;
+      --c3: #FF79C6;
+      --c4: #F472B6;
+      --c5: #FF4DCC;
+      --c6: #FF2D9E;
+      --c7: #E500CE;
+      --ai: #C044FF;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2px;
+      background: #1A1A2E;
+      border: 1px solid #1A1A2E;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .col {
+      background: #08080D;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .col-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #1A1A2E;
+    }
+    .col-dot { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; }
+    .col-hex { 
+      font-family: Cascadia Code,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
+      font-size: 13px; 
+      color: #CCCCDD; 
+      font-weight: 600; 
+    }
+    .col-name { font-size: 11px; color: #33334A; text-transform: uppercase; letter-spacing: .12em; margin-top: 2px; }
+
+    .wordmark { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+    .ai-part { color: var(--ai); }
+
+    .ctx { font-size: 10px; text-transform: uppercase; letter-spacing: .15em; color: #33334A; margin-bottom: 6px; }
+    .ctx-sub { font-size: 9px; text-transform: uppercase; letter-spacing: .12em; color: #22223A; margin-bottom: 5px; margin-top: 10px; }
+
+    .para { font-size: 14px; line-height: 1.6; color: #888899; }
+
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 4px 12px; border-radius: 999px; border: 1.5px solid;
+    }
+
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .btn-outline {
+      font-size: 13px; font-weight: 600; padding: 8px 18px;
+      border-radius: 6px; border: 1.5px solid; background: transparent; cursor: pointer;
+    }
+    .btn-filled {
+      font-size: 13px; font-weight: 600; padding: 8px 18px;
+      border-radius: 6px; border: 1.5px solid transparent; cursor: pointer;
+    }
+
+    .sep { height: 1px; }
+
+    .score-card {
+      background: #0F0F18; border: 1px solid; border-radius: 8px; padding: 14px 16px;
+    }
+    .score-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 6px; }
+    .score-value { font-size: 28px; font-weight: 800; line-height: 1; }
+    .score-sub { font-size: 12px; color: #44445A; margin-top: 4px; }
+
+    .nav-mock {
+      display: flex; gap: 6px; align-items: center; background: #0F0F18;
+      border-radius: 6px; padding: 10px 14px; border: 1px solid #1A1A2E;
+    }
+    .nav-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .nav-text { font-size: 13px; font-weight: 500; }
+
+    /* option label divider */
+    .opt-divider {
+      height: 1px;
+      background: #1A1A2E;
+      margin: 2px 0 8px;
+    }
+    .opt-label {
+      font-size: 9px; text-transform: uppercase; letter-spacing: .15em;
+      color: #22223A; margin-bottom: 6px;
+    }
+    .opt-block { margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+<h1>UX Pink — Color Comparison · All Contexts · Dark Background #08080D</h1>
+
+<div class="grid">
+
+  <!-- macro to repeat per color — done manually for each -->
+
+  <!-- ── C1: #FF6EC7 ── -->
+  <div class="col">
+    <div class="col-header">
+      <div class="col-dot" style="background:#FF6EC7;"></div>
+      <div><div class="col-hex">#FF6EC7</div><div class="col-name">Neon Pink</div></div>
+    </div>
+    <div><div class="ctx">Wordmark</div>
+      <div class="wordmark"><span style="color:#FF6EC7;">UXic</span><span class="ai-part">AI</span></div>
+    </div>
+    <div><div class="ctx">Accent text in paragraph</div>
+      <div class="para">Analyze your <span style="color:#FF6EC7;">UI/UX design</span> and get instant, AI-powered feedback on layout, contrast, and usability.</div>
+    </div>
+    <div><div class="ctx">Badges · text token</div>
+      <div class="badge-row">
+        <span class="badge" style="color:#FF6EC7;border-color:#FF6EC7;background:rgba(255,110,199,.08);">UX Score</span>
+        <span class="badge" style="color:#FF6EC7;border-color:#FF6EC7;background:rgba(255,110,199,.08);">Design Review</span>
+      </div>
+    </div>
+    <div>
+      <div class="ctx">Filled Buttons</div>
+      <div class="opt-block">
+        <div class="opt-label">A — white text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF6EC7;color:#ffffff;">Start Review</button>
+        </div>
+      </div>
+      <div class="opt-divider"></div>
+      <div class="opt-block">
+        <div class="opt-label">B — dark text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF6EC7;color:#08080D;">Start Review</button>
+        </div>
+      </div>
+    </div>
+    <div><div class="ctx">Outline Button</div>
+      <div class="btn-row">
+        <button class="btn-outline" style="color:#FF6EC7;border-color:#FF6EC7;">Analyze UI</button>
+      </div>
+    </div>
+    <div><div class="ctx">Score card</div>
+      <div class="score-card" style="border-color:rgba(255,110,199,.2);">
+        <div class="score-label" style="color:#FF6EC7;">UX Score</div>
+        <div class="score-value" style="color:#FF6EC7;">87<span style="font-size:18px;color:#33334A;">/100</span></div>
+        <div class="score-sub">Above average · 3 issues found</div>
+      </div>
+    </div>
+    <div><div class="ctx">Nav item</div>
+      <div class="nav-mock">
+        <div class="nav-dot" style="background:#FF6EC7;"></div>
+        <div class="nav-text" style="color:#FF6EC7;">UXicAI</div>
+      </div>
+    </div>
+    <div><div class="ctx">Separator</div>
+      <div class="sep" style="background:rgba(255,110,199,.35);"></div>
+    </div>
+  </div>
+
+  <!-- ── C2: #FF5EBB ── -->
+  <div class="col">
+    <div class="col-header">
+      <div class="col-dot" style="background:#FF5EBB;"></div>
+      <div><div class="col-hex">#FF5EBB</div><div class="col-name">Bright Bubblegum</div></div>
+    </div>
+    <div><div class="ctx">Wordmark</div>
+      <div class="wordmark"><span style="color:#FF5EBB;">UXic</span><span class="ai-part">AI</span></div>
+    </div>
+    <div><div class="ctx">Accent text in paragraph</div>
+      <div class="para">Analyze your <span style="color:#FF5EBB;">UI/UX design</span> and get instant, AI-powered feedback on layout, contrast, and usability.</div>
+    </div>
+    <div><div class="ctx">Badges · text token</div>
+      <div class="badge-row">
+        <span class="badge" style="color:#FF5EBB;border-color:#FF5EBB;background:rgba(255,94,187,.08);">UX Score</span>
+        <span class="badge" style="color:#FF5EBB;border-color:#FF5EBB;background:rgba(255,94,187,.08);">Design Review</span>
+      </div>
+    </div>
+    <div>
+      <div class="ctx">Filled Buttons</div>
+      <div class="opt-block">
+        <div class="opt-label">A — white text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF5EBB;color:#ffffff;">Start Review</button>
+        </div>
+      </div>
+      <div class="opt-divider"></div>
+      <div class="opt-block">
+        <div class="opt-label">B — dark text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF5EBB;color:#08080D;">Start Review</button>
+        </div>
+      </div>
+    </div>
+    <div><div class="ctx">Outline Button</div>
+      <div class="btn-row">
+        <button class="btn-outline" style="color:#FF5EBB;border-color:#FF5EBB;">Analyze UI</button>
+      </div>
+    </div>
+    <div><div class="ctx">Score card</div>
+      <div class="score-card" style="border-color:rgba(255,94,187,.2);">
+        <div class="score-label" style="color:#FF5EBB;">UX Score</div>
+        <div class="score-value" style="color:#FF5EBB;">87<span style="font-size:18px;color:#33334A;">/100</span></div>
+        <div class="score-sub">Above average · 3 issues found</div>
+      </div>
+    </div>
+    <div><div class="ctx">Nav item</div>
+      <div class="nav-mock">
+        <div class="nav-dot" style="background:#FF5EBB;"></div>
+        <div class="nav-text" style="color:#FF5EBB;">UXicAI</div>
+      </div>
+    </div>
+    <div><div class="ctx">Separator</div>
+      <div class="sep" style="background:rgba(255,94,187,.35);"></div>
+    </div>
+  </div>
+
+  <!-- ── C3: #FF79C6 ── -->
+  <div class="col">
+    <div class="col-header">
+      <div class="col-dot" style="background:#FF79C6;"></div>
+      <div><div class="col-hex">#FF79C6</div><div class="col-name">Classic Neon (Dracula)</div></div>
+    </div>
+    <div><div class="ctx">Wordmark</div>
+      <div class="wordmark"><span style="color:#FF79C6;">UXic</span><span class="ai-part">AI</span></div>
+    </div>
+    <div><div class="ctx">Accent text in paragraph</div>
+      <div class="para">Analyze your <span style="color:#FF79C6;">UI/UX design</span> and get instant, AI-powered feedback on layout, contrast, and usability.</div>
+    </div>
+    <div><div class="ctx">Badges · text token</div>
+      <div class="badge-row">
+        <span class="badge" style="color:#FF79C6;border-color:#FF79C6;background:rgba(255,121,198,.08);">UX Score</span>
+        <span class="badge" style="color:#FF79C6;border-color:#FF79C6;background:rgba(255,121,198,.08);">Design Review</span>
+      </div>
+    </div>
+    <div>
+      <div class="ctx">Filled Buttons</div>
+      <div class="opt-block">
+        <div class="opt-label">A — white text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF79C6;color:#ffffff;">Start Review</button>
+        </div>
+      </div>
+      <div class="opt-divider"></div>
+      <div class="opt-block">
+        <div class="opt-label">B — dark text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF79C6;color:#08080D;">Start Review</button>
+        </div>
+      </div>
+    </div>
+    <div><div class="ctx">Outline Button</div>
+      <div class="btn-row">
+        <button class="btn-outline" style="color:#FF79C6;border-color:#FF79C6;">Analyze UI</button>
+      </div>
+    </div>
+    <div><div class="ctx">Score card</div>
+      <div class="score-card" style="border-color:rgba(255,121,198,.2);">
+        <div class="score-label" style="color:#FF79C6;">UX Score</div>
+        <div class="score-value" style="color:#FF79C6;">87<span style="font-size:18px;color:#33334A;">/100</span></div>
+        <div class="score-sub">Above average · 3 issues found</div>
+      </div>
+    </div>
+    <div><div class="ctx">Nav item</div>
+      <div class="nav-mock">
+        <div class="nav-dot" style="background:#FF79C6;"></div>
+        <div class="nav-text" style="color:#FF79C6;">UXicAI</div>
+      </div>
+    </div>
+    <div><div class="ctx">Separator</div>
+      <div class="sep" style="background:rgba(255,121,198,.35);"></div>
+    </div>
+  </div>
+
+  <!-- ── C4: #F472B6 ── -->
+  <div class="col">
+    <div class="col-header">
+      <div class="col-dot" style="background:#F472B6;"></div>
+      <div><div class="col-hex">#F472B6</div><div class="col-name">Tailwind Pink-400</div></div>
+    </div>
+    <div><div class="ctx">Wordmark</div>
+      <div class="wordmark"><span style="color:#F472B6;">UXic</span><span class="ai-part">AI</span></div>
+    </div>
+    <div><div class="ctx">Accent text in paragraph</div>
+      <div class="para">Analyze your <span style="color:#F472B6;">UI/UX design</span> and get instant, AI-powered feedback on layout, contrast, and usability.</div>
+    </div>
+    <div><div class="ctx">Badges · text token</div>
+      <div class="badge-row">
+        <span class="badge" style="color:#F472B6;border-color:#F472B6;background:rgba(244,114,182,.08);">UX Score</span>
+        <span class="badge" style="color:#F472B6;border-color:#F472B6;background:rgba(244,114,182,.08);">Design Review</span>
+      </div>
+    </div>
+    <div>
+      <div class="ctx">Filled Buttons</div>
+      <div class="opt-block">
+        <div class="opt-label">A — white text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#F472B6;color:#ffffff;">Start Review</button>
+        </div>
+      </div>
+      <div class="opt-divider"></div>
+      <div class="opt-block">
+        <div class="opt-label">B — dark text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#F472B6;color:#08080D;">Start Review</button>
+        </div>
+      </div>
+    </div>
+    <div><div class="ctx">Outline Button</div>
+      <div class="btn-row">
+        <button class="btn-outline" style="color:#F472B6;border-color:#F472B6;">Analyze UI</button>
+      </div>
+    </div>
+    <div><div class="ctx">Score card</div>
+      <div class="score-card" style="border-color:rgba(244,114,182,.2);">
+        <div class="score-label" style="color:#F472B6;">UX Score</div>
+        <div class="score-value" style="color:#F472B6;">87<span style="font-size:18px;color:#33334A;">/100</span></div>
+        <div class="score-sub">Above average · 3 issues found</div>
+      </div>
+    </div>
+    <div><div class="ctx">Nav item</div>
+      <div class="nav-mock">
+        <div class="nav-dot" style="background:#F472B6;"></div>
+        <div class="nav-text" style="color:#F472B6;">UXicAI</div>
+      </div>
+    </div>
+    <div><div class="ctx">Separator</div>
+      <div class="sep" style="background:rgba(244,114,182,.35);"></div>
+    </div>
+  </div>
+
+  <!-- ── C5: #FF4DCC ── -->
+  <div class="col">
+    <div class="col-header">
+      <div class="col-dot" style="background:#FF4DCC;"></div>
+      <div><div class="col-hex">#FF4DCC</div><div class="col-name">Electric Mid</div></div>
+    </div>
+    <div><div class="ctx">Wordmark</div>
+      <div class="wordmark"><span style="color:#FF4DCC;">UXic</span><span class="ai-part">AI</span></div>
+    </div>
+    <div><div class="ctx">Accent text in paragraph</div>
+      <div class="para">Analyze your <span style="color:#FF4DCC;">UI/UX design</span> and get instant, AI-powered feedback on layout, contrast, and usability.</div>
+    </div>
+    <div><div class="ctx">Badges · text token</div>
+      <div class="badge-row">
+        <span class="badge" style="color:#FF4DCC;border-color:#FF4DCC;background:rgba(255,77,204,.08);">UX Score</span>
+        <span class="badge" style="color:#FF4DCC;border-color:#FF4DCC;background:rgba(255,77,204,.08);">Design Review</span>
+      </div>
+    </div>
+    <div>
+      <div class="ctx">Filled Buttons</div>
+      <div class="opt-block">
+        <div class="opt-label">A — white text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF4DCC;color:#ffffff;">Start Review</button>
+        </div>
+      </div>
+      <div class="opt-divider"></div>
+      <div class="opt-block">
+        <div class="opt-label">B — dark text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF4DCC;color:#08080D;">Start Review</button>
+        </div>
+      </div>
+    </div>
+    <div><div class="ctx">Outline Button</div>
+      <div class="btn-row">
+        <button class="btn-outline" style="color:#FF4DCC;border-color:#FF4DCC;">Analyze UI</button>
+      </div>
+    </div>
+    <div><div class="ctx">Score card</div>
+      <div class="score-card" style="border-color:rgba(255,77,204,.2);">
+        <div class="score-label" style="color:#FF4DCC;">UX Score</div>
+        <div class="score-value" style="color:#FF4DCC;">87<span style="font-size:18px;color:#33334A;">/100</span></div>
+        <div class="score-sub">Above average · 3 issues found</div>
+      </div>
+    </div>
+    <div><div class="ctx">Nav item</div>
+      <div class="nav-mock">
+        <div class="nav-dot" style="background:#FF4DCC;"></div>
+        <div class="nav-text" style="color:#FF4DCC;">UXicAI</div>
+      </div>
+    </div>
+    <div><div class="ctx">Separator</div>
+      <div class="sep" style="background:rgba(255,77,204,.35);"></div>
+    </div>
+  </div>
+
+  <!-- ── C6: #FF2D9E (current) ── -->
+  <div class="col" style="background:#0C0C14;">
+    <div class="col-header">
+      <div class="col-dot" style="background:#FF2D9E;"></div>
+      <div><div class="col-hex">#FF2D9E</div><div class="col-name">Current — Hot Pink</div></div>
+    </div>
+    <div><div class="ctx">Wordmark</div>
+      <div class="wordmark"><span style="color:#FF2D9E;">UXic</span><span class="ai-part">AI</span></div>
+    </div>
+    <div><div class="ctx">Accent text in paragraph</div>
+      <div class="para">Analyze your <span style="color:#FF2D9E;">UI/UX design</span> and get instant, AI-powered feedback on layout, contrast, and usability.</div>
+    </div>
+    <div><div class="ctx">Badges · text token (#FF79C6)</div>
+      <div class="badge-row">
+        <span class="badge" style="color:#FF79C6;border-color:#FF79C6;background:rgba(255,121,198,.08);">UX Score</span>
+        <span class="badge" style="color:#FF79C6;border-color:#FF79C6;background:rgba(255,121,198,.08);">Design Review</span>
+      </div>
+    </div>
+    <div>
+      <div class="ctx">Filled Buttons</div>
+      <div class="opt-block">
+        <div class="opt-label">A — white text on brand ← recommended</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF2D9E;color:#ffffff;">Start Review</button>
+        </div>
+      </div>
+      <div class="opt-divider"></div>
+      <div class="opt-block">
+        <div class="opt-label">B — dark text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#FF2D9E;color:#08080D;">Start Review</button>
+        </div>
+      </div>
+    </div>
+    <div><div class="ctx">Outline Button · text token</div>
+      <div class="btn-row">
+        <button class="btn-outline" style="color:#FF79C6;border-color:#FF79C6;">Analyze UI</button>
+      </div>
+    </div>
+    <div><div class="ctx">Score card</div>
+      <div class="score-card" style="border-color:rgba(255,121,198,.2);">
+        <div class="score-label" style="color:#FF79C6;">UX Score</div>
+        <div class="score-value" style="color:#FF2D9E;">87<span style="font-size:18px;color:#33334A;">/100</span></div>
+        <div class="score-sub">Above average · 3 issues found</div>
+      </div>
+    </div>
+    <div><div class="ctx">Nav item · text token</div>
+      <div class="nav-mock">
+        <div class="nav-dot" style="background:#FF79C6;"></div>
+        <div class="nav-text" style="color:#FF79C6;">UXicAI</div>
+      </div>
+    </div>
+    <div><div class="ctx">Separator</div>
+      <div class="sep" style="background:rgba(255,45,158,.35);"></div>
+    </div>
+  </div>
+
+  <!-- ── C7: #E500CE (original) ── -->
+  <div class="col" style="background:#0C0C14;">
+    <div class="col-header">
+      <div class="col-dot" style="background:#E500CE;"></div>
+      <div><div class="col-hex">#E500CE</div><div class="col-name">Original Magenta</div></div>
+    </div>
+    <div><div class="ctx">Wordmark</div>
+      <div class="wordmark"><span style="color:#E500CE;">UXic</span><span class="ai-part">AI</span></div>
+    </div>
+    <div><div class="ctx">Accent text in paragraph</div>
+      <div class="para">Analyze your <span style="color:#E500CE;">UI/UX design</span> and get instant, AI-powered feedback on layout, contrast, and usability.</div>
+    </div>
+    <div><div class="ctx">Badges · text token</div>
+      <div class="badge-row">
+        <span class="badge" style="color:#E500CE;border-color:#E500CE;background:rgba(229,0,206,.08);">UX Score</span>
+        <span class="badge" style="color:#E500CE;border-color:#E500CE;background:rgba(229,0,206,.08);">Design Review</span>
+      </div>
+    </div>
+    <div>
+      <div class="ctx">Filled Buttons</div>
+      <div class="opt-block">
+        <div class="opt-label">A — white text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#E500CE;color:#ffffff;">Start Review</button>
+        </div>
+      </div>
+      <div class="opt-divider"></div>
+      <div class="opt-block">
+        <div class="opt-label">B — dark text on brand</div>
+        <div class="btn-row">
+          <button class="btn-filled" style="background:#E500CE;color:#08080D;">Start Review</button>
+        </div>
+      </div>
+    </div>
+    <div><div class="ctx">Outline Button</div>
+      <div class="btn-row">
+        <button class="btn-outline" style="color:#E500CE;border-color:#E500CE;">Analyze UI</button>
+      </div>
+    </div>
+    <div><div class="ctx">Score card</div>
+      <div class="score-card" style="border-color:rgba(229,0,206,.2);">
+        <div class="score-label" style="color:#E500CE;">UX Score</div>
+        <div class="score-value" style="color:#E500CE;">87<span style="font-size:18px;color:#33334A;">/100</span></div>
+        <div class="score-sub">Above average · 3 issues found</div>
+      </div>
+    </div>
+    <div><div class="ctx">Nav item</div>
+      <div class="nav-mock">
+        <div class="nav-dot" style="background:#E500CE;"></div>
+        <div class="nav-text" style="color:#E500CE;">UXicAI</div>
+      </div>
+    </div>
+    <div><div class="ctx">Separator</div>
+      <div class="sep" style="background:rgba(229,0,206,.35);"></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
