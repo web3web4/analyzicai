@@ -30,14 +30,14 @@ export default function ParticleBackground() {
       detectRetina: true,
       particles: {
         color: {
-          value: '#C044FF',
+          value: '#e2a7ff',
         },
         links: {
-          color: '#FF2D9E',
-          distance: isMobile ? 100 : 140,
+          color: '#ff7cc2',
+          distance: isMobile ? 100 : 500,
           enable: true,
-          opacity: isMobile ? 0.08 : 0.12,
-          width: 1,
+          opacity: isMobile ? 0.25 : 0.4,
+          width: isMobile ? 0.8 : 1.2,
         },
         move: {
           enable: true,
@@ -58,7 +58,7 @@ export default function ParticleBackground() {
           value: isMobile ? 15 : 35,
         },
         opacity: {
-          value: { min: 0.1, max: 0.5 },
+          value: { min: 0.35, max: 0.85 },
           animation: {
             enable: true,
             speed: 0.3,
@@ -69,7 +69,7 @@ export default function ParticleBackground() {
           type: 'circle',
         },
         size: {
-          value: { min: 1, max: isMobile ? 2 : 2.5 },
+          value: { min: 1.5, max: isMobile ? 3 : 3.5 },
         },
       },
       interactivity: {
