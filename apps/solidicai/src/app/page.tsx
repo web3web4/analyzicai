@@ -28,33 +28,24 @@ export default function Home() {
     };
   }, []);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-accent/20 to-slate-900 flex flex-col">
       {/* Navigation */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-3">
-          <Logo containerSize="sm" prefix="Solidic" />
-          <div className="h-8 w-[1px] bg-white/20 mx-1 hidden md:block" />
-          <div className="hidden md:block">
-            <div className="text-xs font-bold text-purple-400 uppercase tracking-tighter">
-              AnalyzicAI Ecosystem
-            </div>
-            <div className="text-sm font-semibold text-white">SolidicAI.com</div>
-          </div>
-        </div>
+        <Logo containerSize="lg" prefix="Solidic" />
         <div className="flex items-center gap-4">
           {isLoggedIn ? (
             <>
               <form action="/api/auth/signout" method="post">
                 <button
                   type="submit"
-                  className="text-white/70 hover:text-white transition-colors"
+                  className="text-white/90 hover:text-white transition-colors"
                 >
                   Sign out
                 </button>
               </form>
               <Link
                 href="/dashboard"
-                className="px-5 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium hover:from-purple-600 hover:to-pink-600 transition-all flex items-center gap-2"
+                className="px-5 py-2 bg-gradient-to-r from-accent to-primary text-white rounded-full font-medium hover:opacity-90 transition-all flex items-center gap-2"
               >
                 <User className="w-4 h-4" />
                 Dashboard
@@ -64,13 +55,13 @@ export default function Home() {
             <>
               <Link
                 href="/login"
-                className="text-white/70 hover:text-white transition-colors"
+                className="text-white/90 hover:text-white transition-colors"
               >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="px-5 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium hover:from-purple-600 hover:to-pink-600 transition-all"
+                className="px-5 py-2 bg-gradient-to-r from-accent to-primary text-white rounded-full font-medium hover:opacity-90 transition-all"
               >
                 Get Started
               </Link>
@@ -82,12 +73,12 @@ export default function Home() {
       <div className="flex-1 flex items-center justify-center">
         <div className="max-w-4xl mx-auto p-8 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
-            <span className="text-xs font-bold text-purple-400 uppercase tracking-widest">
+            <span className="text-xs font-bold text-primary uppercase tracking-widest">
               AnalyzicAI Ecosystem
             </span>
           </div>
 
-          <h1 className="text-6xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+          <h1 className="text-6xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-accent to-primary">
             SolidicAI
           </h1>
           <div className="text-sm font-bold text-gray-500 uppercase tracking-[0.2em] mb-8">
@@ -140,7 +131,7 @@ export default function Home() {
           <div className="flex gap-4 justify-center">
             <Link
               href="/dashboard/analyze"
-              className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl"
+              className="px-8 py-3 bg-gradient-to-r from-accent to-primary text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
             >
               Start Analysis
             </Link>
@@ -153,15 +144,10 @@ export default function Home() {
 
       <footer className="py-12 px-6 border-t border-white/10 bg-slate-900/50">
         <div className="max-w-7xl mx-auto md:items-start lg:items-start flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
-          <div className="flex flex-col md:flex-row gap-6 max-w-2xl">
+          <div className="flex flex-col max-w-2xl">
             <Logo containerSize="md" prefix="Solidic" />
-            <div className="flex flex-col gap-1">
-              <div className="text-sm text-gray-400">
-                AI-powered smart contract analysis
-              </div>
-              <div className="text-sm text-gray-500">
-                An AnalyzicAI product
-              </div>
+            <div className=" ml-2 text-sm text-gray-400">
+              AI-powered smart contract analysis
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 w-full lg:w-auto">
@@ -171,7 +157,7 @@ export default function Home() {
                 <li>
                   <Link
                     href="#features"
-                    className="hover:text-purple-400 transition-colors"
+                    className="hover:text-primary transition-colors"
                   >
                     Features
                   </Link>
@@ -179,7 +165,7 @@ export default function Home() {
                 <li>
                   <Link
                     href="/dashboard/analyze"
-                    className="hover:text-purple-400 transition-colors"
+                    className="hover:text-primary transition-colors"
                   >
                     Start Analysis
                   </Link>
@@ -193,7 +179,7 @@ export default function Home() {
                   <Link
                     href="https://analyzicai.com"
                     target="_blank"
-                    className="hover:text-purple-400 transition-colors"
+                    className="hover:text-primary transition-colors"
                   >
                     AnalyzicAI.com
                   </Link>
@@ -202,7 +188,7 @@ export default function Home() {
                   <Link
                     href="https://solidicai.com"
                     target="_blank"
-                    className="hover:text-purple-400 transition-colors"
+                    className="hover:text-primary transition-colors"
                   >
                     SolidicAI.com
                   </Link>
@@ -216,7 +202,7 @@ export default function Home() {
                   <Link
                     href="https://web3web4.com"
                     target="_blank"
-                    className="hover:text-purple-400 transition-colors"
+                    className="hover:text-primary transition-colors"
                   >
                     Web3Web4.com
                   </Link>

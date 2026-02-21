@@ -47,7 +47,7 @@ export default function AppsShowcase() {
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
             Analyzic<span className="text-ai">AI</span> <span className="text-ai-soft">Apps</span> Family
           </h2>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto font-mono">
+          <p className="text-lg text-fg-secondary max-w-2xl mx-auto font-mono">
             Specialized AI-powered analysis tools for different domains
           </p>
         </ScrollReveal>
@@ -85,7 +85,7 @@ export default function AppsShowcase() {
                     </div>
 
                     {/* Description */}
-                    <p className="text-white/70 leading-relaxed mb-6">
+                    <p className="text-fg-secondary leading-relaxed mb-6">
                       {app.description}
                     </p>
 
@@ -98,7 +98,7 @@ export default function AppsShowcase() {
                               isUx ? 'bg-ux' : 'bg-chain'
                             }`}
                           />
-                          <span className="text-white/70 text-sm">{feature}</span>
+                          <span className="text-fg-secondary text-sm">{feature}</span>
                         </li>
                       ))}
                     </ul>

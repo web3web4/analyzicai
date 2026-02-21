@@ -44,7 +44,7 @@ export default function PricingPage() {
           </div>
         </div>
 
-        <p className="mt-12 text-sm text-muted-foreground">
+        <p className="mt-12 text-sm text-fg-tertiary">
           Part of the{" "}
           <span className="text-foreground font-medium">
             AnalyzicAI Ecosystem

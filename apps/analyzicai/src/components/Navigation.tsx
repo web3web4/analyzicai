@@ -51,10 +51,10 @@ export default function Navigation() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <Logo prefix="Analyzic" containerSize="sm" />
+            <Logo prefix="Analyzic" containerSize="lg" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -64,7 +64,7 @@ export default function Navigation() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNav(e, link.href)}
-                className={`relative font-mono text-white/80 hover:text-ai transition-colors cursor-pointer ${
+                className={`relative font-mono text-fg-muted hover:text-ai transition-colors cursor-pointer ${
                   active === link.href
                     ? 'text-ai after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[2px] after:bg-ai'
                     : ''
@@ -109,7 +109,7 @@ export default function Navigation() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="block font-mono text-white/80 hover:text-ai transition-colors"
+                  className="block font-mono text-fg-secondary hover:text-ai transition-colors"
                   onClick={(e) => handleNav(e, link.href)}
                 >
                   {link.label}

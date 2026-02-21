@@ -31,7 +31,7 @@ export default function Footer() {
             <Link href="/" className="flex items-center space-x-2 mb-4 group">
               <Logo prefix="Analyzic" containerSize="sm" />
             </Link>
-            <p className="text-white/60 mb-4 max-w-md text-sm">
+            <p className="text-fg-tertiary mb-4 max-w-md text-sm">
               Empowering developers and designers with AI-powered analysis tools for UI/UX, smart contracts, and more.
             </p>
             <div className="flex space-x-3">
@@ -39,7 +39,7 @@ export default function Footer() {
                 <Link
                   key={index}
                   href={social.href}
-                  className="w-10 h-10 bg-surface-800 border border-white/10 flex items-center justify-center text-white/60 hover:text-ai hover:border-ai/30 transition-all"
+                  className="w-10 h-10 bg-surface-800 border border-white/10 flex items-center justify-center text-fg-tertiary hover:text-ai hover:border-ai/30 transition-all"
                   aria-label={social.label}
                   target="_blank"
                 >
@@ -77,7 +77,7 @@ export default function Footer() {
                 <li key={index}>
                   <Link
                     href={link.href}
-                    className="text-white/80 hover:text-ai transition-colors text-sm"
+                    className="text-fg-secondary hover:text-ai transition-colors text-sm"
                     target="_blank"
                   >
                     {link.name}
@@ -90,14 +90,14 @@ export default function Footer() {
 
         {/* Bottom section */}
         <div className="border-t border-white/[0.08] pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-white/50 text-xs font-mono mb-4 md:mb-0">
+          <p className="text-fg-tertiary text-xs font-mono mb-4 md:mb-0">
             &copy; {currentYear} <span className='font-bold'><span className='text-white'>Analyzic</span><span className="text-ai-soft">AI</span></span>. All rights reserved.
           </p>
           <div className="flex items-center space-x-6 text-xs font-mono">
             <Link
               href="https://web3web4.com"
               target="_blank"
-              className="text-white/50 hover:text-ai transition-colors"
+              className="text-fg-tertiary hover:text-ai transition-colors"
             >
               Built by Web3Web4.com
             </Link>

@@ -51,7 +51,7 @@ export default function Features() {
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
             Powerful <span className="text-ai">Features</span>
           </h2>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto font-mono">
+          <p className="text-lg text-fg-secondary max-w-2xl mx-auto font-mono">
             Everything you need to analyze, optimize, and enhance your projects with AI
           </p>
         </ScrollReveal>
@@ -93,7 +93,7 @@ export default function Features() {
                     </h3>
                   </div>
 
-                  <p className="text-white/70 leading-relaxed">
+                  <p className="text-fg-secondary leading-relaxed">
                     {feature.description}
                   </p>
                 </div>

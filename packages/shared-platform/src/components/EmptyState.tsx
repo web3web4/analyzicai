@@ -36,7 +36,7 @@ export function EmptyState({
       : "text-lg font-medium mb-2 text-white";
 
   const descriptionClasses =
-    variant === "uxic" ? "text-muted mb-6" : "text-gray-500 mb-6";
+    variant === "uxic" ? "text-muted mb-6" : "text-fg-tertiary mb-6";
 
   const buttonClasses =
     variant === "uxic"

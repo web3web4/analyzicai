@@ -27,7 +27,7 @@ export default function CTA() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <p className="text-lg text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-fg-secondary mb-8 max-w-3xl mx-auto leading-relaxed">
             Join developers and designers who are already using Analyzic<span className="text-ai">AI</span> tools to enhance their projects with intelligent analysis and optimization.
           </p>
         </ScrollReveal>
@@ -76,7 +76,7 @@ export default function CTA() {
                 >
                   {card.title}
                 </div>
-                <div className="text-white/60 text-sm">{card.sub}</div>
+                <div className="text-fg-tertiary text-sm">{card.sub}</div>
               </div>
             ))}
           </div>

@@ -5,6 +5,8 @@ import "./globals.css";
 const font = Cascadia_Mono({
   variable: "--font-cascadia-mono",
   subsets: ["latin"],
+  adjustFontFallback: false, // custom fallback @font-face defined in shared index.css
+  fallback: ["Cascadia Mono Fallback", "Courier New", "monospace"],
 });
 
 export const metadata: Metadata = {

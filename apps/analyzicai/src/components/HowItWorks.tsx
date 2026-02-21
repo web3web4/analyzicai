@@ -39,7 +39,7 @@ export default function HowItWorks() {
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
             How It <span className="text-ai">Works</span>
           </h2>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto font-mono">
+          <p className="text-lg text-fg-secondary max-w-2xl mx-auto font-mono">
             Simple, powerful, and intelligent — our multi-step AI pipeline delivers results
           </p>
         </ScrollReveal>
@@ -87,7 +87,7 @@ export default function HowItWorks() {
                     <h3 className="text-lg font-bold mb-3 text-white">
                       {step.title}
                     </h3>
-                    <p className="text-white/70 leading-relaxed text-sm">
+                    <p className="text-fg-secondary leading-relaxed text-sm">
                       {step.description}
                     </p>
                   </div>
@@ -105,7 +105,7 @@ export default function HowItWorks() {
                 <h3 className="text-2xl font-bold text-white mb-2">
                   Advanced Multi-Step Pipeline
                 </h3>
-                <p className="text-white/70 max-w-2xl">
+                <p className="text-fg-secondary max-w-2xl">
                   Our unique approach combines the strengths of multiple AI providers, with cross-validation and synthesis to deliver the most accurate and comprehensive analysis.
                 </p>
               </div>

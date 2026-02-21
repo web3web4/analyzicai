@@ -1,99 +1,165 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@source "../../../../packages/shared-platform/src/**/*.{ts,tsx}";
+@source "../../../../packages/ai-ui-library/src/**/*.{ts,tsx}";
 
+/* ── Shared brand tokens + utilities ── */
+@import "../../../../packages/shared-platform/src/styles/index.css";
+
+/* ── AnalyzicAI slot overrides: AI purple leads ──
+   Shared tokens.css already sets these as defaults;
+   kept here explicitly for clarity and easy diffing. */
+:root {
+  --primary:       #C044FF;
+  --primary-soft:  #B06EFF;
+  --primary-light: #C084FC;
+  --primary-dark:  #8c00d9;
+  --accent:        #FF2D9E;
+  --accent-light:  #FF79C6;
+}
+
+/* ──────────────────────────────────────────────────
+   TAILWIND V4 THEME — AnalyzicAI
+   Maps CSS custom properties to Tailwind utility classes.
+   Static values use inline literals; dynamic slots reference vars.
+   ────────────────────────────────────────────────── */
+@theme inline {
+  /* ── Semantic slots ── */
+  --color-primary:       var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark:  var(--primary-dark);
+  --color-primary-soft:  var(--primary-soft);
+  --color-accent:        var(--accent);
+  --color-accent-light:  var(--accent-light);
+
+  /* ── Brand palette ── */
+  --color-brand-purple:       var(--brand-web4-purple);
+  --color-brand-purple-soft:  var(--brand-web4-purple-soft);
+  --color-brand-purple-light: var(--brand-web4-purple-light);
+  --color-brand-cyan:         var(--brand-web3-cyan);
+  --color-brand-cyan-light:   var(--brand-web3-cyan-light);
+  --color-brand-pink:         var(--brand-ux-pink);
+  --color-brand-pink-light:   var(--brand-ux-pink-light);
+
+  /* ── AI purple scale (text-ai, text-ai-soft, border-ai/30, bg-ai-200…) ── */
+  --color-ai:       #C044FF;
+  --color-ai-soft:  #B06EFF;
+  --color-ai-50:    #f9eeff;
+  --color-ai-100:   #f1d9ff;
+  --color-ai-200:   #e4b3ff;
+  --color-ai-300:   #d280ff;
+  --color-ai-400:   #C044FF;
+  --color-ai-500:   #a800ff;
+  --color-ai-600:   #8c00d9;
+  --color-ai-700:   #7000b3;
+  --color-ai-800:   #590090;
+  --color-ai-900:   #430070;
+  --color-ai-950:   #280045;
+
+  /* ── UX pink scale (text-ux, bg-ux/[0.06]…) ── */
+  --color-ux:       var(--color-brand-pink);
+  --color-ux-50:    #fff0f8;
+  --color-ux-100:   #ffe4f3;
+  --color-ux-200:   #ffcce8;
+  --color-ux-300:   #ffa3d5;
+  --color-ux-400:   #FF79C6;
+  --color-ux-500:   var(--color-brand-pink);
+  --color-ux-600:   #e0007e;
+  --color-ux-700:   #b80069;
+  --color-ux-800:   #960057;
+  --color-ux-900:   #7a0047;
+  --color-ux-950:   #4a002b;
+
+  /* ── Chain cyan (text-chain, border-chain/30…) ── */
+  --color-chain:     #00FFD1;
+  --color-chain-400: #5FFAE0;
+
+  /* ── Surface scale (bg-surface-900/90, bg-surface-700…) ── */
+  --color-surface-950: var(--bg-950);
+  --color-surface-900: var(--bg-900);
+  --color-surface-800: var(--bg-800);
+  --color-surface-700: var(--bg-700);
+  --color-surface-600: var(--bg-600);
+  --color-surface-500: var(--bg-500);
+
+  /* ── Foreground scale ── */
+  --color-fg-primary:   var(--fg-primary);
+  --color-fg-muted:     var(--fg-muted);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-tertiary:  var(--fg-tertiary);
+
+  /* ── Semantic ── */
+  --color-border:  var(--border);
+  --color-muted:   var(--muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error:   var(--error);
+
+  /* ── Typography — Space Mono is this app's signature font ── */
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* ── Border radius scale ── */
+  --radius-none: 0;
+  --radius:      4px;
+  --radius-sm:   2px;
+  --radius-md:   4px;
+  --radius-lg:   6px;
+  --radius-xl:   8px;
+  --radius-2xl:  12px;
+  --radius-3xl:  16px;
+  --radius-full: 9999px;
+
+  /* ── Box shadows ── */
+  --shadow-glow-ai-subtle: 0 0 20px rgba(192, 68, 255, 0.15);
+  --shadow-glow-ux-subtle: 0 0 20px rgba(255, 45, 158, 0.15);
+
+  /* ── Animations ── */
+  --animate-scan-line:  scan-line 4s linear infinite;
+  --animate-glitch-1:   glitch-1 0.3s ease-in-out;
+  --animate-glitch-2:   glitch-2 0.3s ease-in-out 0.05s;
+  --animate-float-slow: float-slow 6s ease-in-out infinite;
+}
+
+/* ── Keyframes ── */
+@keyframes scan-line {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes glitch-1 {
+  0%, 100% { clip-path: inset(0 0 0 0);    transform: translate(0); }
+  20%      { clip-path: inset(20% 0 60% 0); transform: translate(-2px, 2px); }
+  40%      { clip-path: inset(40% 0 20% 0); transform: translate(2px, -1px); }
+  60%      { clip-path: inset(60% 0 10% 0); transform: translate(-1px, 1px); }
+  80%      { clip-path: inset(10% 0 70% 0); transform: translate(1px, -2px); }
+}
+
+@keyframes glitch-2 {
+  0%, 100% { clip-path: inset(0 0 0 0);    transform: translate(0); }
+  20%      { clip-path: inset(50% 0 30% 0); transform: translate(2px, -2px); }
+  40%      { clip-path: inset(10% 0 50% 0); transform: translate(-2px, 1px); }
+  60%      { clip-path: inset(30% 0 40% 0); transform: translate(1px, -1px); }
+  80%      { clip-path: inset(70% 0 5% 0);  transform: translate(-1px, 2px); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-15px); }
+}
+
+/* ── Global base reset ── */
 @layer base {
   *, *::before, *::after {
     border-radius: 4px;
   }
 }
 
-/* ──────────────────────────────────────────────────
-   BRAND DARK THEME — AnalyzicAI Family
-   AI Purple #C044FF • UX Pink #FF2D9E • Chain Cyan #00FFD1
-   No glow spam. Solid outlines. Clean contrast.
-   ────────────────────────────────────────────────── */
-
-:root {
-  /* AI — all products */
-  --color-ai-brand:    #C044FF;
-  --color-ai-text:     #C084FC;
-
-  /* Blockchain — SolidicAI */
-  --color-chain-brand: #00FFD1;
-  --color-chain-text:  #5FFAE0;
-
-  /* UX — UXicAI */
-  --color-ux-brand:    #FF2D9E;
-  --color-ux-text:     #FF79C6;
-
-  /* Analyzic anchor */
-  --color-analyzic:    #FFFFFF;
-
-  /* Backgrounds */
-  --bg-900: #08080D;
-  --bg-800: #0F0F18;
-  --bg-700: #16162A;
-  --bg-600: #1E1E38;
-
-  /* Legacy surface aliases (for Tailwind compat) */
-  --color-surface-900: #08080D;
-  --color-surface-800: #0F0F18;
-  --color-surface-700: #16162A;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  color: #ffffff;
-  background: var(--bg-900);
-}
-
-/* ── Custom scrollbar ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-900); }
-::-webkit-scrollbar-thumb { background: rgba(192, 68, 255, 0.3); }
-::-webkit-scrollbar-thumb:hover { background: rgba(192, 68, 255, 0.6); }
-* { scrollbar-width: thin; scrollbar-color: rgba(192, 68, 255, 0.3) var(--bg-900); }
-
-::selection {
-  background: rgba(192, 68, 255, 0.25);
-  color: #ffffff;
-}
-
+/* ── Analyzic-specific utilities ── */
 @layer utilities {
-  .text-balance { text-wrap: balance; }
-
-  /* Single restrained text glow — hero title only */
-  .text-glow-subtle {
-    text-shadow: 0 0 12px rgba(192, 68, 255, 0.35);
-  }
-
-  /* Gradient text — AI purple to UX pink */
-  .text-gradient-cyber {
-    background: linear-gradient(135deg, #C044FF, #FF2D9E);
+  /* Full purple → pink gradient — used on the Analyzic landing */
+  .text-gradient-analyzic {
+    background: linear-gradient(135deg, var(--brand-web4-purple), var(--brand-ux-pink));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-  }
-}
-
-/* ── Focus outlines — cyber style ── */
-*:focus-visible {
-  outline: 2px solid var(--color-ai-brand);
-  outline-offset: 2px;
-}
-
-/* ── Reduced motion ── */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }

@@ -2,140 +2,61 @@
 @source "../../../../packages/ai-ui-library/src/**/*.{ts,tsx}";
 @source "../../../../packages/shared-platform/src/**/*.{ts,tsx}";
 
+/* ── Shared brand tokens + utilities ── */
+@import "../../../../packages/shared-platform/src/styles/index.css";
+
+/* ── UXicAI slot overrides: UX pink leads ── */
 :root {
-  /* Web3Web4 Official Brand Colors */
-  --brand-web3-cyan: #00FFD1;
-  --brand-web4-purple: #C044FF;
-  --brand-black: #000000;
-  --brand-white: #ffffff;
+  --primary:       var(--brand-ux-pink);
+  --primary-light: var(--brand-ux-pink-light);
+  --primary-dark:  var(--brand-ux-pink-dark);
+  --accent:        var(--brand-web4-purple);
+  --accent-light:  var(--brand-web4-purple-light);
 
-  /* UXicAI Official Brand Colors */
-  --background: #08080D;
-  --foreground: #ededed;
-  --primary: #FF2D9E;       /* UX pink — this app's accent */
-  --primary-light: #FF79C6;
-  --primary-dark: #C044FF;  /* AI purple as dark fallback */
-
-  --accent: #00FFD1;        /* Blockchain cyan as secondary accent */
-  --accent-light: #5FFAE0;
-  --surface: #0F0F18;
-  --surface-light: #16162A;
-  --border: #3f3f46;
-  --muted: #71717a;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --error: #ef4444;
+  /* Backwards-compat aliases used by existing component code */
+  --background:    var(--bg-900);
+  --foreground:    var(--fg-muted);
+  --surface:       var(--bg-800);
+  --surface-light: var(--bg-700);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
+  /* ── Semantic slots ── */
+  --color-primary:       var(--primary);
   --color-primary-light: var(--primary-light);
-  --color-primary-dark: var(--primary-dark);
-  --color-accent: var(--accent);
-  --color-accent-light: var(--accent-light);
-  --color-surface: var(--surface);
+  --color-primary-dark:  var(--primary-dark);
+  --color-accent:        var(--accent);
+  --color-accent-light:  var(--accent-light);
+
+  /* ── Backwards-compat (preserves bg-background, bg-surface, text-foreground…) ── */
+  --color-background:    var(--background);
+  --color-foreground:    var(--foreground);
+  --color-surface:       var(--surface);
   --color-surface-light: var(--surface-light);
-  --color-border: var(--border);
-  --color-muted: var(--muted);
+
+  /* ── Brand palette ── */
+  --color-brand-purple: var(--brand-web4-purple);
+  --color-brand-cyan:   var(--brand-web3-cyan);
+  --color-brand-pink:   var(--brand-ux-pink);
+
+  /* ── Foreground scale ── */
+  --color-fg-primary:   var(--fg-primary);
+  --color-fg-muted:     var(--fg-muted);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-tertiary:  var(--fg-tertiary);
+
+  /* ── Semantic ── */
+  --color-border:  var(--border);
+  --color-muted:   var(--muted);
   --color-success: var(--success);
   --color-warning: var(--warning);
-  --color-error: var(--error);
-  --color-brand-web4-purple: var(--brand-web4-purple);
-  --color-brand-web3-cyan: var(--brand-web3-cyan);
+  --color-error:   var(--error);
+
+  /* ── Typography ── */
   --font-sans: var(--font-geist-sans);
-  --font-mono: "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono: var(--font-cascadia-mono), "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: var(--font-mono);
-}
-
-/* Gradient text utility */
-.gradient-text {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--brand-web4-purple) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Gradient background utility */
-.gradient-bg {
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-dark) 100%
-  );
-}
-
-/* Glass morphism card */
-.glass-card {
-  background: rgba(15, 15, 24, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(63, 63, 70, 0.5);
-}
-
-/* Animated glow effect */
-.glow {
-  box-shadow:
-    0 0 60px rgba(255, 45, 158, 0.3),
-    0 0 100px rgba(0, 255, 209, 0.15);
-}
-
-/* Button styles */
-.btn-primary {
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-dark) 100%
-  );
-  transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 45, 158, 0.4);
-}
-
-.btn-secondary {
-  background: transparent;
-  border: 1px solid var(--border);
-  transition: all 0.2s ease;
-}
-
-.btn-secondary:hover {
-  background: var(--surface-light);
-  border-color: var(--primary-light);
-}
-
-/* Animation keyframes */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes pulse-glow {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
 }

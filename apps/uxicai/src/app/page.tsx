@@ -41,23 +41,14 @@ export default function Home() {
         </div>
 
         <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
-            <Logo prefix="UXic" containerSize="sm" />
-            <div className="h-8 w-[1px] bg-border mx-1 hidden md:block" />
-            <div className="hidden md:block">
-              <div className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">
-                AnalyzicAI Ecosystem
-              </div>
-              <div className="text-sm font-semibold">UXicAI.com</div>
-            </div>
-          </div>
+          <Logo prefix="UXic" containerSize="lg" />
           <div className="flex items-center gap-4">
             {isLoggedIn ? (
               <>
                 <form action="/api/auth/signout" method="post">
                   <button
                     type="submit"
-                    className="text-muted hover:text-foreground transition-colors"
+                    className="text-fg-muted hover:text-fg-primary transition-colors"
                   >
                     Sign out
                   </button>
@@ -155,7 +146,7 @@ export default function Home() {
             </div>
 
             {/* Intermediate Step */}
-            <div className="glass-card rounded-2xl p-8 opacity-60">
+            <div className="glass-card rounded-2xl p-8 border-dashed">
               <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-6">
                 <span className="text-lg font-bold text-accent">V2</span>
               </div>
@@ -245,15 +236,10 @@ export default function Home() {
 
       <footer className="py-12 px-6 border-t border-border bg-surface">
         <div className="max-w-7xl mx-auto md:items-start lg:items-start flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
-          <div className="flex flex-col md:flex-row gap-6 max-w-2xl">
+          <div className="md:flex-row gap-6 max-w-2xl">
             <Logo prefix="UXic" containerSize="md" />
-            <div className="flex flex-col gap-1">
-              <div className="text-sm text-muted">
-                AI-powered UI/UX analysis
-              </div>
-              <div className="text-sm text-muted-foreground">
-                An AnalyzicAI product
-              </div>
+            <div className="ml-2 text-sm text-fg-tertiary">
+              AI-powered smart contract analysis
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 w-full lg:w-auto">

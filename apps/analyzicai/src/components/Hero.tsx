@@ -10,7 +10,7 @@ export default function Hero() {
 
   return (
     <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 text-center">
         {/* Badge */}
         <motion.div
           initial={noMotion ? false : { opacity: 0, y: 20 }}
@@ -40,7 +40,7 @@ export default function Hero() {
 
         {/* Subtitle */}
         <motion.p
-          className="text-lg sm:text-xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed"
+          className="text-lg sm:text-xl text-fg-secondary mb-12 max-w-3xl mx-auto leading-relaxed"
           initial={noMotion ? false : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.45 }}
@@ -60,7 +60,7 @@ export default function Hero() {
             onClick={() => scrollToSection('#apps')}
             className="group px-8 py-4 bg-gradient-to-r from-ai to-ai-soft text-white font-mono font-bold border-2 border-ai transition-all hover:opacity-90 flex items-center space-x-2 text-lg cursor-pointer"
           >
-            <span>Explore <span className="opacity-90">Analyzic</span><span className="opacity-70">AI</span> Apps</span>
+            <span>Explore <span className="text-white">Analyzic</span><span className="text-ai-50">AI</span> Apps</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
 
@@ -95,7 +95,7 @@ export default function Hero() {
               >
                 {stat.value}
               </div>
-              <div className="text-white/60 font-medium text-sm">
+              <div className="text-fg-tertiary font-medium text-sm">
                 {stat.label}
               </div>
             </div>
@@ -110,7 +110,7 @@ export default function Hero() {
           transition={{ delay: 1.2, duration: 0.6 }}
           aria-hidden="true"
         >
-          <span className="text-xs font-mono text-white/50 tracking-widest uppercase">Scroll</span>
+          <span className="text-xs font-mono text-fg-tertiary tracking-widest uppercase">Scroll</span>
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}

@@ -36,7 +36,7 @@ export function InputTypeToggle({
             className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
               selected === option.id
                 ? `${accentClasses} shadow-sm border`
-                : "text-gray-400 hover:text-white hover:bg-white/5"
+                : "text-fg-tertiary hover:text-fg-primary hover:bg-white/5"
             }`}
           >
             <Icon className="h-4 w-4" />
