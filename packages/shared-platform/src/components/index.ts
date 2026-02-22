@@ -10,6 +10,10 @@ export { default as Modal } from "./Modal";
 export { default as ApiKeysForm } from "./ApiKeysForm";
 export { default as ApiKeysPromptCard } from "./ApiKeysPromptCard";
 
+// Navigation components (Server Components - import directly, not from barrel export)
+// Note: DashboardHeader and MobileNav are server components
+// Import them directly: from "@web3web4/shared-platform/components/DashboardHeader"
+
 // Auth components
 export {
   SocialAuthProviders,
@@ -24,6 +28,9 @@ export type { StatusBadgeProps } from "./StatusBadge";
 export type { EmptyStateProps } from "./EmptyState";
 export type { LoadingStateProps } from "./LoadingState";
 export type { StatusBannerProps } from "./StatusBanner";
+// Server component types - import from direct path: @web3web4/shared-platform/components/DashboardHeader
+// export type { DashboardHeaderProps } from "./DashboardHeader";
+// export type { MobileNavProps } from "./MobileNav";
 export type {
   SocialProvider,
   SocialProviderConfig,

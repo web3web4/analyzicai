@@ -24,6 +24,12 @@ export { default as SuspendedPage } from "./pages/SuspendedPage";
 // Config
 export * from "./config/models";
 
+// Browser-only image utilities (client components only)
+export { rasterizeSvg } from "./utils/image";
+
+// Formatting utilities
+export { formatFileSize } from "./utils/formatting";
+
 // Brand design tokens (JS/TS mirror of tokens.css)
 export { tokens, brandColors } from "./styles/tokens";
 

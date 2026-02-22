@@ -1,6 +1,6 @@
 import { createClient } from "@web3web4/shared-platform/supabase/server";
 import { redirect } from "next/navigation";
-import { DashboardHeader } from "@/components/DashboardHeader";
+import { DashboardHeader } from "@web3web4/shared-platform/server-components";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -118,7 +118,7 @@ export default async function ResultPage({ params }: PageProps) {
       {/* If completely failed */}
       {analysis.status === "failed" && v1Responses.length === 0 ? (
         <div className="min-h-screen bg-black text-white p-6">
-          <DashboardHeader />
+          <DashboardHeader theme="solidic" prefix="Solidic" />
           <div className="max-w-4xl mx-auto mt-12 text-center">
             <div className="h-16 w-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Shield className="h-8 w-8 text-red-500" />
@@ -137,7 +137,7 @@ export default async function ResultPage({ params }: PageProps) {
         </div>
       ) : (
         <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30">
-      <DashboardHeader />
+      <DashboardHeader theme="solidic" prefix="Solidic" />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="mb-8 flex items-center gap-4">

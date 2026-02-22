@@ -13,6 +13,7 @@
     "./api-handlers": "./src/api-handlers/index.ts",
     "./api-handlers/*": "./src/api-handlers/*.ts",
     "./components": "./src/components/index.ts",
+    "./server-components": "./src/server-components.ts",
     "./pages/*": "./src/pages/*.tsx",
     "./types": "./src/types/index.ts",
     "./config/*": "./src/config/*.ts",

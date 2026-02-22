@@ -1,7 +1,7 @@
 import { createClient } from "@web3web4/shared-platform/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { DashboardHeader } from "@/components/DashboardHeader";
+import { DashboardHeader } from "@web3web4/shared-platform/server-components";
 import { Shield, Github, Code } from "lucide-react";
 import { EmptyState } from "@web3web4/shared-platform";
 import { AnalysisCard } from "@web3web4/ai-ui-library";
@@ -26,7 +26,7 @@ export default async function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30">
-      <DashboardHeader />
+      <DashboardHeader theme="solidic" prefix="Solidic" />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="mb-12">

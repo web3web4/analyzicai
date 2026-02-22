@@ -179,7 +179,7 @@ pnpm dev
 
 ```bash
 # From repo root
-pnpm build:analyzic
+pnpm build:analyzicai
 
 # Or from app directory
 cd apps/analyzicai

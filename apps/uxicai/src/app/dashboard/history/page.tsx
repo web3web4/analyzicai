@@ -1,7 +1,7 @@
 import { createClient } from "@web3web4/shared-platform/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { DashboardHeader } from "@/components/DashboardHeader";
+import { DashboardHeader } from "@web3web4/shared-platform/server-components";
 import { EmptyState } from "@web3web4/shared-platform";
 import { AnalysisCard } from "@web3web4/ai-ui-library";
 import { UXIC_SOURCE_TYPES } from "@web3web4/ai-core";
@@ -26,7 +26,7 @@ export default async function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader />
+      <DashboardHeader theme="uxic" prefix="UXic" />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">

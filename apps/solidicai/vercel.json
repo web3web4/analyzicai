@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm install && pnpm run build:solidic",
+  "buildCommand": "cd ../.. && pnpm install && pnpm run build:solidicai",
   "outputDirectory": ".next",
   "installCommand": "pnpm install",
   "framework": "nextjs",

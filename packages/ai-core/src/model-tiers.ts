@@ -124,26 +124,27 @@ export function getProviderTierOptions(
   return [
     {
       value: "tier1" as ModelTier,
-      label: `Tier 1: ${getModelTierName(
-        config,
-        provider,
-        "tier1",
-      )} (cheapest)`,
+      label: `Tier 1: ${getModelTierName(config, provider, "tier1")} (cheapest)`,
       description: "Fastest & most affordable",
+      tierLabel: "Tier 1",
+      modelName: getModelTierName(config, provider, "tier1"),
+      quality: "Cheapest",
     },
     {
       value: "tier2" as ModelTier,
-      label: `Tier 2: ${getModelTierName(
-        config,
-        provider,
-        "tier2",
-      )} (balanced)`,
+      label: `Tier 2: ${getModelTierName(config, provider, "tier2")} (balanced)`,
       description: "Best cost-to-quality ratio",
+      tierLabel: "Tier 2",
+      modelName: getModelTierName(config, provider, "tier2"),
+      quality: "Balanced",
     },
     {
       value: "tier3" as ModelTier,
       label: `Tier 3: ${getModelTierName(config, provider, "tier3")} (premium)`,
       description: "Highest quality outcomes",
+      tierLabel: "Tier 3",
+      modelName: getModelTierName(config, provider, "tier3"),
+      quality: "Premium",
     },
   ];
 }
