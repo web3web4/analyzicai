@@ -1,26 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { LoadingState } from "@web3web4/shared-platform";
+import { useAnalysisProgress } from "@web3web4/shared-platform";
 import { Loader2, Shield, Zap, Code } from "lucide-react";
-
-interface AnalysisStatus {
-  analysis: {
-    id: string;
-    status: string;
-    final_score: number | null;
-    created_at: string;
-    providers_used: string[];
-    master_provider: string;
-  };
-  responses: {
-    v1Count: number;
-    v2Count: number;
-    hasSynthesis: boolean;
-  };
-  progress: number;
-}
 
 interface ResultsPageClientProps {
   analysisId: string;
@@ -33,87 +14,32 @@ export function ResultsPageClient({
   initialStatus,
   children,
 }: ResultsPageClientProps) {
-  const router = useRouter();
-  const [status, setStatus] = useState(initialStatus);
-  const [progress, setProgress] = useState(0);
-  const [currentStep, setCurrentStep] = useState("v1_initial");
-  const [providerCounts, setProviderCounts] = useState({ v1: 0, v2: 0, synthesis: false });
-  const [rotationIndex, setRotationIndex] = useState(0);
-  const [isPolling, setIsPolling] = useState(
-    initialStatus === "pending" || initialStatus === "processing"
-  );
-
-  // Rotate icons every 2 seconds
-  useEffect(() => {
-    if (!isPolling) return;
-
-    const rotationTimer = setInterval(() => {
-      setRotationIndex((prev) => (prev + 1) % 3);
-    }, 2000);
-
-    return () => clearInterval(rotationTimer);
-  }, [isPolling]);
-
-  // Poll for status updates
-  useEffect(() => {
-    if (!isPolling) return;
-
-    const pollInterval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/analysis-status/${analysisId}`);
-        if (!response.ok) {
-          console.error("Failed to fetch analysis status");
-          return;
-        }
-
-        const data: AnalysisStatus = await response.json();
-        setStatus(data.analysis.status);
-        setProgress(data.progress);
-        setProviderCounts({
-          v1: data.responses.v1Count,
-          v2: data.responses.v2Count,
-          synthesis: data.responses.hasSynthesis,
-        });
-
-        // Determine current step
-        if (data.responses.hasSynthesis) {
-          setCurrentStep("v3_synthesis");
-        } else if (data.responses.v2Count > 0) {
-          setCurrentStep("v2_rethink");
-        } else if (data.responses.v1Count > 0) {
-          setCurrentStep("v1_initial");
-        }
-
-        // If the analysis is complete or failed, stop polling and refresh the page
-        if (
-          data.analysis.status === "completed" ||
-          data.analysis.status === "partial" ||
-          data.analysis.status === "failed"
-        ) {
-          setIsPolling(false);
-          // Refresh the page to get the latest data from the server
-          router.refresh();
-        }
-      } catch (error) {
-        console.error("Error polling analysis status:", error);
-      }
-    }, 2000); // Poll every 2 seconds
-
-    return () => clearInterval(pollInterval);
-  }, [analysisId, isPolling, router]);
+  const {
+    status,
+    progress,
+    currentStep,
+    providerCounts,
+    rotationIndex,
+    isPolling,
+  } = useAnalysisProgress(analysisId, initialStatus);
 
   // Show loading state while analysis is in progress
-  if (isPolling && (status === "pending" || status === "processing")) {
+  if (isPolling) {
     const getStepMessage = () => {
-      if (currentStep === "v1_initial") {
-        return `Running initial analysis (${providerCounts.v1} providers completed)...`;
-      } else if (currentStep === "v2_rethink") {
-        return `Cross-checking results (${providerCounts.v2} providers completed)...`;
-      } else if (currentStep === "v3_synthesis") {
+      if (currentStep === "v3_synthesis") {
         return "Synthesizing final report...";
+      } else if (currentStep === "v2_rethink") {
+        return `Cross-checking results (${providerCounts.v2} of ${providerCounts.total} providers completed)...`;
+      } else if (currentStep === "v1_initial") {
+        return `Running initial analysis (${providerCounts.v1} of ${providerCounts.total} providers completed)...`;
       }
       return "Initializing analysis...";
     };
+
+    const getStepNumber = (step: typeof currentStep) =>
+      step === "v3_synthesis" ? (providerCounts.v2 > 0 ? "3" : "2") :
+      step === "v2_rethink" ? "2" : "1";
+    const totalStepCount = providerCounts.v2 > 0 ? "3" : "2";
 
     const analysisTypes = [
       { icon: Shield, label: "Security", color: "text-red-400", bgColor: "bg-red-500/10" },
@@ -159,7 +85,7 @@ export function ResultsPageClient({
                       {progress}%
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      Step {currentStep === "v3_synthesis" ? "3" : currentStep === "v2_rethink" ? "2" : "1"}/3
+                      Step {getStepNumber(currentStep)}/{totalStepCount}
                     </div>
                   </div>
                 </div>
@@ -222,7 +148,7 @@ export function ResultsPageClient({
                 )}
               </div>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>Step {currentStep === "v3_synthesis" ? "3" : currentStep === "v2_rethink" ? "2" : "1"} of 3</span>
+                <span>Step {getStepNumber(currentStep)} of {totalStepCount}</span>
                 <span>{progress}% Complete</span>
               </div>
             </div>

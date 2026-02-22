@@ -13,9 +13,11 @@ export interface ApiKeyAccessResult {
  * Custom hook to check if user has access to analyze features.
  *
  * User has access if ANY of these conditions are met:
- * 1. Has at least one encrypted API key
- * 2. Is an admin
- * 3. Has an active paid subscription (pro or enterprise)
+ * 1. Has at least one encrypted API key (BYOK - unlimited)
+ * 2. Has allocated tokens (from tier OR through custom admin assignment)
+ *
+ * Note: Admin status is separate and only grants user management capabilities.
+ * Admins should be assigned "pro" tier initially for analysis access. But they can also edit their token limits.
  *
  * @returns {ApiKeyAccessResult} Access state and loading status
  */
@@ -41,7 +43,7 @@ export function useApiKeyAccess(): ApiKeyAccessResult {
       const { data: profile } = await supabase
         .from("user_profiles")
         .select(
-          "encrypted_openai_key, encrypted_anthropic_key, encrypted_gemini_key, is_admin, subscription_tier",
+          "encrypted_openai_key, encrypted_anthropic_key, encrypted_gemini_key, subscription_tier, daily_token_limit",
         )
         .eq("user_id", user.id)
         .single();
@@ -53,26 +55,7 @@ export function useApiKeyAccess(): ApiKeyAccessResult {
         return;
       }
 
-      // Check 1: Is admin?
-      if (profile.is_admin) {
-        setHasAccess(true);
-        setReason("admin");
-        setIsLoading(false);
-        return;
-      }
-
-      // Check 2: Has paid subscription?
-      if (
-        profile.subscription_tier === "pro" ||
-        profile.subscription_tier === "enterprise"
-      ) {
-        setHasAccess(true);
-        setReason("subscription");
-        setIsLoading(false);
-        return;
-      }
-
-      // Check 3: Has at least one API key?
+      // Check 1: Has at least one API key? (BYOK - unlimited access)
       const hasApiKeys = !!(
         profile.encrypted_openai_key ||
         profile.encrypted_anthropic_key ||
@@ -82,11 +65,31 @@ export function useApiKeyAccess(): ApiKeyAccessResult {
       if (hasApiKeys) {
         setHasAccess(true);
         setReason("api_keys");
-      } else {
-        setHasAccess(false);
-        setReason("none");
+        setIsLoading(false);
+        return;
       }
 
+      // Check 2: Has allocated tokens? (from tier OR custom admin assignment)
+      // Token limits by tier: free=0, pro=1M, enterprise=10M
+      const tierTokens: Record<string, number> = {
+        free: 0,
+        pro: 1_000_000,
+        enterprise: 10_000_000,
+      };
+
+      const allocatedTokens =
+        profile.daily_token_limit ?? tierTokens[profile.subscription_tier] ?? 0;
+
+      if (allocatedTokens > 0) {
+        setHasAccess(true);
+        setReason("subscription");
+        setIsLoading(false);
+        return;
+      }
+
+      // No access
+      setHasAccess(false);
+      setReason("none");
       setIsLoading(false);
     }
 

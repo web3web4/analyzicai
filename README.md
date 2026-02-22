@@ -32,7 +32,34 @@ pnpm install
 pnpm run dev
 ```
 
-Auto-starts Supabase, applies migrations, and launches Next.js on [http://localhost:3001](http://localhost:3001).
+Auto-starts Supabase, applies migrations, and launches Next.js on [http://localhost:3000](http://localhost:3000), [http://localhost:3001](http://localhost:3001) and [http://localhost:3002](http://localhost:3002).
+
+### Local Development Access
+
+For local development, promote yourself to admin for user management capabilities and analysis access:
+
+**Option 1: Add your email to `.env.local`** (auto-promotes on login with "pro" tier)
+```env
+ADMIN_EMAILS=your-email@example.com
+```
+
+**Option 2: Manually promote in database**
+```sql
+UPDATE user_profiles 
+SET is_admin = true, subscription_tier = 'pro' 
+WHERE user_id = 'your-user-id';
+```
+
+**Option 3: Provide your own API keys** in Settings for unlimited access regardless of tier.
+
+### Access Control Model
+
+- **Admin role**: User management only (auto-assigned "pro" tier for analysis access)
+- **Subscription tiers**:
+  - Free: 50,000 tokens/day
+  - Pro: 1,000,000 tokens/day
+  - Enterprise: 10,000,000 tokens/day
+- **BYOK** (Bring Your Own Keys): Unlimited tokens using your own API keys
 
 ## Tech Stack
 

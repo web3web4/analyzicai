@@ -148,6 +148,11 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
     promptContext: { systemSuffix?: string; userVars: Record<string, any> },
     imagesBase64?: string[],
     onProgress?: (step: string, detail: string) => void,
+    onProviderComplete?: (
+      step: "v1" | "v2",
+      provider: AIProvider,
+      data: { result: TResult; tokensUsed: number; latencyMs: number },
+    ) => Promise<void>,
   ): Promise<{
     results: Map<
       AIProvider,
@@ -199,6 +204,9 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
           `[Orchestrator] ${providerName} analysis succeeded with score ${result.result.overallScore}`,
         );
         v1Results.set(providerName, result);
+        // Notify caller immediately so they can persist/stream without waiting
+        // for the other providers to finish.
+        await onProviderComplete?.("v1", providerName, result);
         return { success: true, providerName };
       } catch (error) {
         console.error(
@@ -310,6 +318,11 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
         { result: TResult; tokensUsed: number; latencyMs: number }
       >,
     ) => Promise<void>,
+    onProviderComplete?: (
+      step: "v1" | "v2",
+      provider: AIProvider,
+      data: { result: TResult; tokensUsed: number; latencyMs: number },
+    ) => Promise<void>,
   ): Promise<OrchestratorResult<TResult>> {
     // Validate providers
     this.validateProviders(config);
@@ -323,6 +336,7 @@ export class AnalysisOrchestrator<TResult extends BaseAnalysisResult> {
       promptContext,
       imagesBase64,
       onProgress,
+      onProviderComplete,
     );
 
     const v1Results = step1.results;

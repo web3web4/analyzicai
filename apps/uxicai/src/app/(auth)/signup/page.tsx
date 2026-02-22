@@ -8,24 +8,16 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Logo } from "@web3web4/shared-platform";
+import {
+  Logo,
+  SocialAuthProviders,
+  AuthDivider,
+  getEnabledProviders,
+  type SocialProvider,
+} from "@web3web4/shared-platform";
 
-type SocialProvider =
-  | "github"
-  | "google"
-  | "azure"
-  | "apple"
-  | "figma"
-  | "notion";
-
-const socialProviders: { id: SocialProvider; name: string; icon: string }[] = [
-  { id: "github", name: "GitHub", icon: "🐙" },
-  { id: "google", name: "Google", icon: "🔵" },
-  { id: "azure", name: "Microsoft", icon: "🪟" },
-  { id: "apple", name: "Apple", icon: "🍎" },
-  { id: "figma", name: "Figma", icon: "🎨" },
-  { id: "notion", name: "Notion", icon: "📝" },
-];
+// Filter providers at module level (env vars are embedded at build time)
+const socialProviders = getEnabledProviders();
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -110,6 +102,9 @@ export default function SignupPage() {
             We&apos;ve sent a confirmation link to <strong>{email}</strong>.
             Click the link to verify your account.
           </p>
+          <p className="text-xl mb-8">
+            If you could not find the email, please <span className="text-warning">check your spam</span> folder or try signing up again with one of the available <span className="text-warning">social providers</span>.
+          </p>
           <Link
             href="/login"
             className="text-primary hover:text-primary-light transition-colors"
@@ -144,29 +139,16 @@ export default function SignupPage() {
           )}
 
           {/* Social Signup */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {socialProviders.map((provider) => (
-              <button
-                key={provider.id}
-                onClick={() => handleSocialSignup(provider.id)}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-surface-light hover:bg-border transition-colors"
-              >
-                <span>{provider.icon}</span>
-                <span className="text-sm">{provider.name}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-surface text-muted">
-                or continue with email
-              </span>
-            </div>
-          </div>
+          {socialProviders.length > 0 && (
+            <>
+              <SocialAuthProviders
+                providers={socialProviders}
+                onProviderClick={handleSocialSignup}
+                buttonClassName="flex items-center justify-center gap-2 px-4 py-3 w-full btn-primary py-3 rounded-lg text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <AuthDivider borderClassName="border-border" textClassName="bg-surface text-muted" />
+            </>
+          )}
 
           {/* Email Signup */}
           <form onSubmit={handleSubmit} className="space-y-4">

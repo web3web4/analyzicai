@@ -43,7 +43,7 @@ pnpm build
 pnpm start
 ```
 
-The app runs on port 3002 by default.
+The app runs on port 3000 by default.
 
 ## Project Structure
 

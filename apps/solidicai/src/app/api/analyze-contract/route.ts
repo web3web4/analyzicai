@@ -11,6 +11,7 @@ import {
   createServiceClient,
 } from "@web3web4/shared-platform/supabase/server";
 import { decryptApiKey } from "@web3web4/shared-platform/auth/crypto";
+import { checkRateLimit } from "@web3web4/shared-platform/auth/rate-limit";
 
 /**
  * Runs the analysis pipeline in the background and updates the database incrementally
@@ -40,54 +41,61 @@ async function runPipelineInBackground(
       .update({ status: "processing" })
       .eq("id", analysisId);
 
-    // Run pipeline with callback to write to DB after each step
+    // Run pipeline with per-provider DB writes as soon as each finishes
     const results = await orchestrator.runPipeline(
       pipelineOptions,
       templates,
       context,
       undefined, // no images for contract analysis
-      undefined, // onProgress callback
+      undefined, // onProgress
       async (step, stepResults) => {
-        // This callback is called after each step completes
-        console.log(
-          `[Background Pipeline] Step ${step} completed with ${stepResults.size} results`,
-        );
-
-        const stepName =
-          step === "v1"
-            ? "v1_initial"
-            : step === "v2"
-            ? "v2_rethink"
-            : "v3_synthesis";
-
-        // Convert Map to array of records
+        // Called after synthesis (v3) — the only step that isn't covered per-provider
+        if (step !== "v3") return;
         const records = Array.from(stepResults.entries()).map(
           ([provider, data]) => ({
             analysis_id: analysisId,
             provider,
-            step: stepName,
+            step: "v3_synthesis",
             result: data.result,
             tokens_used: data.tokensUsed,
             latency_ms: data.latencyMs,
           }),
         );
-
         if (records.length > 0) {
           const { error } = await supabase
             .from("analysis_responses")
             .insert(records);
-
-          if (error) {
+          if (error)
             console.error(
-              `[Background Pipeline] Failed to store ${stepName} responses:`,
+              `[Background Pipeline] Failed to store v3 response:`,
               error,
             );
-          } else {
+          else
             console.log(
-              `[Background Pipeline] Stored ${records.length} ${stepName} response(s)`,
+              `[Background Pipeline] Stored ${records.length} v3_synthesis response(s)`,
             );
-          }
         }
+      },
+      async (step, provider, data) => {
+        // Called immediately when each v1/v2 provider finishes
+        const stepName = step === "v1" ? "v1_initial" : "v2_rethink";
+        const { error } = await supabase.from("analysis_responses").insert({
+          analysis_id: analysisId,
+          provider,
+          step: stepName,
+          result: data.result,
+          tokens_used: data.tokensUsed,
+          latency_ms: data.latencyMs,
+        });
+        if (error)
+          console.error(
+            `[Background Pipeline] Failed to store ${stepName} for ${provider}:`,
+            error,
+          );
+        else
+          console.log(
+            `[Background Pipeline] Stored ${stepName} for ${provider}`,
+          );
       },
     );
 
@@ -143,6 +151,19 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Check rate limit
+    const rateLimit = await checkRateLimit(user.id);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded",
+          remaining: rateLimit.remaining,
+          resetAt: rateLimit.resetAt,
+        },
+        { status: 429 },
+      );
     }
 
     // Fetch user's stored API keys from profile

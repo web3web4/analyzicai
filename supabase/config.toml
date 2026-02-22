@@ -52,7 +52,21 @@ enabled = true
 # in emails.
 site_url = "http://127.0.0.1:3000"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+# Support all three apps (analyzicai:3000, solidicai:3001, uxicai:3002) on both localhost and 127.0.0.1
+additional_redirect_urls = [
+  "http://localhost:3000/**",
+  "http://127.0.0.1:3000/**",
+  "https://localhost:3000/**",
+  "https://127.0.0.1:3000/**",
+  "http://localhost:3001/**",
+  "http://127.0.0.1:3001/**",
+  "https://localhost:3001/**",
+  "https://127.0.0.1:3001/**",
+  "http://localhost:3002/**",
+  "http://127.0.0.1:3002/**",
+  "https://localhost:3002/**",
+  "https://127.0.0.1:3002/**"
+]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # If disabled, the refresh token will never expire.
@@ -107,15 +121,43 @@ auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 # `twitter`, `slack`, `spotify`, `workos`, `zoom`.
 [auth.external.google]
 enabled = true
-client_id = "env(GOOGLE_CLIENT_ID)"
+client_id = "env(NEXT_PUBLIC_GOOGLE_CLIENT_ID)"
 secret = "env(GOOGLE_CLIENT_SECRET)"
 redirect_uri = ""
 url = ""
 
 [auth.external.github]
 enabled = true
-client_id = "env(GITHUB_CLIENT_ID)"
+client_id = "env(NEXT_PUBLIC_GITHUB_CLIENT_ID)"
 secret = "env(GITHUB_CLIENT_SECRET)"
+redirect_uri = ""
+url = ""
+
+[auth.external.azure]
+enabled = true
+client_id = "env(NEXT_PUBLIC_AZURE_CLIENT_ID)"
+secret = "env(AZURE_CLIENT_SECRET)"
+redirect_uri = ""
+url = ""
+
+[auth.external.apple]
+enabled = true
+client_id = "env(NEXT_PUBLIC_APPLE_CLIENT_ID)"
+secret = "env(APPLE_CLIENT_SECRET)"
+redirect_uri = ""
+url = ""
+
+[auth.external.figma]
+enabled = true
+client_id = "env(NEXT_PUBLIC_FIGMA_CLIENT_ID)"
+secret = "env(FIGMA_CLIENT_SECRET)"
+redirect_uri = ""
+url = ""
+
+[auth.external.notion]
+enabled = true
+client_id = "env(NEXT_PUBLIC_NOTION_CLIENT_ID)"
+secret = "env(NOTION_CLIENT_SECRET)"
 redirect_uri = ""
 url = ""
 

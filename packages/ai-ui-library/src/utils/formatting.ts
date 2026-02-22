@@ -95,4 +95,11 @@ export const designAccentOptions = {
     text: "text-purple-400",
     focus: "focus:border-purple-500/50 focus:ring-purple-500/50",
   },
+  primary: {
+    border: "border-primary/50 bg-primary/10",
+    accent: "accent-primary",
+    bg: "bg-primary/10 border-primary/20",
+    text: "text-primary",
+    focus: "focus:border-primary/50 focus:ring-primary/50",
+  },
 } as const;

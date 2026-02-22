@@ -51,6 +51,7 @@ export async function requireAdmin(userId: string): Promise<void> {
 
 /**
  * Auto-promote users to admin based on ADMIN_EMAILS environment variable
+ * Also sets subscription tier to 'pro' for analysis access
  * Should be called in middleware or login callback
  *
  * @param userEmail - The user's email address
@@ -83,7 +84,7 @@ export async function promoteAdminsByEmail(
     const supabase = createServiceClient();
     const { data: profile } = await supabase
       .from("user_profiles")
-      .select("is_admin")
+      .select("is_admin, subscription_tier")
       .eq("user_id", userId)
       .single();
 
@@ -92,10 +93,13 @@ export async function promoteAdminsByEmail(
       return false;
     }
 
-    // Promote user to admin
+    // Promote user to admin AND set tier to 'pro' for analysis access
     const { error } = await supabase
       .from("user_profiles")
-      .update({ is_admin: true })
+      .update({
+        is_admin: true,
+        subscription_tier: "pro",
+      })
       .eq("user_id", userId);
 
     if (error) {

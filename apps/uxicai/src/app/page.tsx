@@ -152,14 +152,16 @@ export default function Home() {
 
             {/* Intermediate Step */}
             <div className="glass-card rounded-2xl p-8 border-dashed">
-              <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-6">
-                <span className="text-lg font-bold text-accent">02</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">
-                Cross-Review & Rethinking
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-6">
+                  <span className="text-lg font-bold text-accent">02</span>
+                </div>
                 <span className="ml-2 text-xs px-2 py-1 rounded-full bg-accent/20 text-accent">
                   Coming in V2
                 </span>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3">
+                Cross-Review & Rethinking
               </h3>
               <p className="text-muted">
                 Providers will review each other&apos;s findings,

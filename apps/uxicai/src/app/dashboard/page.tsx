@@ -1,8 +1,9 @@
-import { createClient } from "@web3web4/shared-platform/supabase/server";
+import { createClient, createServiceClient } from "@web3web4/shared-platform/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { DashboardHeader } from "@/components/DashboardHeader";
+import { DashboardHeader } from "@web3web4/shared-platform/server-components";
 import { UXIC_SOURCE_TYPES } from "@web3web4/ai-core";
+import { checkRateLimit } from "@web3web4/shared-platform/auth/rate-limit";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -22,21 +23,44 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: false })
     .limit(5);
 
-  // Get usage stats
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  // Get user profile to check access
+  const serviceSupabase = createServiceClient();
+  const { data: profile } = await serviceSupabase
+    .from("user_profiles")
+    .select("encrypted_openai_key, encrypted_anthropic_key, encrypted_gemini_key, is_admin, subscription_tier, status, daily_token_limit")
+    .eq("user_id", user.id)
+    .single();
 
-  const { count: todayCount } = await supabase
-    .from("analyses")
-    .select("*", { count: "exact", head: true })
-    .in("source_type", UXIC_SOURCE_TYPES)
-    .gte("created_at", today.toISOString());
+  // Check if user has access (BYOK or allocated tokens)
+  const hasApiKeys = !!(
+    profile?.encrypted_openai_key ||
+    profile?.encrypted_anthropic_key ||
+    profile?.encrypted_gemini_key
+  );
+  
+  // Check allocated tokens (from tier OR custom admin assignment)
+  const tierTokens: Record<string, number> = {
+    free: 0,
+    pro: 1_000_000,
+    enterprise: 10_000_000,
+  };
+  
+  const allocatedTokens = 
+    profile?.daily_token_limit ?? 
+    tierTokens[profile?.subscription_tier ?? 'free'] ?? 
+    0;
+  
+  const hasAccess = hasApiKeys || allocatedTokens > 0;
 
-  const remaining = Math.max(0, 10 - (todayCount ?? 0));
+  // Get token-based rate limit info
+  const rateLimit = await checkRateLimit(user.id);
+  const remainingTokens = rateLimit.remaining;
+  const usedTokens = rateLimit.used;
+  const totalTokens = rateLimit.limit;
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader />
+      <DashboardHeader theme="uxic" prefix="UXic" />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
@@ -50,7 +74,25 @@ export default async function DashboardPage() {
             </span>
           </h1>
           <p className="text-muted">
-            You have {remaining} analyses remaining today.
+            {!hasAccess ? (
+              <>
+                <span className="text-warning">⚠️ No active access.</span>{" "}
+                <Link href="/dashboard/settings" className="text-primary hover:underline">
+                  Provide API keys
+                </Link>{" "}
+                or{" "}
+                <Link href="/waitlist" className="text-primary hover:underline">
+                  join waitlist
+                </Link>{" "}
+                for paid plans.
+              </>
+            ) : hasApiKeys ? (
+              <span className="text-success">✓ Unlimited (using your own API keys)</span>
+            ) : (
+              <>
+                {remainingTokens.toLocaleString()} tokens remaining today ({usedTokens.toLocaleString()} / {totalTokens.toLocaleString()} used)
+              </>
+            )}
           </p>
         </div>
 

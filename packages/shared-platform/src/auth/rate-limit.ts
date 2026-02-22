@@ -2,7 +2,7 @@ import { createServiceClient } from "../supabase/server";
 
 // Token-based rate limit tiers (more granular cost control)
 const TIER_TOKEN_LIMITS = {
-  free: 50_000, // ~10-25 basic analyses/day
+  free: 0, // No tokens by default (admins can assign custom tokens)
   pro: 1_000_000, // ~200-500 analyses/day
   enterprise: 10_000_000, // ~2000-5000 analyses/day
 } as const;
@@ -18,19 +18,6 @@ export interface RateLimitResult {
 }
 
 export async function checkRateLimit(userId: string): Promise<RateLimitResult> {
-  // Bypass rate limiting in development if ENABLE_RATE_LIMITS is false
-  if (process.env.ENABLE_RATE_LIMITS === "false") {
-    const resetAt = new Date();
-    resetAt.setUTCDate(resetAt.getUTCDate() + 1);
-    return {
-      allowed: true,
-      remaining: 999999,
-      resetAt,
-      limit: 999999,
-      used: 0,
-    };
-  }
-
   const supabase = createServiceClient();
 
   // Get start of current day in UTC

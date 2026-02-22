@@ -71,7 +71,7 @@ All AnalyzicAI apps leverage multiple AI providers simultaneously:
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide React
 - **Deployment**: Vercel
-- **Port**: 3002 (development)
+- **Port**: 3000 (development)
 
 ## Design System
 
@@ -179,7 +179,7 @@ pnpm dev
 
 ```bash
 # From repo root
-pnpm build:analyzic
+pnpm build:analyzicai
 
 # Or from app directory
 cd apps/analyzicai
@@ -188,10 +188,10 @@ pnpm build
 
 ### Port Configuration
 
-The app runs on port **3002** to avoid conflicts with:
+The app runs on port **3000** to avoid conflicts with:
 
-- UXicAI (3000)
 - SolidicAI (3001)
+- UXicAI (3002)
 
 ## Deployment
 

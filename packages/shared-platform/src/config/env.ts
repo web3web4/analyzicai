@@ -27,12 +27,6 @@ const envSchema = z.object({
   // Admin Configuration (optional)
   ADMIN_EMAILS: z.string().optional(),
 
-  // Rate Limiting (optional - defaults to enabled)
-  ENABLE_RATE_LIMITS: z
-    .enum(["true", "false"])
-    .optional()
-    .transform((val) => val !== "false"),
-
   // API Logging (optional - defaults to disabled)
   ENABLE_API_LOGGING: z
     .enum(["true", "false"])

@@ -4,6 +4,7 @@ import type { SynthesizedResult } from "@web3web4/ai-core";
 import { ResultsHeader } from "./components/ResultsHeader";
 import { ScoreOverview } from "./components/ScoreOverview";
 import { ResultsContent } from "./components/ResultsContent";
+import { ResultsPageClient } from "./components/ResultsPageClient";
 import { StatusBanner, LoadingState } from "@web3web4/shared-platform";
 
 interface PageProps {
@@ -172,7 +173,8 @@ export default async function ResultsPage({ params }: PageProps) {
   const isPartial = analysis.status === "partial" || hasPartialResults;
 
   return (
-    <div className="min-h-screen bg-background">
+    <ResultsPageClient analysisId={id} initialStatus={analysis.status}>
+      <div className="min-h-screen bg-background">
       <ResultsHeader />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
@@ -257,5 +259,6 @@ export default async function ResultsPage({ params }: PageProps) {
         )}
       </main>
     </div>
+    </ResultsPageClient>
   );
 }

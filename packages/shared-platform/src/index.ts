@@ -20,9 +20,17 @@ export * from "./hooks/index";
 export { default as AdminUsersPage } from "./pages/AdminUsersPage";
 export { default as SettingsPage } from "./pages/SettingsPage";
 export { default as SuspendedPage } from "./pages/SuspendedPage";
+export { default as WaitlistPage } from "./pages/WaitlistPage";
+export type { WaitlistPageProps } from "./pages/WaitlistPage";
 
 // Config
 export * from "./config/models";
+
+// Browser-only image utilities (client components only)
+export { rasterizeSvg } from "./utils/image";
+
+// Formatting utilities
+export { formatFileSize } from "./utils/formatting";
 
 // Brand design tokens (JS/TS mirror of tokens.css)
 export { tokens, brandColors } from "./styles/tokens";

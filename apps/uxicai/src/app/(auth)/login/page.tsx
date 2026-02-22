@@ -8,24 +8,16 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
-import { Logo } from "@web3web4/shared-platform";
+import {
+  Logo,
+  SocialAuthProviders,
+  AuthDivider,
+  getEnabledProviders,
+  type SocialProvider,
+} from "@web3web4/shared-platform";
 
-type SocialProvider =
-  | "github"
-  | "google"
-  | "azure"
-  | "apple"
-  | "figma"
-  | "notion";
-
-const socialProviders: { id: SocialProvider; name: string; icon: string }[] = [
-  { id: "github", name: "GitHub", icon: "🐙" },
-  { id: "google", name: "Google", icon: "🔵" },
-  { id: "azure", name: "Microsoft", icon: "🪟" },
-  { id: "apple", name: "Apple", icon: "🍎" },
-  { id: "figma", name: "Figma", icon: "🎨" },
-  { id: "notion", name: "Notion", icon: "📝" },
-];
+// Filter providers at module level (env vars are embedded at build time)
+const socialProviders = getEnabledProviders();
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -101,29 +93,16 @@ function LoginForm() {
           )}
 
           {/* Social Login */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {socialProviders.map((provider) => (
-              <button
-                key={provider.id}
-                onClick={() => handleSocialLogin(provider.id)}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-surface-light hover:bg-border transition-colors"
-              >
-                <span>{provider.icon}</span>
-                <span className="text-sm">{provider.name}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-surface text-muted">
-                or continue with email
-              </span>
-            </div>
-          </div>
+          {socialProviders.length > 0 && (
+            <>
+              <SocialAuthProviders
+                providers={socialProviders}
+                onProviderClick={handleSocialLogin}
+                buttonClassName="flex items-center justify-center gap-2 px-4 py-3 w-full btn-primary py-3 rounded-lg text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <AuthDivider borderClassName="border-border" textClassName="bg-surface text-muted" />
+            </>
+          )}
 
           {/* Email Login */}
           <form onSubmit={handleSubmit} className="space-y-4">
