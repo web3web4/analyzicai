@@ -46,12 +46,12 @@ export function AnalysisCard({
   const providersTextClasses =
     variant === "uxic"
       ? "text-muted text-sm"
-      : "text-xs text-gray-500 truncate";
+      : "text-xs text-fg-tertiary truncate";
 
   const dateContainerClasses =
     variant === "uxic"
       ? "text-right shrink-0"
-      : "text-sm text-gray-500 tabular-nums text-right";
+      : "text-sm text-fg-tertiary tabular-nums text-right";
 
   const dateClasses = variant === "uxic" ? "text-sm" : "";
   const timeClasses =
@@ -109,7 +109,7 @@ export function AnalysisCard({
             </div>
 
             {sourceLabel && (
-              <div className="text-sm text-gray-300 font-mono truncate mb-1">
+              <div className="text-sm text-fg-secondary font-mono truncate mb-1">
                 {sourceLabel}
               </div>
             )}

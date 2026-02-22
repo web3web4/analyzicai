@@ -1,14 +1,24 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
+import { Cascadia_Mono } from "next/font/google";
+import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'] });
+const font = Cascadia_Mono({
+  variable: "--font-cascadia-mono",
+  subsets: ["latin"],
+  adjustFontFallback: false, // custom fallback @font-face defined in shared index.css
+  fallback: ["Cascadia Mono Fallback", "Courier New", "monospace"],
+});
 
 export const metadata: Metadata = {
   title: 'AnalyzicAI - AI-Powered Analysis Tools',
   description: 'Comprehensive AI-powered analysis tools for UI/UX design, smart contracts, and more. Transform your workflow with intelligent automation.',
   keywords: 'AI, analysis, UI/UX, smart contracts, design tools, automation',
   authors: [{ name: 'AnalyzicAI Team' }],
+  icons: {
+    icon: '/logo.svg',
+    shortcut: '/logo.svg',
+    apple: '/logo.svg',
+  },
   openGraph: {
     title: 'AnalyzicAI - AI-Powered Analysis Tools',
     description: 'Comprehensive AI-powered analysis tools for UI/UX design, smart contracts, and more.',
@@ -29,7 +39,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${font.className} bg-surface-900 text-white antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }

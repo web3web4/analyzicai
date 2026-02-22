@@ -16,7 +16,8 @@
     "./pages/*": "./src/pages/*.tsx",
     "./types": "./src/types/index.ts",
     "./config/*": "./src/config/*.ts",
-    "./utils/*": "./src/utils/*.ts"
+    "./utils/*": "./src/utils/*.ts",
+    "./styles": "./src/styles/index.css"
   },
   "scripts": {
     "build": "tsc",

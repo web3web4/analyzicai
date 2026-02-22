@@ -53,10 +53,10 @@ export function ProviderSelector({
             />
             <div className="flex-1">
               <p className="font-medium text-white">{provider.name}</p>
-              <p className="text-sm text-gray-400">{provider.description}</p>
+              <p className="text-sm text-fg-tertiary">{provider.description}</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400">Master:</span>
+              <span className="text-xs text-fg-tertiary">Master:</span>
               <input
                 type="radio"
                 name="master"
@@ -73,7 +73,7 @@ export function ProviderSelector({
             onModelTierChange &&
             getModelTierOptions && (
               <div className="mt-3 pt-3 border-t border-white/10">
-                <label className="block text-xs text-gray-400 mb-2">
+                <label className="block text-xs text-fg-tertiary mb-2">
                   Model Quality Tier
                 </label>
                 <select
@@ -81,7 +81,7 @@ export function ProviderSelector({
                   onChange={(e) =>
                     onModelTierChange(provider.id, e.target.value)
                   }
-                  className={`w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-sm text-gray-300 focus:outline-none ${accentClasses.focus} transition-colors`}
+                  className={`w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-sm text-fg-secondary focus:outline-none ${accentClasses.focus} transition-colors`}
                 >
                   {getModelTierOptions(provider.id).map((option) => (
                     <option key={option.value} value={option.value}>

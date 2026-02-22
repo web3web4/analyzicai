@@ -1,10 +1,7 @@
-// Import middleware function from shared platform (middleware-specific export)
-import { middleware } from "@web3web4/shared-platform/middleware-exports";
+import { proxy } from "@web3web4/shared-platform/middleware-exports";
 
-// Export the middleware function
-export { middleware };
+export default proxy;
 
-// Config must be defined locally (not re-exported)
 export const config = {
   matcher: [
     /*

@@ -42,14 +42,10 @@ export default function Home() {
 
         <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
-            <Logo containerSize="sm" />
-            <div className="h-8 w-[1px] bg-border mx-1 hidden md:block" />
-            <div className="hidden md:block">
-              <div className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">
-                AnalyzicAI Ecosystem
-              </div>
-              <div className="text-sm font-semibold">UXicAI.com</div>
-            </div>
+            <Logo prefix="UXic" containerSize="lg" />
+            <span className="text-xs px-2 py-0.5 rounded-full border border-border text font-mono">
+              v1 pre-alpha
+            </span>
           </div>
           <div className="flex items-center gap-4">
             {isLoggedIn ? (
@@ -57,7 +53,7 @@ export default function Home() {
                 <form action="/api/auth/signout" method="post">
                   <button
                     type="submit"
-                    className="text-muted hover:text-foreground transition-colors"
+                    className="text-fg-muted hover:text-fg-primary transition-colors"
                   >
                     Sign out
                   </button>
@@ -91,7 +87,7 @@ export default function Home() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-32 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-border mb-8">
-            <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span className="text-sm text-muted">
               Powered by GPT, Gemini & Claude
             </span>
@@ -102,9 +98,9 @@ export default function Home() {
           </h1>
 
           <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto mb-10">
-            Upload a screenshot or capture your screen. Get comprehensive design
-            feedback from multiple AI vision models that identify issues and
-            suggest improvements.
+            Upload a screenshot or capture your screen. Multiple AI vision
+            models analyze your design in parallel, score each category, and
+            synthesize a single prioritized report.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -132,7 +128,7 @@ export default function Home() {
               Multi-Provider Intelligence
             </h2>
             <p className="text-muted text-lg max-w-2xl mx-auto">
-              We don&apos;t rely on a single AI. Our 3-step pipeline combines
+              We don&apos;t rely on a single AI. Our pipeline combines
               insights from multiple models for more accurate, comprehensive
               analysis.
             </p>
@@ -142,10 +138,10 @@ export default function Home() {
             {/* First Step */}
             <div className="glass-card rounded-2xl p-8">
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-6">
-                <span className="text-xl font-bold text-primary">1st</span>
+                <span className="text-xl font-bold text-primary">01</span>
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                First Step: Initial Analysis
+                Initial Analysis
               </h3>
               <p className="text-muted">
                 Each AI provider independently analyzes your UI/UX, scoring
@@ -155,30 +151,30 @@ export default function Home() {
             </div>
 
             {/* Intermediate Step */}
-            <div className="glass-card rounded-2xl p-8 opacity-60">
+            <div className="glass-card rounded-2xl p-8 border-dashed">
               <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-6">
-                <span className="text-lg font-bold text-accent">V2</span>
+                <span className="text-lg font-bold text-accent">02</span>
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                Intermediate Step
+                Cross-Review & Rethinking
                 <span className="ml-2 text-xs px-2 py-1 rounded-full bg-accent/20 text-accent">
                   Coming in V2
                 </span>
               </h3>
               <p className="text-muted">
-                Planned for version 2: Providers will review each other&apos;s
-                findings, reconsidering their assessments and catching blind
-                spots.
+                Providers will review each other&apos;s findings,
+                reconsidering their assessments and catching blind spots before
+                the final synthesis.
               </p>
             </div>
 
             {/* Last Step */}
             <div className="glass-card rounded-2xl p-8">
               <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center mb-6">
-                <span className="text-xl font-bold text-success">3rd</span>
+                <span className="text-xl font-bold text-success">03</span>
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                Last Step: Master Synthesis
+                Master Synthesis
               </h3>
               <p className="text-muted">
                 Your trusted provider synthesizes all insights into a final,
@@ -231,8 +227,15 @@ export default function Home() {
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to improve your designs?
           </h2>
-          <p className="text-muted text-lg mb-10">
-            Sign up free and use your own API keys, or join the waitlist for our upcoming subscription plans. No credit card required.
+          <p className="text-muted text-lg mb-3">
+            Start free with your own API keys. No credit card required.
+          </p>
+          <p className="text-sm text-muted/60 mb-10">
+            Subscription plans coming soon —{" "}
+            <Link href="/waitlist" className="underline underline-offset-2 hover:text-primary transition-colors">
+              join the waitlist
+            </Link>{" "}
+            for early access.
           </p>
           <Link
             href="/signup"
@@ -246,14 +249,9 @@ export default function Home() {
       <footer className="py-12 px-6 border-t border-border bg-surface">
         <div className="max-w-7xl mx-auto md:items-start lg:items-start flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
           <div className="flex flex-col md:flex-row gap-6 max-w-2xl">
-            <Logo containerSize="md" />
-            <div className="flex flex-col gap-1">
-              <div className="text-sm text-muted">
-                AI-powered UI/UX analysis
-              </div>
-              <div className="text-sm text-muted-foreground">
-                An AnalyzicAI product
-              </div>
+            <Logo prefix="UXic" containerSize="md" />
+            <div className="ml-2 text-sm text-fg-tertiary">
+              AI-powered UI/UX design analysis
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 w-full lg:w-auto">
@@ -311,6 +309,15 @@ export default function Home() {
                     className="hover:text-primary transition-colors"
                   >
                     Web3Web4.com
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://github.com/web3web4/analyzicai"
+                    target="_blank"
+                    className="hover:text-primary transition-colors"
+                  >
+                    GitHub
                   </Link>
                 </li>
               </ul>

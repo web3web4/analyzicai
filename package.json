@@ -7,7 +7,7 @@
     "dev": "pnpm supabase:ensure && pnpm --parallel --filter uxicai --filter solidicai --filter analyzicai dev",
     "dev:uxic": "pnpm supabase:ensure && pnpm --filter uxicai dev",
     "dev:solidic": "pnpm supabase:ensure && pnpm --filter solidicai dev",
-    "dev:analyzic": "pnpm supabase:ensure && pnpm --filter analyzicai dev",
+    "dev:analyzic": "pnpm --filter analyzicai dev",
     "kill-dev": "lsof -ti:3000 | xargs kill -9 2>/dev/null; lsof -ti:3001 | xargs kill -9 2>/dev/null; lsof -ti:3002 | xargs kill -9 2>/dev/null; echo 'Servers stopped'",
     "build": "pnpm -r build",
     "build:uxic": "pnpm --filter uxicai -r build",

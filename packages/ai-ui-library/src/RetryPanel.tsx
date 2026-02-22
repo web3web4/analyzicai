@@ -186,7 +186,7 @@ export function RetryPanel({
           
           {failedProviders.length > 0 && (
             <div className="mb-4">
-              <p className="text-sm text-gray-400 mb-3">
+              <p className="text-sm text-fg-tertiary mb-3">
                 The following providers failed during initial analysis. You can retry with the same provider or choose a different one:
               </p>
               
@@ -208,7 +208,7 @@ export function RetryPanel({
                     </div>
                     
                     <div className="space-y-2">
-                      <label className="text-xs text-gray-400 block">
+                      <label className="text-xs text-fg-tertiary block">
                         Select provider for retry:
                       </label>
                       <div className="grid grid-cols-1 gap-2">
@@ -240,10 +240,10 @@ export function RetryPanel({
                                     {info?.name || provider}
                                   </span>
                                   {isSameProvider && (
-                                    <span className="text-xs text-gray-400">(retry same)</span>
+                                    <span className="text-xs text-fg-tertiary">(retry same)</span>
                                   )}
                                 </div>
-                                <p className="text-xs text-gray-400 mt-0.5">
+                                <p className="text-xs text-fg-tertiary mt-0.5">
                                   {info?.description || "AI provider"}
                                 </p>
                               </div>
@@ -275,7 +275,7 @@ export function RetryPanel({
 
           {synthesisFailed && (
             <div className="mb-4">
-              <p className="text-sm text-gray-400 mb-3">
+              <p className="text-sm text-fg-tertiary mb-3">
                 The synthesis step failed. You can retry combining the successful provider results with a master provider of your choice.
               </p>
               
@@ -292,7 +292,7 @@ export function RetryPanel({
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-xs text-gray-400 block">
+                  <label className="text-xs text-fg-tertiary block">
                     Select master provider for synthesis retry:
                   </label>
                   <div className="grid grid-cols-1 gap-2">
@@ -324,10 +324,10 @@ export function RetryPanel({
                                 {info?.name || provider}
                               </span>
                               {isSameProvider && (
-                                <span className="text-xs text-gray-400">(retry same)</span>
+                                <span className="text-xs text-fg-tertiary">(retry same)</span>
                               )}
                             </div>
-                            <p className="text-xs text-gray-400 mt-0.5">
+                            <p className="text-xs text-fg-tertiary mt-0.5">
                               {info?.description || "AI provider"}
                             </p>
                           </div>
@@ -402,7 +402,7 @@ export function RetryPanel({
           )}
 
           <div className={`mt-3 p-3 rounded-lg ${variant === 'uxic' ? 'bg-surface-light/50 border border-border' : 'bg-white/5 border border-white/10'}`}>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-fg-tertiary">
               <strong>Note:</strong> Retrying will use additional AI API credits. 
               {failedProviders.length > 0 && selectedProviders && 
                 Object.values(selectedProviders).some(p => !failedProviders.includes(p)) && (

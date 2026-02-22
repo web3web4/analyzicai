@@ -1,8 +1,14 @@
-# UXicAI - AI Agent Documentation
+# AnalyzicAI - AI Agent Documentation
 
 ## Project Overview
 
-**UXicAI** is an AI-powered UI/UX analysis platform. Users upload screenshots or capture screens via WebRTC, and the system analyzes them using multiple AI vision providers (OpenAI, Gemini, Claude) in a multi-steps pipeline to deliver comprehensive design feedback.
+**AnalyzicAI** is the umbrella brand for a family of AI-powered analysis tools. This monorepo contains:
+
+- **analyzicai.com** — Brand landing page and ecosystem hub
+- **solidicai.com** — Smart contract security and optimization analysis
+- **uxicai.com** — UI/UX design analysis platform
+
+Analysis apps use multiple AI vision providers (OpenAI, Gemini, Claude) in a multi-step consensus pipeline to deliver comprehensive feedback.
 
 ## Tech Stack
 
