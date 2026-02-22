@@ -107,9 +107,7 @@ export function useImageUpload(
         }
 
         const newTotalSize =
-          currentSize +
-          valid.reduce((sum, f) => sum + f.size, 0) +
-          file.size;
+          currentSize + valid.reduce((sum, f) => sum + f.size, 0) + file.size;
         if (newTotalSize > maxTotalSizeBytes) {
           errors.push(`Total size exceeds ${maxTotalSizeMB} MB`);
           break;
@@ -134,9 +132,7 @@ export function useImageUpload(
           try {
             rasterized.push(await rasterizeSvg(file));
           } catch {
-            rasterizeErrors.push(
-              `${file.name}: Could not convert SVG to PNG`,
-            );
+            rasterizeErrors.push(`${file.name}: Could not convert SVG to PNG`);
           }
         } else {
           rasterized.push(file);

@@ -62,9 +62,18 @@ async function runPipelineInBackground(
           }),
         );
         if (records.length > 0) {
-          const { error } = await supabase.from("analysis_responses").insert(records);
-          if (error) console.error(`[Background Pipeline] Failed to store v3 response:`, error);
-          else console.log(`[Background Pipeline] Stored ${records.length} v3_synthesis response(s)`);
+          const { error } = await supabase
+            .from("analysis_responses")
+            .insert(records);
+          if (error)
+            console.error(
+              `[Background Pipeline] Failed to store v3 response:`,
+              error,
+            );
+          else
+            console.log(
+              `[Background Pipeline] Stored ${records.length} v3_synthesis response(s)`,
+            );
         }
       },
       async (step, provider, data) => {
@@ -78,8 +87,15 @@ async function runPipelineInBackground(
           tokens_used: data.tokensUsed,
           latency_ms: data.latencyMs,
         });
-        if (error) console.error(`[Background Pipeline] Failed to store ${stepName} for ${provider}:`, error);
-        else console.log(`[Background Pipeline] Stored ${stepName} for ${provider}`);
+        if (error)
+          console.error(
+            `[Background Pipeline] Failed to store ${stepName} for ${provider}:`,
+            error,
+          );
+        else
+          console.log(
+            `[Background Pipeline] Stored ${stepName} for ${provider}`,
+          );
       },
     );
 

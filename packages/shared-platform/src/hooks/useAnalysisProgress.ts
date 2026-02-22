@@ -20,7 +20,11 @@ export interface AnalysisStatusResponse {
   progress: number;
 }
 
-export type AnalysisStep = "initializing" | "v1_initial" | "v2_rethink" | "v3_synthesis";
+export type AnalysisStep =
+  | "initializing"
+  | "v1_initial"
+  | "v2_rethink"
+  | "v3_synthesis";
 
 export interface UseAnalysisProgressReturn {
   status: string;
@@ -75,7 +79,10 @@ export function useAnalysisProgress(
       try {
         const res = await fetch(`/api/analysis-status/${analysisId}`);
         if (!res.ok) {
-          console.error("[useAnalysisProgress] Failed to fetch status", res.status);
+          console.error(
+            "[useAnalysisProgress] Failed to fetch status",
+            res.status,
+          );
           return;
         }
 
