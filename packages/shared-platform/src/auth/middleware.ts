@@ -67,7 +67,7 @@ export async function proxy(request: NextRequest) {
         // Check and promote if needed
         const { data: profile, error: profileError } = await serviceSupabase
           .from("user_profiles")
-          .select("is_admin")
+          .select("is_admin, subscription_tier")
           .eq("user_id", user.id)
           .single();
 
@@ -78,7 +78,10 @@ export async function proxy(request: NextRequest) {
           console.log("[Admin Promotion] Promoting user to admin...");
           const { error: updateError } = await serviceSupabase
             .from("user_profiles")
-            .update({ is_admin: true })
+            .update({
+              is_admin: true,
+              subscription_tier: "pro",
+            })
             .eq("user_id", user.id);
 
           if (updateError) {

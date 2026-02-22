@@ -11,6 +11,7 @@ import {
   createServiceClient,
 } from "@web3web4/shared-platform/supabase/server";
 import { decryptApiKey } from "@web3web4/shared-platform/auth/crypto";
+import { checkRateLimit } from "@web3web4/shared-platform/auth/rate-limit";
 
 /**
  * Runs the analysis pipeline in the background and updates the database incrementally
@@ -57,8 +58,8 @@ async function runPipelineInBackground(
           step === "v1"
             ? "v1_initial"
             : step === "v2"
-            ? "v2_rethink"
-            : "v3_synthesis";
+              ? "v2_rethink"
+              : "v3_synthesis";
 
         // Convert Map to array of records
         const records = Array.from(stepResults.entries()).map(
@@ -143,6 +144,19 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Check rate limit
+    const rateLimit = await checkRateLimit(user.id);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded",
+          remaining: rateLimit.remaining,
+          resetAt: rateLimit.resetAt,
+        },
+        { status: 429 },
+      );
     }
 
     // Fetch user's stored API keys from profile
