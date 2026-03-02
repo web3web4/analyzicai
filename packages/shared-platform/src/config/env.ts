@@ -1,14 +1,13 @@
 /**
  * Environment variable validation and access
  * Validates all required env vars at startup to fail fast
+ *
+ * NOTE: Env files are loaded by dotenv-cli in each app's package.json scripts
+ * (e.g. "dotenv -e ../../.env.local -- next dev"). This module only validates
+ * and provides typed access to already-loaded process.env vars.
  */
 
-import fs from "node:fs";
-import path from "node:path";
-import { config as loadEnv } from "dotenv";
 import { z } from "zod";
-
-const defaultEnvFiles = [".env.local", ".env.prod", ".env"];
 
 const envSchema = z.object({
   // Supabase (required)
@@ -59,98 +58,6 @@ const envSchema = z.object({
 export type Env = z.infer<typeof envSchema>;
 
 let cachedEnv: Env | null = null;
-
-type LoadRootEnvOptions = {
-  rootDir?: string;
-  envFiles?: string[];
-  throwIfMissing?: boolean;
-  logger?: (message: string) => void;
-};
-
-/**
- * Detect if we're in a platform environment that injects env vars
- */
-function isPlatformEnvironment(): boolean {
-  return !!(
-    process.env.VERCEL ||
-    process.env.NETLIFY ||
-    process.env.RAILWAY_ENVIRONMENT ||
-    process.env.CI
-  );
-}
-
-/**
- * Load repo-root env files in a consistent order.
- * Falls back to current working directory if root load fails.
- * Returns true if at least one file was loaded.
- */
-export function loadRootEnv(options: LoadRootEnvOptions = {}): boolean {
-  const {
-    rootDir = process.cwd(),
-    envFiles = defaultEnvFiles,
-    throwIfMissing = !isPlatformEnvironment(), // Don't throw on Vercel/production platforms
-    logger = console.info,
-  } = options;
-
-  let loaded = false;
-  let loadedPath: string | null = null;
-
-  // Try to load from root directory first
-  envFiles.forEach((file) => {
-    const fullPath = path.join(rootDir, file);
-    if (!fs.existsSync(fullPath)) return;
-
-    const result = loadEnv({ path: fullPath });
-    if (!result.error) {
-      if (!loaded) {
-        loadedPath = fullPath;
-        logger(`✓ Loaded env from ${fullPath}`);
-        for (const file of envFiles) {
-          const fullPath = path.join(rootDir, file);
-          if (!fs.existsSync(fullPath)) continue;
-
-          const result = loadEnv({ path: fullPath });
-          if (!result.error) {
-            loaded = true;
-            loadedPath = fullPath;
-            logger(`✓ Loaded env from ${fullPath}`);
-            break;
-          }
-        }
-      }
-      loaded = true;
-    }
-  });
-
-  // Fallback: try loading from current working directory (for Vercel/deployed environments)
-  if (!loaded) {
-    const cwd = process.cwd();
-    for (const file of envFiles) {
-      const fullPath = path.join(cwd, file);
-      if (!fs.existsSync(fullPath)) continue;
-
-      const result = loadEnv({ path: fullPath });
-      if (!result.error) {
-        loaded = true;
-        loadedPath = fullPath;
-        logger(`✓ Loaded env from ${fullPath} (fallback)`);
-        break;
-      }
-    }
-  }
-
-  if (!loaded) {
-    const message = `No env file found. Checked: ${envFiles.join(
-      ", ",
-    )} in [${rootDir}, ${process.cwd()}]`;
-    if (throwIfMissing) {
-      throw new Error(message);
-    }
-    console.warn(`⚠ ${message}`);
-  }
-
-  return loaded;
-}
 
 /**
  * Validate environment variables at application startup
