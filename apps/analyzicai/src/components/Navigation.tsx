@@ -66,7 +66,7 @@ export default function Navigation() {
                 onClick={(e) => handleNav(e, link.href)}
                 className={`relative font-mono text-fg-muted hover:text-ai transition-colors cursor-pointer ${
                   active === link.href
-                    ? 'text-ai after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[2px] after:bg-ai'
+                    ? 'text-ai after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-0.5 after:bg-ai'
                     : ''
                 }`}
               >

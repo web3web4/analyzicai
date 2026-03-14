@@ -289,7 +289,7 @@ export default async function ResultPage({ params }: PageProps) {
                                 </p>
                                 {rec.priority && (
                                   <span
-                                    className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                    className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${
                                       rec.priority === "high"
                                         ? "bg-red-500/20 text-red-400"
                                         : rec.priority === "medium"
@@ -327,7 +327,7 @@ export default async function ResultPage({ params }: PageProps) {
                           {finding.title}
                         </h4>
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${
+                          className={`px-2 py-0.5 rounded text-xs uppercase font-bold ${
                             finding.severity === "critical"
                               ? "bg-red-500 text-white"
                               : finding.severity === "high"
@@ -504,7 +504,7 @@ export default async function ResultPage({ params }: PageProps) {
                                     <div key={fIdx} className="bg-red-500/5 border border-red-500/20 rounded-lg p-3">
                                       <div className="flex items-start justify-between mb-1">
                                         <h6 className="font-medium text-red-300 text-sm">{finding.title}</h6>
-                                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${
+                                        <span className={`px-2 py-0.5 rounded text-xs uppercase font-bold ${
                                           finding.severity === "critical"
                                             ? "bg-red-500 text-white"
                                             : finding.severity === "high"
@@ -562,7 +562,7 @@ export default async function ResultPage({ params }: PageProps) {
                                           <h6 className="font-medium text-cyan-300 text-sm mb-1">{rec.title}</h6>
                                           <p className="text-xs text-gray-400 mb-1">{rec.description}</p>
                                           {rec.priority && (
-                                            <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${
                                               rec.priority === "high"
                                                 ? "bg-red-500/20 text-red-400"
                                                 : rec.priority === "medium"

@@ -203,7 +203,7 @@ export default async function DashboardPage() {
                           {analysis.source_type}
                         </span>
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                          className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
                             analysis.status === "completed"
                               ? "bg-green-500/20 text-green-400"
                               : analysis.status === "failed"

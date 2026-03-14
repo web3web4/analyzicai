@@ -65,7 +65,7 @@ export default function Features() {
                 <div className="group relative p-8 bg-surface-700/50 border border-white/[0.08] transition-all duration-300 hover:-translate-y-1 hover:border-ai/30">
                   {/* Top accent line */}
                   <div
-                    className={`absolute top-0 left-0 right-0 h-[2px] transition-all duration-500 opacity-0 group-hover:opacity-100 ${
+                    className={`absolute top-0 left-0 right-0 h-0.5 transition-all duration-500 opacity-0 group-hover:opacity-100 ${
                       isAi
                         ? 'bg-gradient-to-r from-ai to-ai-soft'
                         : 'bg-gradient-to-r from-ai-soft to-ai'
