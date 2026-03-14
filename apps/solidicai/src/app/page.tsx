@@ -85,7 +85,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 mb-8">
             <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-fg-secondary">
               Powered by GPT, Gemini & Claude
             </span>
           </div>
@@ -94,10 +94,10 @@ export default function Home() {
             Audit Smarter.
           </h1>
 
-          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-6">
+          <p className="text-xl md:text-2xl text-fg-secondary max-w-2xl mx-auto mb-6">
             AI-powered smart contract security audits and gas optimization — Solidity, Vyper, and beyond.
           </p>
-          <p className="text-gray-500 mb-12">
+          <p className="text-fg-tertiary mb-12">
             Multiple AI providers independently analyze your contract, then synthesize a single prioritized report.
           </p>
 
@@ -125,7 +125,7 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Multi-Provider Intelligence
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-fg-secondary text-lg max-w-2xl mx-auto">
               No single AI has the full picture. Running independent models in parallel reduces bias — catching vulnerabilities one model misses while filtering out false positives others over-report.
             </p>
           </div>
@@ -138,7 +138,7 @@ export default function Home() {
               <h3 className="text-xl font-semibold text-white mb-3">
                 Parallel Audit
               </h3>
-              <p className="text-gray-400">
+              <p className="text-fg-secondary">
                 Each AI provider independently analyzes your contract, scoring security, gas efficiency, code quality, and best practices.
               </p>
             </div>
@@ -155,7 +155,7 @@ export default function Home() {
               <h3 className="text-xl font-semibold text-white mb-3">
                 Cross-Review & Rethinking
               </h3>
-              <p className="text-gray-400">
+              <p className="text-fg-secondary">
                 Providers review each other&apos;s findings, reconsidering assessments and surfacing blind spots before synthesis.
               </p>
             </div>
@@ -167,7 +167,7 @@ export default function Home() {
               <h3 className="text-xl font-semibold text-white mb-3">
                 Master Synthesis
               </h3>
-              <p className="text-gray-400">
+              <p className="text-fg-secondary">
                 Your trusted provider consolidates all findings into a final, actionable report with severity-ranked vulnerabilities.
               </p>
             </div>
@@ -182,7 +182,7 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               What We Analyze
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-fg-secondary text-lg max-w-2xl mx-auto">
               Every audit covers the critical vulnerability classes and optimization opportunities in your smart contracts.
             </p>
           </div>
@@ -203,7 +203,7 @@ export default function Home() {
                 className="flex items-center gap-3 p-4 rounded-xl bg-slate-900/60 hover:bg-slate-900 transition-colors border border-primary/15"
               >
                 <span className="text-2xl">{item.icon}</span>
-                <span className="font-medium text-gray-300">{item.name}</span>
+                <span className="font-medium text-fg-secondary">{item.name}</span>
               </div>
             ))}
           </div>
@@ -216,10 +216,10 @@ export default function Home() {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ship with confidence.
           </h2>
-          <p className="text-gray-400 text-lg mb-3">
+          <p className="text-fg-secondary text-lg mb-3">
             Start free with your own API keys. No credit card required.
           </p>
-          <p className="text-sm text-gray-500 mb-10">
+          <p className="text-sm text-fg-tertiary mb-10">
             Subscription plans coming soon —{" "}
             <Link href="/waitlist" className="underline underline-offset-2 hover:text-primary transition-colors">
               join the waitlist
@@ -239,14 +239,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto md:items-start lg:items-start flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
           <div className="flex flex-col max-w-2xl">
             <Logo containerSize="md" prefix="Solidic" />
-            <div className=" ml-2 text-sm text-gray-400">
+            <div className=" ml-2 text-sm text-fg-secondary">
               AI-powered smart contract analysis
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 w-full lg:w-auto">
             <div className="space-y-4">
               <h4 className="font-bold text-white">Product</h4>
-              <ul className="space-y-2.5 text-sm text-gray-400">
+              <ul className="space-y-2.5 text-sm text-fg-secondary">
                 <li>
                   <Link
                     href="#features"
@@ -267,7 +267,7 @@ export default function Home() {
             </div>
             <div className="space-y-4">
               <h4 className="font-bold text-white">Ecosystem</h4>
-              <ul className="space-y-2.5 text-sm text-gray-400">
+              <ul className="space-y-2.5 text-sm text-fg-secondary">
                 <li>
                   <Link
                     href="https://analyzicai.com"
@@ -290,7 +290,7 @@ export default function Home() {
             </div>
             <div className="space-y-4 col-span-2 md:col-span-1">
               <h4 className="font-bold text-white">Developed by</h4>
-              <ul className="space-y-2.5 text-sm text-gray-400">
+              <ul className="space-y-2.5 text-sm text-fg-secondary">
                 <li>
                   <Link
                     href="https://web3web4.com"

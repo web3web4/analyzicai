@@ -61,7 +61,7 @@ export default async function DashboardPage() {
   const totalTokens = rateLimit.limit;
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30">
+    <div className="min-h-screen bg-black text-white selection:bg-primary/30">
       <DashboardHeader theme="solidic" prefix="Solidic" />
 
       {/* Main Content */}
@@ -74,15 +74,15 @@ export default async function DashboardPage() {
               {user.email?.split("@")[0]}
             </span>
           </h1>
-          <p className="text-gray-400">
+          <p className="text-fg-secondary">
             {!hasAccess ? (
               <>
                 <span className="text-yellow-400">⚠️ No active access.</span>{" "}
-                <Link href="/dashboard/settings" className="text-cyan-400 hover:underline">
+                <Link href="/dashboard/settings" className="text-primary hover:underline">
                   Provide API keys
                 </Link>{" "}
                 or{" "}
-                <Link href="/waitlist" className="text-cyan-400 hover:underline">
+                <Link href="/waitlist" className="text-primary hover:underline">
                   join waitlist
                 </Link>{" "}
                 for paid plans.
@@ -101,19 +101,19 @@ export default async function DashboardPage() {
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           <Link
             href="/dashboard/analyze"
-            className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 p-8 transition-all hover:bg-white/10 hover:border-cyan-500/50"
+            className="group relative overflow-hidden rounded-2xl bg-surface border border-border p-8 transition-all hover:bg-surface-light hover:border-primary/50"
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Shield className="h-32 w-32 -rotate-12" />
             </div>
             <div className="relative z-10">
-              <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Code className="h-6 w-6 text-cyan-400" />
+              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Code className="h-6 w-6 text-primary" />
               </div>
               <h2 className="text-xl font-semibold mb-2 text-white">
                 New Smart Contract Scan
               </h2>
-              <p className="text-gray-400">
+              <p className="text-fg-secondary">
                 Paste Solidity code or provide a GitHub URL to detect
                 vulnerabilities and gas optimizations.
               </p>
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
 
           <Link
             href="/dashboard/history"
-            className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 p-8 transition-all hover:bg-white/10 hover:border-blue-500/50"
+            className="group relative overflow-hidden rounded-2xl bg-surface border border-border p-8 transition-all hover:bg-surface-light hover:border-accent/50"
           >
             <div className="relative z-10">
               <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
               <h2 className="text-xl font-semibold mb-2 text-white">
                 Audit History
               </h2>
-              <p className="text-gray-400">
+              <p className="text-fg-secondary">
                 Review past security reports and track your contract
                 improvements over time.
               </p>
@@ -146,19 +146,19 @@ export default async function DashboardPage() {
           </h2>
 
           {!recentAnalyses || recentAnalyses.length === 0 ? (
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-12 text-center">
-              <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-8 w-8 text-gray-500" />
+            <div className="rounded-2xl bg-surface border border-border p-12 text-center">
+              <div className="w-16 h-16 rounded-full bg-surface-light flex items-center justify-center mx-auto mb-4">
+                <Shield className="h-8 w-8 text-fg-tertiary" />
               </div>
               <h3 className="text-lg font-medium mb-2 text-white">
                 No audits yet
               </h3>
-              <p className="text-gray-500 mb-6">
+              <p className="text-fg-tertiary mb-6">
                 Start your first smart contract analysis to secure your code.
               </p>
               <Link
                 href="/dashboard/analyze"
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-medium inline-block hover:opacity-90 transition-opacity"
+                className="px-6 py-3 rounded-xl btn-primary text-white font-medium inline-block hover:opacity-90 transition-opacity"
               >
                 Start First Scan
               </Link>
@@ -169,11 +169,11 @@ export default async function DashboardPage() {
                 <Link
                   key={analysis.id}
                   href={`/dashboard/results/${analysis.id}`}
-                  className="block rounded-xl bg-white/5 border border-white/10 p-6 transition-all hover:bg-white/10 hover:border-cyan-500/30"
+                  className="block rounded-xl bg-surface border border-border p-6 transition-all hover:bg-surface-light hover:border-primary/30"
                 >
                   <div className="flex items-center gap-6">
                     {/* Score Badge */}
-                    <div className="w-16 h-16 rounded-lg bg-black/40 flex items-center justify-center shrink-0 border border-white/5">
+                    <div className="w-16 h-16 rounded-lg bg-black/40 flex items-center justify-center shrink-0 border border-border">
                       {analysis.status === "completed" ? (
                         <span
                           className={`text-2xl font-bold ${
@@ -187,14 +187,14 @@ export default async function DashboardPage() {
                           {analysis.final_score ?? "-"}
                         </span>
                       ) : (
-                        <span className="text-gray-500">...</span>
+                        <span className="text-fg-tertiary">...</span>
                       )}
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-1">
-                        <span className="flex items-center gap-1 text-sm font-medium text-cyan-400 capitalize bg-cyan-500/10 px-2 py-0.5 rounded">
+                        <span className="flex items-center gap-1 text-sm font-medium text-primary capitalize bg-primary/10 px-2 py-0.5 rounded">
                           {analysis.source_type === "github" ? (
                             <Github className="h-3 w-3" />
                           ) : (
@@ -215,7 +215,7 @@ export default async function DashboardPage() {
                         </span>
                       </div>
 
-                      <div className="text-sm text-gray-300 font-mono truncate mb-1">
+                      <div className="text-sm text-fg-secondary font-mono truncate mb-1">
                         {analysis.source_type === "github"
                           ? (analysis.repo_info as any)?.url?.replace(
                               "https://github.com/",
@@ -224,12 +224,12 @@ export default async function DashboardPage() {
                           : "Pasted Contract Code"}
                       </div>
 
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-fg-tertiary truncate">
                         Providers: {analysis.providers_used?.join(", ")}
                       </p>
                     </div>
 
-                    <div className="text-sm text-gray-500 tabular-nums">
+                    <div className="text-sm text-fg-tertiary tabular-nums">
                       {new Date(analysis.created_at).toLocaleDateString()}
                     </div>
                   </div>

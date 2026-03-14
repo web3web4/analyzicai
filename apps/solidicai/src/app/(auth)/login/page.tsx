@@ -87,7 +87,7 @@ function LoginForm() {
           <h1 className="text-2xl font-bold text-center mb-6">Welcome back</h1>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg mb-6 text-sm">
+            <div className="bg-error/10 border border-error/20 text-error px-4 py-3 rounded-lg mb-6 text-sm">
               {error}
             </div>
           )}
@@ -108,7 +108,7 @@ function LoginForm() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium mb-2 text-gray-300"
+                className="block text-sm font-medium mb-2"
               >
                 Email
               </label>
@@ -117,7 +117,7 @@ function LoginForm() {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary focus:outline-none transition-colors text-white placeholder-gray-500"
+                className="w-full px-4 py-3 rounded-lg bg-surface-light border border-border focus:border-primary focus:ring-2 focus:ring-primary/50 focus:outline-none transition-colors text-foreground placeholder-muted"
                 placeholder="you@example.com"
                 required
               />
@@ -126,7 +126,7 @@ function LoginForm() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium mb-2 text-gray-300"
+                className="block text-sm font-medium mb-2"
               >
                 Password
               </label>
@@ -135,7 +135,7 @@ function LoginForm() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary focus:outline-none transition-colors text-white placeholder-gray-500"
+                className="w-full px-4 py-3 rounded-lg bg-surface-light border border-border focus:border-primary focus:ring-2 focus:ring-primary/50 focus:outline-none transition-colors text-foreground placeholder-muted"
                 placeholder="••••••••"
                 required
               />
@@ -144,17 +144,17 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 rounded-lg btn-primary font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Logging in..." : "Log in"}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-muted mt-6">
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              className="text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="text-primary hover:text-primary-light transition-colors"
             >
               Create account
             </Link>

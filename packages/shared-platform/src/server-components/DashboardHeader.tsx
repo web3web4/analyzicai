@@ -43,8 +43,8 @@ export async function DashboardHeader({ theme = "uxic", prefix, className }: Das
       badge: "border border-primary text-primary",
       divider: "bg-white/10",
       brandLink: "font-bold hover:text-primary",
-      navLink: "text-gray-400 hover:text-white",
-      button: "text-gray-400 hover:text-white",
+      navLink: "text-muted hover:text-foreground",
+      button: "text-muted hover:text-foreground",
     },
   };
 
