@@ -39,7 +39,7 @@ export default function CTA() {
               href="https://UXicAI.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="group px-8 py-4 bg-gradient-to-r text-white font-mono font-black border-2 border-ux transition-all hover:opacity-90 flex items-center space-x-2 text-lg"
+              className="group px-8 py-4 bg-gradient-to-r from-ux to-ux/80 text-white font-mono font-black border-2 border-ux transition-all hover:opacity-90 flex items-center space-x-2 text-lg"
             >
               <span>Try <span className="opacity-90 text-ux">UXic</span><span className="text-ai-soft">AI</span></span>
               <ArrowRight className="w-5 h-5 text-ux group-hover:translate-x-1 transition-transform" />

@@ -48,7 +48,7 @@ export default function Home() {
               <form action="/api/auth/signout" method="post">
                 <button
                   type="submit"
-                  className="text-white/90 hover:text-white transition-colors"
+                  className="text-white hover:text-white/80 transition-colors"
                 >
                   Sign out
                 </button>
@@ -65,7 +65,7 @@ export default function Home() {
             <>
               <Link
                 href="/login"
-                className="text-sm sm:text-base text-white/90 hover:text-white transition-colors"
+                className="text-sm sm:text-base text-white hover:text-white/80 transition-colors"
               >
                 Log in
               </Link>
