@@ -47,10 +47,10 @@ export default function HowItWorks() {
         <div className="relative">
           {/* Connection line for desktop */}
           <div className="hidden lg:block absolute top-10 left-[8%] right-[8%] z-0" aria-hidden="true">
-            <div className="h-[1px] bg-gradient-to-r from-ai via-ai-soft to-ai opacity-40" />
+            <div className="h-px bg-gradient-to-r from-ai via-ai-soft to-ai opacity-40" />
             {/* Travelling pulse */}
             <div
-              className="absolute top-0 left-0 w-24 h-[1px] bg-gradient-to-r from-transparent via-ai to-transparent animate-scan-line opacity-80"
+              className="absolute top-0 left-0 w-24 h-px bg-gradient-to-r from-transparent via-ai to-transparent animate-scan-line opacity-80"
             />
           </div>
 

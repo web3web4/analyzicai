@@ -39,7 +39,7 @@ export default function CTA() {
               href="https://UXicAI.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="group px-8 py-4 bg-gradient-to-r text-white font-mono font-black border-2 border-ux transition-all hover:opacity-90 flex items-center space-x-2 text-lg"
+              className="group px-8 py-4 bg-gradient-to-r from-ux to-ux/80 text-white font-mono font-black border-2 border-ux transition-all hover:opacity-90 flex items-center space-x-2 text-lg"
             >
               <span>Try <span className="opacity-90 text-ux">UXic</span><span className="text-ai-soft">AI</span></span>
               <ArrowRight className="w-5 h-5 text-ux group-hover:translate-x-1 transition-transform" />
@@ -61,7 +61,7 @@ export default function CTA() {
         <ScrollReveal delay={0.2}>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10 max-w-4xl mx-auto">
             {[
-              { title: 'Free Sign Up', sub: 'No credit card required', accent: 'ai' as const },
+              { title: 'Free Account', sub: 'No credit card required', accent: 'ai' as const },
               { title: 'BYOK', sub: 'Bring your own API keys', accent: 'soft' as const },
               { title: 'Subscription', sub: 'Plans available soon!', accent: 'ai' as const },
             ].map((card) => (

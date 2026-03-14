@@ -47,11 +47,11 @@ export function ImageThumbnailGrid({
               onError={() => onImageError(idx)}
             />
           )}
-          <span className="absolute bottom-0.5 right-0.5 text-[10px] font-medium text-white bg-black/60 px-1 rounded">
+          <span className="absolute bottom-0.5 right-0.5 text-xs font-medium text-white bg-black/60 px-1 rounded">
             {idx + 1}
           </span>
           {showScores && scores[idx] !== undefined && (
-            <span className="absolute top-0.5 left-0.5 text-[10px] font-medium text-white bg-black/60 px-1 rounded">
+            <span className="absolute top-0.5 left-0.5 text-xs font-medium text-white bg-black/60 px-1 rounded">
               {roundScore(scores[idx])}
             </span>
           )}

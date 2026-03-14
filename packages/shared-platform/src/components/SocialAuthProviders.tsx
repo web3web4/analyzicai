@@ -81,7 +81,7 @@ export interface SocialAuthProvidersProps {
 export function SocialAuthProviders({
   providers,
   onProviderClick,
-  buttonClassName = "flex items-center justify-center gap-2 px-4 py-3 w-full py-3 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed",
+  buttonClassName = "flex items-center justify-center gap-2 px-4 py-3 w-full py-3 rounded-lg btn-primary font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed",
   containerClassName = "grid grid-cols-1 gap-3 mb-6",
   layout = "stack",
 }: SocialAuthProvidersProps) {

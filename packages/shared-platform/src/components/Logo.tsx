@@ -65,7 +65,8 @@ export function Logo({
     <div className={`flex items-center ${classes.gap} ${className}`}>
 
       {isAnalyzic && (
-        <svg width={classes.icon} height={classes.icon} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+        <svg width={classes.icon} height={classes.icon} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0" role="img" aria-label="AnalyzicAI Logo">
+          <title>AnalyzicAI Logo</title>
           <rect width="64" height="64" rx="4" fill="transparent"/>
           <path d="M 8 56 L 32 8 L 56 56" stroke="#FFFFFF" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
           <path d="M 32 26 C 32 35 43 40 50 40 C 43 40 32 45 32 54 C 32 45 21 40 14 40 C 21 40 32 35 32 26 Z" fill="#C044FF" />
@@ -73,7 +74,8 @@ export function Logo({
       )}
 
       {isSolidic && (
-        <svg width={classes.icon} height={classes.icon} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+        <svg width={classes.icon} height={classes.icon} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0" role="img" aria-label="SolidicAI Logo">
+          <title>SolidicAI Logo</title>
           <rect width="64" height="64" rx="4" fill="transparent"/>
           <path d="M 24 10 L 18 10 C 9 10 9 13 9 20 L 9 28 C 9 32 6 32 6 32 C 9 32 9 32 9 36 L 9 44 C 9 51 9 54 18 54 L 24 54" stroke="#00FFD1" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
           <path d="M 40 10 L 46 10 C 55 10 55 13 55 20 L 55 28 C 55 32 58 32 58 32 C 55 32 55 32 55 36 L 55 44 C 55 51 55 54 46 54 L 40 54" stroke="#00FFD1" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -91,7 +93,8 @@ export function Logo({
 
 
       {isUXic && (
-        <svg width={classes.icon} height={classes.icon} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+        <svg width={classes.icon} height={classes.icon} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0" role="img" aria-label="UXicAI Logo">
+          <title>UXicAI Logo</title>
           <rect width="64" height="64" rx="4" fill="transparent"/>
           <path d="M 22 8 L 8 8 L 8 22 M 42 8 L 56 8 L 56 22 M 22 56 L 8 56 L 8 42 M 42 56 L 56 56 L 56 42" stroke="#FF2D9E" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
           <path d="M 32 14 C 32 24 44 32 50 32 C 44 32 32 40 32 50 C 32 40 20 32 14 32 C 20 32 32 24 32 14 Z" fill="#C044FF" />

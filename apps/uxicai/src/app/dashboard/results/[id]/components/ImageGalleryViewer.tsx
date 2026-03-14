@@ -149,7 +149,7 @@ export function ImageGalleryViewer({
                 />
               )}
               {/* Thumbnail index */}
-              <span className="absolute bottom-0.5 right-0.5 text-[10px] font-medium text-white bg-black/60 px-1 rounded">
+              <span className="absolute bottom-0.5 right-0.5 text-xs font-medium text-white bg-black/60 px-1 rounded">
                 {idx + 1}
               </span>
             </button>

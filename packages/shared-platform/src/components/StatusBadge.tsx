@@ -20,7 +20,7 @@ export function StatusBadge({
     size === "sm" ? "px-2 py-0.5 text-xs" : "px-2 py-0.5 rounded-full text-xs";
 
   const variantClasses =
-    variant === "solidic" ? "text-[10px] font-bold uppercase" : "capitalize";
+    variant === "solidic" ? "text-xs font-bold uppercase" : "capitalize";
 
   return (
     <span

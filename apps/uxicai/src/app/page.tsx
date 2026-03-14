@@ -40,14 +40,19 @@ export default function Home() {
           />
         </div>
 
-        <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
-            <Logo prefix="UXic" containerSize="lg" />
-            <span className="text-xs px-2 py-0.5 rounded-full border border-border text font-mono">
+        <nav className="relative z-10 flex items-center justify-between px-4 sm:px-6 py-4 max-w-7xl mx-auto">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 sm:gap-3 min-w-0">
+            <div className="sm:hidden">
+              <Logo prefix="UXic" containerSize="sm" />
+            </div>
+            <div className="hidden sm:block">
+              <Logo prefix="UXic" containerSize="lg" />
+            </div>
+            <span className="text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 rounded-full border border-amber-500/40 text-amber-400/80 font-mono">
               v1 pre-alpha
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             {isLoggedIn ? (
               <>
                 <form action="/api/auth/signout" method="post">
@@ -60,7 +65,7 @@ export default function Home() {
                 </form>
                 <Link
                   href="/dashboard"
-                  className="btn-primary px-5 py-2 rounded-full text-white font-medium flex items-center gap-2"
+                  className="btn-primary px-3 py-1.5 sm:px-5 sm:py-2 rounded-full text-white font-medium text-sm sm:text-base flex items-center gap-2 whitespace-nowrap"
                 >
                   <User className="w-4 h-4" />
                   Dashboard
@@ -70,13 +75,13 @@ export default function Home() {
               <>
                 <Link
                   href="/login"
-                  className="text-muted hover:text-foreground transition-colors"
+                  className="text-sm sm:text-base text-muted hover:text-foreground transition-colors"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/signup"
-                  className="btn-primary px-5 py-2 rounded-full text-white font-medium"
+                  className="btn-primary px-3 py-1.5 sm:px-5 sm:py-2 rounded-full text-white font-medium text-sm sm:text-base whitespace-nowrap"
                 >
                   Get Started
                 </Link>
