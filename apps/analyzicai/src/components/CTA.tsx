@@ -61,7 +61,7 @@ export default function CTA() {
         <ScrollReveal delay={0.2}>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10 max-w-4xl mx-auto">
             {[
-              { title: 'Free Sign Up', sub: 'No credit card required', accent: 'ai' as const },
+              { title: 'Free Account', sub: 'No credit card required', accent: 'ai' as const },
               { title: 'BYOK', sub: 'Bring your own API keys', accent: 'soft' as const },
               { title: 'Subscription', sub: 'Plans available soon!', accent: 'ai' as const },
             ].map((card) => (

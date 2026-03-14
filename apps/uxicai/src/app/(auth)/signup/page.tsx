@@ -109,7 +109,7 @@ export default function SignupPage() {
             href="/login"
             className="text-primary hover:text-primary-light transition-colors"
           >
-            Back to login
+            Back to log in
           </Link>
         </div>
       </div>
@@ -219,7 +219,7 @@ export default function SignupPage() {
               href="/login"
               className="text-primary hover:text-primary-light transition-colors"
             >
-              Sign in
+              Log in
             </Link>
           </p>
         </div>

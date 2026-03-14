@@ -30,14 +30,19 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-primary/8 to-slate-950">
       {/* Navigation */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-3">
-          <Logo containerSize="lg" prefix="Solidic" />
-          <span className="text-xs px-2 py-0.5 rounded-full border border-primary text-primary font-mono">
+      <nav className="relative z-10 flex items-center justify-between px-4 sm:px-6 py-4 max-w-7xl mx-auto w-full">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 sm:gap-3 min-w-0">
+          <div className="sm:hidden">
+            <Logo containerSize="sm" prefix="Solidic" />
+          </div>
+          <div className="hidden sm:block">
+            <Logo containerSize="lg" prefix="Solidic" />
+          </div>
+          <span className="text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 rounded-full border border-amber-500/40 text-amber-400/80 font-mono">
             v1 pre-alpha
           </span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           {isLoggedIn ? (
             <>
               <form action="/api/auth/signout" method="post">
@@ -50,7 +55,7 @@ export default function Home() {
               </form>
               <Link
                 href="/dashboard"
-                className="px-5 py-2 bg-gradient-to-r from-accent-light to-primary-light text-black rounded-full font-bold border border-transparent hover:[background-image:none] hover:bg-slate-900 hover:text-primary hover:border-primary/40 transition-all flex items-center gap-2"
+                className="px-3 py-1.5 sm:px-5 sm:py-2 text-sm sm:text-base bg-gradient-to-r from-accent-light to-primary-light text-black rounded-full font-bold border border-transparent hover:[background-image:none] hover:bg-slate-900 hover:text-primary hover:border-primary/40 transition-all flex items-center gap-2 whitespace-nowrap"
               >
                 <User className="w-4 h-4" />
                 Dashboard
@@ -60,13 +65,13 @@ export default function Home() {
             <>
               <Link
                 href="/login"
-                className="text-white/90 hover:text-white transition-colors"
+                className="text-sm sm:text-base text-white/90 hover:text-white transition-colors"
               >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="px-5 py-2 bg-gradient-to-r from-accent-light to-primary-light text-black rounded-full font-bold border border-transparent hover:[background-image:none] hover:bg-slate-900 hover:text-primary hover:border-primary/40 transition-all"
+                className="px-3 py-1.5 sm:px-5 sm:py-2 text-sm sm:text-base bg-gradient-to-r from-accent-light to-primary-light text-black rounded-full font-bold border border-transparent hover:[background-image:none] hover:bg-slate-900 hover:text-primary hover:border-primary/40 transition-all whitespace-nowrap"
               >
                 Get Started
               </Link>

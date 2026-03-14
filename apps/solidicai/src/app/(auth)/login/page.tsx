@@ -146,7 +146,7 @@ function LoginForm() {
               disabled={loading}
               className="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Logging in..." : "Log in"}
             </button>
           </form>
 
@@ -156,7 +156,7 @@ function LoginForm() {
               href="/signup"
               className="text-cyan-400 hover:text-cyan-300 transition-colors"
             >
-              Sign up
+              Create account
             </Link>
           </p>
         </div>
