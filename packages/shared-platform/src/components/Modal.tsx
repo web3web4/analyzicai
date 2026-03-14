@@ -67,7 +67,7 @@ export default function Modal({
             <h2 className="text-xl font-semibold">{title}</h2>
             <button
               onClick={onClose}
-              className="rounded-lg p-1 hover:bg-surface-light transition-colors"
+              className="rounded-lg p-1 hover:bg-surface-light transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
             >
               <X className="h-5 w-5" />
             </button>

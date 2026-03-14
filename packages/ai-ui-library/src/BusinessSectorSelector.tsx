@@ -61,7 +61,7 @@ export function BusinessSectorSelector({
             key={sector}
             type="button"
             onClick={() => toggleSector(sector)}
-            className={`px-3 py-1.5 rounded-lg border text-sm transition-colors ${
+            className={`px-3 py-1.5 rounded-lg border text-sm transition-colors focus:ring-2 focus:ring-primary/50 focus:outline-none ${
               selectedSectors.includes(sector)
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-border hover:border-primary/50"
